@@ -84,6 +84,7 @@
   .copybtn:hover{transform:translateY(-1px)}
   .copybtn.done{background:linear-gradient(120deg,#86efac,#bbf7d0)}
   .cmdnote{margin-top:14px;font-size:13px;color:var(--dim)}
+  .subhead{font-size:19px;font-weight:750;letter-spacing:-.01em;margin:38px 0 8px}
   @media(max-width:560px){
     .cmdbox{flex-direction:column;align-items:stretch}
     .cmdbox code{width:100%}
@@ -176,6 +177,21 @@
         <li><b>Wait.</b> The script downloads the source, installs dependencies, installs Rust 1.80+ via rustup if needed, builds Rustify when the prebuilt binary cannot run, and unpacks yt-dlp for fast startup.</li>
         <li><b>Rustify launches</b> when it is done. After that, run <code>rustify</code> or open it from the app menu.</li>
       </ol>
+
+      <h3 class="subhead">Uninstall command, if necessary</h3>
+      <p>Removes the app, the launcher, the icon, the data folder, and the config. Nothing else on the machine is touched.</p>
+      <div class="cmdbox">
+        <code id="uninstallCmd">SHARE=~/.local/share
+rm -f ~/.local/bin/{rustify,yt-dlp}
+rm -f $SHARE/applications/rustify.desktop
+rm -f $SHARE/icons/hicolor/128x128/apps/rustify.{png,svg}
+rm -rf $SHARE/rustify ~/.config/rustify
+update-desktop-database $SHARE/applications 2>/dev/null
+gtk-update-icon-cache -f -t $SHARE/icons/hicolor 2>/dev/null
+echo "Rustify removed."</code>
+        <button class="copybtn" id="copyUninstall" type="button" aria-label="Copy the uninstall command">Copy command</button>
+      </div>
+      <p class="cmdnote">If Rustify is running, close it first. Your downloaded files in the imports folder are removed with the data folder — copy anything you want to keep out of <code>~/.local/share/rustify/imports</code> first.</p>
     </div>
   </section>
 
@@ -212,7 +228,7 @@
         <p><strong>The prebuilt binary will not start</strong> — that is expected on some distros. The installer detects it, installs the runtime libraries, and falls back to a source build automatically.</p>
         <p><strong>The source build fails</strong> — install the dev packages for your distro and run the command again. On Debian/Ubuntu: <code>sudo apt install build-essential pkg-config libssl-dev libgtk-3-dev libwebkit2gtk-4.1-dev libsoup-3.0-dev</code>.</p>
         <p><strong>Updating</strong> — run the same command again. It stops the running copy, replaces the binary, refreshes yt-dlp, and relaunches.</p>
-        <p><strong>Uninstalling</strong> — <code>rm -f ~/.local/bin/rustify ~/.local/bin/yt-dlp ~/.local/share/applications/rustify.desktop; rm -rf ~/.local/share/rustify</code>.</p>
+        <p><strong>Uninstalling</strong> — use the uninstall command in the <a href="#install">install section</a>. It removes everything the installer added.</p>
       </div>
     </div>
   </section>
@@ -248,29 +264,33 @@
 
 <script>
   (function(){
-    var btn = document.getElementById('copyCmd');
-    var cmd = 'curl -fsSL https://strangergithun.github.io/install-rustify.sh | bash';
-    if (!btn) return;
-    btn.addEventListener('click', function(){
-      function ok(){
-        btn.textContent = 'Copied!';
-        btn.classList.add('done');
-        setTimeout(function(){ btn.textContent = 'Copy command'; btn.classList.remove('done'); }, 1600);
-      }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(cmd).then(ok, function(){
+    function wire(btnId, cmdId){
+      var btn = document.getElementById(btnId);
+      var el = document.getElementById(cmdId);
+      if (!btn || !el) return;
+      var cmd = el.textContent;
+      var label = btn.textContent;
+      btn.addEventListener('click', function(){
+        function ok(){
+          btn.textContent = 'Copied!';
+          btn.classList.add('done');
+          setTimeout(function(){ btn.textContent = label; btn.classList.remove('done'); }, 1600);
+        }
+        function fallback(){
           var t = document.createElement('textarea');
           t.value = cmd; document.body.appendChild(t); t.select();
           try { document.execCommand('copy'); ok(); } catch(e){}
           t.remove();
-        });
-      } else {
-        var t = document.createElement('textarea');
-        t.value = cmd; document.body.appendChild(t); t.select();
-        try { document.execCommand('copy'); ok(); } catch(e){}
-        t.remove();
-      }
-    });
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(cmd).then(ok, fallback);
+        } else {
+          fallback();
+        }
+      });
+    }
+    wire('copyCmd', 'installCmd');
+    wire('copyUninstall', 'uninstallCmd');
   })();
 </script>
 
