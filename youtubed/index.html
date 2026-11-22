@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>YouTubeD — coming soon — Neutronic</title>
+<meta name="description" content="YouTubeD — a native YouTube downloader for video, audio, and playlists. Placeholder page.">
+<style>
+  :root{
+    --void:#07090c;--panel:#0d1117;--panel-2:#11161e;--line:#1c2330;
+    --ink:#eef2f7;--muted:#8b96a6;--dim:#5b6675;
+    --red:#ef4444;--orange:#f97316;--radius:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--void);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    overflow-x:hidden;-webkit-user-select:none;user-select:none}
+  ::selection{background:var(--red);color:#0a0303}
+  a{color:inherit;text-decoration:none}
+  img{-webkit-user-drag:none;user-select:none}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(7,9,12,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;letter-spacing:-.02em}
+  .mark{width:34px;height:34px;border-radius:9px;object-fit:contain;box-shadow:0 0 22px -4px rgba(239,68,68,.5)}
+  .btn{display:inline-flex;align-items:center;gap:9px;border-radius:999px;font-weight:650;font-size:14px;
+    font-family:inherit;cursor:pointer;transition:transform .16s,border-color .16s,color .16s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-p{background:linear-gradient(120deg,var(--red),var(--orange));color:#fff;padding:11px 20px;
+    box-shadow:0 10px 30px -12px rgba(239,68,68,.8);border:0}
+  .btn-g{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:11px 20px}
+  .btn-g:hover{border-color:#3a2530}
+
+  .hero{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;
+    padding:12vh 24px 56px;overflow:hidden;min-height:62vh;justify-content:center}
+  .hero::before{content:"";position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);width:640px;height:640px;
+    border-radius:50%;background:radial-gradient(circle,rgba(239,68,68,.18),rgba(249,115,22,.10) 45%,transparent 68%);
+    filter:blur(34px);pointer-events:none}
+  .num{position:relative;z-index:1;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:16px}
+  h1{position:relative;z-index:1;font-size:clamp(44px,9vw,88px);line-height:1.02;letter-spacing:-.045em;font-weight:880;
+    background:linear-gradient(110deg,#fff 8%,#fecaca 46%,#f97316 82%,#ef4444 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 60px rgba(239,68,68,.24)}
+  .sub{position:relative;z-index:1;color:var(--muted);font-size:clamp(15px,2.4vw,18px);max-width:50ch;margin:16px auto 0}
+  .heap{position:relative;z-index:1;display:flex;gap:12px;margin-top:30px;flex-wrap:wrap;justify-content:center}
+
+  .bar{display:flex;align-items:flex-end;gap:4px;height:22px;margin-top:26px}
+  .bar i{display:block;width:4px;border-radius:2px;background:linear-gradient(180deg,var(--orange),var(--red));
+    animation:eq 1.1s ease-in-out infinite alternate}
+  .bar i:nth-child(1){height:40%;animation-delay:-.2s}
+  .bar i:nth-child(2){height:90%;animation-delay:-.5s}
+  .bar i:nth-child(3){height:60%;animation-delay:-.1s}
+  .bar i:nth-child(4){height:100%;animation-delay:-.7s}
+  .bar i:nth-child(5){height:50%;animation-delay:-.35s}
+  @keyframes eq{from{transform:scaleY(.35)}to{transform:scaleY(1)}}
+
+  .sec{border-top:1px solid var(--line);padding:56px 0}
+  .kick{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);
+    margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .kick::before{content:"";width:22px;height:1px;background:var(--orange);display:inline-block}
+  h2{font-size:clamp(22px,4vw,30px);letter-spacing:-.03em;line-height:1.1;font-weight:840;margin-bottom:14px}
+  .sec p{color:var(--muted);font-size:15.5px;max-width:66ch;margin-bottom:12px}
+  .sec p:last-child{margin-bottom:0}
+  .status{border:1px solid #4a2630;border-radius:var(--radius);padding:20px 24px;margin-top:20px;
+    background:radial-gradient(440px circle at 0% 0%,rgba(239,68,68,.12),transparent 66%),var(--panel);
+    color:#f3d3d3;font-size:14.5px}
+  .status b{color:var(--ink)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:24px}
+  .card{border:1px solid var(--line);border-radius:14px;padding:20px 22px;
+    background:radial-gradient(360px circle at 0% 0%,rgba(239,68,68,.07),transparent 70%),var(--panel)}
+  .card b{display:block;font-size:14.5px;color:var(--ink);margin-bottom:6px;font-weight:700}
+  .card span{font-size:13.5px;color:var(--muted);line-height:1.55}
+
+  footer{border-top:1px solid var(--line);margin-top:8px;padding:36px 0}
+  .fr{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
+  .fl{display:flex;gap:24px;font-size:13.5px;color:var(--muted);flex-wrap:wrap}
+  .fl a:hover{color:var(--ink)}
+  .copy{font-size:12.5px;color:var(--dim)}
+
+  @media(prefers-reduced-motion:reduce){.bar i{animation:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="../index.html"><img class="mark" src="../logo.png" alt="Neutronic logo"> Neutronic</a>
+      <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <p class="num">Coming soon</p>
+    <h1>YouTubeD</h1>
+    <p class="sub">A native YouTube downloader — video, audio, playlists. No browser tab, no ads, no nonsense.</p>
+    <div class="bar" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="heap">
+      <a class="btn btn-g" href="../index.html">&larr; Back to the site</a>
+      <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Follow the build</a>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <p class="kick">Work in progress</p>
+      <h2>This page is a placeholder.</h2>
+      <p>YouTubeD is the next thing on the bench. The hero block on the home page points here until the real downloader is ready — same idea as Rustify, but for keeping the file instead of streaming it.</p>
+      <div class="status"><b>Status:</b> placeholder page. The full client, download flow, and installer come later. Nothing to download yet.</div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <p class="kick">What it will do</p>
+      <h2>The plan, roughly.</h2>
+      <div class="grid">
+        <div class="card"><b>Video + audio</b><span>Paste a link, pick a quality, and keep the file wherever you want it.</span></div>
+        <div class="card"><b>Playlists</b><span>Queue a whole list in one go, with a simple progress view and sane naming.</span></div>
+        <div class="card"><b>Native and small</b><span>One binary, no embedded browser, no background daemon, no account required.</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fr">
+      <a class="logo" href="../index.html"><img class="mark" src="../logo.png" alt="Neutronic logo"> Neutronic</a>
+      <div class="fl">
+        <a href="../reviews.html">Reviews</a>
+        <a href="../info.html">Info</a>
+        <a href="../help.html">Help</a>
+        <a href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+      </div>
+      <span class="copy">&copy; 2026 Neutronic</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

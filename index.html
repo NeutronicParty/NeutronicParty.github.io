@@ -63,6 +63,12 @@
   .btn-l{background:linear-gradient(120deg,var(--lime),#93c5fd);color:#0a1005;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(125,211,252,.75)}
   .btn-l .dot-i{width:7px;height:7px;border-radius:50%;background:#0a1005;animation:pulse 2.4s infinite}
   .btn-r{background:linear-gradient(120deg,#a855f7,#ec4899);color:#fff;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(168,85,247,.8)}
+  .btn-y{background:linear-gradient(120deg,#ef4444,#f97316);color:#fff;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(239,68,68,.8)}
+  .morebtn{display:inline-flex;align-items:center;gap:8px;margin-top:24px;border:1px solid var(--line);background:rgba(13,17,23,.72);
+    color:var(--muted);border-radius:999px;padding:10px 20px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;
+    transition:color .16s,border-color .16s,transform .16s;white-space:nowrap}
+  .morebtn:hover{color:var(--ink);border-color:#2c3646;transform:translateY(-2px)}
+  .morebtn:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
   @media(max-width:780px){.nl{display:none}nav{display:flex;justify-content:space-between}}
 
   .hero{position:relative;padding:88px 0 80px;overflow:hidden}
@@ -233,7 +239,7 @@
     <div class="orb"></div>
     <div class="orb b"></div>
     <div class="wrap hero-grid">
-      <div class="engine reveal">
+      <div class="engine reveal" id="engineLeft">
         <p class="kick">NEngine</p>
         <h3>One script. Every page.</h3>
         <p class="engine-desc">NEngine is a Tampermonkey userscript that loads the Neutronic Engine into any page you visit. Install it once — it stays current on its own.</p>
@@ -254,6 +260,7 @@
           <span class="rc" id="ratingCount">(1 review)</span>
         </a>
         <h1 class="lens" aria-label="Neutronic Partyhouse"><span class="lens-line">Neutronic</span><br><span class="grad lens-line">Partyhouse</span></h1>
+        <button class="morebtn" id="moreBtn" type="button" aria-pressed="false">More software</button>
       </div>
       <div class="engine right rust reveal">
         <p class="kick">Rustify</p>
@@ -270,6 +277,20 @@
       </div>
     </div>
   </section>
+
+  <template id="youtubedBlock">
+    <p class="kick">YouTubeD</p>
+    <h3>Music, but downloaded.</h3>
+    <p class="engine-desc">Paste a link, pick video or audio, and keep the file. The downloader is next on the bench — this block is its placeholder for now.</p>
+    <ul>
+      <li><span class="tick">✓</span><span><b>Video + audio</b> — choose the quality, keep the file</span></li>
+      <li><span class="tick">✓</span><span><b>Playlists</b> — queue a whole list in one go</span></li>
+      <li><span class="tick">✓</span><span><b>Native</b> — one small binary, no browser tab</span></li>
+    </ul>
+    <div class="engine-side">
+      <a class="btn btn-y" href="youtubed/">Check it out →</a>
+    </div>
+  </template>
 
   <div class="marquee" aria-hidden="true">
     <div class="mq-track">
@@ -343,6 +364,27 @@
       card.style.setProperty('--my',(e.clientY-r.top)+'px');
     });
   });
+
+  (function(){
+    var btn=document.getElementById('moreBtn');
+    var box=document.getElementById('engineLeft');
+    var tpl=document.getElementById('youtubedBlock');
+    if(!btn||!box||!tpl) return;
+    var original=Array.prototype.map.call(box.childNodes, function(n){ return n.cloneNode(true); });
+    var showing=false;
+    function render(){
+      var frag=document.createDocumentFragment();
+      if(showing){
+        frag.appendChild(tpl.content.cloneNode(true));
+      } else {
+        original.forEach(function(n){ frag.appendChild(n.cloneNode(true)); });
+      }
+      box.replaceChildren(frag);
+      btn.textContent=showing?'Back to NEngine':'More software';
+      btn.setAttribute('aria-pressed', showing?'true':'false');
+    }
+    btn.addEventListener('click', function(){ showing=!showing; render(); });
+  })();
 
   (function(){
     var btn=document.getElementById('emailBtn');
