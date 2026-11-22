@@ -48,18 +48,18 @@
     padding:70px 24px 40px;overflow:hidden;min-height:74vh}
   .hero::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:640px;height:640px;border-radius:50%;
     background:radial-gradient(circle,rgba(168,85,247,.22),rgba(126,34,206,.12) 45%,transparent 68%);filter:blur(30px);pointer-events:none}
-  .stage{position:relative;display:inline-block;padding:clamp(70px,14vmin,120px) clamp(24px,6vw,60px)}
+  .stage{position:relative;display:inline-block;padding:clamp(70px,14vmin,120px) clamp(24px,6vw,60px) clamp(14px,2.6vmin,24px)}
   .stage h1{position:relative;z-index:2;font-size:clamp(44px,9vw,94px);line-height:1.04;letter-spacing:-.045em;font-weight:880;
     padding:0 .02em .14em;overflow:visible;
     background:linear-gradient(110deg,#fff 10%,#f3e8ff 45%,#d8b4fe 75%,#a855f7 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
     text-shadow:0 0 60px rgba(168,85,247,.28)}
   .orbfx{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1}
   .orbfx.front{z-index:3}
-  .hero-sub{position:relative;z-index:4;color:var(--muted);font-size:clamp(15px,2.4vw,18px);max-width:48ch;margin:6px auto 0}
-  .hero-cta{position:relative;z-index:4;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
-  .hero-note{position:relative;z-index:4;margin-top:16px;font-size:12.5px;color:var(--dim)}
+  .hero-sub{position:relative;z-index:4;color:var(--muted);font-size:clamp(15px,2.4vw,18px);max-width:48ch;margin:0 auto 0}
+  .hero-cta{position:relative;z-index:4;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+  .hero-note{position:relative;z-index:4;margin-top:12px;font-size:12.5px;color:var(--dim)}
 
-  .previewbtn{position:relative;z-index:4;margin-top:10px;display:inline-flex;align-items:center;gap:9px;
+  .previewbtn{position:relative;z-index:4;margin-top:6px;display:inline-flex;align-items:center;gap:9px;
     border:1px solid #4c2a7a;background:rgba(17,22,30,.66);color:#e9d5ff;border-radius:999px;padding:10px 20px;
     font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px);
     transition:transform .16s,border-color .16s,background .16s}
