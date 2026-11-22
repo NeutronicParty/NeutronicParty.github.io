@@ -43,21 +43,24 @@
     padding:70px 24px 40px;overflow:hidden;min-height:74vh}
   .hero::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:640px;height:640px;border-radius:50%;
     background:radial-gradient(circle,rgba(59,130,246,.20),rgba(29,78,216,.10) 45%,transparent 68%);filter:blur(30px);pointer-events:none}
-  .stage{position:relative;display:inline-block;padding:clamp(70px,14vmin,120px) clamp(24px,6vw,60px)}
-  .stage h1{position:relative;z-index:2;font-size:clamp(40px,8.4vw,88px);line-height:.98;letter-spacing:-.045em;font-weight:880;
+  .stage{position:relative;display:inline-block;padding:clamp(70px,14vmin,120px) clamp(24px,6vw,60px);
+    perspective:900px;perspective-origin:50% 50%;transform-style:preserve-3d}
+  .stage h1{position:relative;transform:translateZ(0);font-size:clamp(40px,8.4vw,88px);line-height:.98;letter-spacing:-.045em;font-weight:880;
     background:linear-gradient(110deg,#fff 10%,#bfdbfe 45%,#60a5fa 75%,#3b82f6 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
     text-shadow:0 0 60px rgba(59,130,246,.25)}
-  .orbiter{position:absolute;top:50%;left:50%;width:0;height:0;z-index:1;animation:spin var(--dur,16s) linear infinite}
-  .orbiter .orb{position:absolute;top:calc(-1 * var(--r,160px));left:0;width:var(--s,12px);height:var(--s,12px);border-radius:50%;
-    transform:translate(-50%,-50%);background:radial-gradient(circle at 32% 30%,#dbeafe,#60a5fa 55%,#1d4ed8);
+  .orbits{position:absolute;top:50%;left:50%;width:0;height:0;transform-style:preserve-3d}
+  .orbit{position:absolute;top:0;left:0;width:0;height:0;transform-style:preserve-3d;transform:rotateX(var(--tiltX,70deg)) rotateZ(var(--tiltZ,0deg))}
+  .ring3d{position:absolute;top:0;left:0;width:calc(var(--r,160px) * 2);height:calc(var(--r,160px) * 2);
+    margin:calc(var(--r,160px) * -1) 0 0 calc(var(--r,160px) * -1);border:1px solid rgba(59,130,246,.13);border-radius:50%}
+  .spinner{position:absolute;top:0;left:0;width:0;height:0;transform-style:preserve-3d;animation:spin var(--dur,16s) linear infinite}
+  .orb{position:absolute;left:0;top:0;width:var(--s,12px);height:var(--s,12px);margin:calc(var(--s,12px) * -0.5) 0 0 calc(var(--s,12px) * -0.5);
+    border-radius:50%;transform:translateX(var(--r,160px));background:radial-gradient(circle at 32% 30%,#dbeafe,#60a5fa 55%,#1d4ed8);
     box-shadow:0 0 16px rgba(59,130,246,.85),0 0 34px rgba(59,130,246,.35)}
-  .orbiter.dim .orb{background:radial-gradient(circle at 32% 30%,#93c5fd,#3b82f6 60%,#1e3a8a);box-shadow:0 0 12px rgba(59,130,246,.6)}
-  .ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border:1px solid rgba(59,130,246,.12);border-radius:50%;pointer-events:none;z-index:0}
   @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
   .hero-sub{position:relative;z-index:2;color:var(--muted);font-size:clamp(15px,2.4vw,18px);max-width:46ch;margin:6px auto 0}
   .hero-cta{position:relative;z-index:2;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
   .hero-note{position:relative;z-index:2;margin-top:16px;font-size:12.5px;color:var(--dim)}
-  @media(prefers-reduced-motion:reduce){.orbiter{animation:none}.orbiter:nth-of-type(2) .orb{display:none}}
+  @media(prefers-reduced-motion:reduce){.spinner{animation:none}}
 
   .sec{padding:64px 0;border-top:1px solid var(--line)}
   .sec:first-of-type{border-top:none}
@@ -118,11 +121,20 @@
 <main>
   <section class="hero">
     <div class="stage">
-      <div class="ring" style="width:clamp(240px,48vmin,380px);height:clamp(240px,48vmin,380px)"></div>
-      <div class="ring" style="width:clamp(320px,64vmin,500px);height:clamp(320px,64vmin,500px)"></div>
-      <div class="orbiter" style="--r:clamp(120px,24vmin,190px);--dur:15s;--s:13px"><span class="orb"></span></div>
-      <div class="orbiter dim" style="--r:clamp(155px,30vmin,235px);--dur:23s;--s:9px;animation-direction:reverse"><span class="orb"></span></div>
-      <div class="orbiter" style="--r:clamp(95px,19vmin,150px);--dur:11s;--s:7px;animation-delay:-3s"><span class="orb"></span></div>
+      <div class="orbits">
+        <div class="orbit" style="--r:clamp(120px,24vmin,190px);--dur:14s;--tiltX:72deg;--tiltZ:0deg">
+          <div class="ring3d"></div>
+          <div class="spinner"><span class="orb" style="--s:13px"></span></div>
+        </div>
+        <div class="orbit" style="--r:clamp(150px,30vmin,230px);--dur:21s;--tiltX:58deg;--tiltZ:130deg">
+          <div class="ring3d"></div>
+          <div class="spinner" style="animation-direction:reverse"><span class="orb" style="--s:9px"></span></div>
+        </div>
+        <div class="orbit" style="--r:clamp(95px,19vmin,150px);--dur:10s;--tiltX:84deg;--tiltZ:250deg">
+          <div class="ring3d"></div>
+          <div class="spinner" style="animation-delay:-4s"><span class="orb" style="--s:7px"></span></div>
+        </div>
+      </div>
       <h1>Neutronic Engine</h1>
     </div>
     <p class="hero-sub">One loader. Every page. Free, keyed, and built to stay out of your way.</p>
