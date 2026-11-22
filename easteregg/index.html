@@ -81,9 +81,6 @@
   body.party .glow{background:radial-gradient(circle,rgba(192,132,252,.25),rgba(59,130,246,.14) 48%,transparent 70%)}
   @keyframes hue{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}
 
-  #matrix{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-events:none;opacity:0;
-    transition:opacity .8s ease;background:rgba(3,8,6,.86)}
-
   @media(prefers-reduced-motion:reduce){
     h1,.sub,.term{animation:none}
     body.party{animation:none}
@@ -99,7 +96,6 @@
 <canvas id="bg" aria-hidden="true"></canvas>
 <div class="glow" aria-hidden="true"></div>
 <canvas id="confetti" aria-hidden="true"></canvas>
-<canvas id="matrix" aria-hidden="true"></canvas>
 
 <main>
   <h1>You found the <span class="grad">easter egg</span>.</h1>
@@ -147,7 +143,6 @@
     out.appendChild(el);
     out.scrollTop = out.scrollHeight;
   }
-  function clearOut(){ out.textContent = ''; }
 
   /* ---- audio: tiny synth, no files ---- */
   var actx = null;
@@ -273,56 +268,6 @@
     return {start: start, stop: stop};
   })();
 
-  /* ---- matrix rain ---- */
-  var matrix = (function(){
-    var cv = document.getElementById('matrix');
-    var ctx = cv.getContext('2d');
-    var cols = [], raf = 0, until = 0, active = false;
-    var glyphs = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEF';
-    function size(){
-      cv.width = innerWidth; cv.height = innerHeight;
-      var n = Math.ceil(innerWidth / 16);
-      cols = [];
-      for (var i = 0; i < n; i++) cols.push(Math.random() * -40);
-    }
-    function frame(){
-      ctx.fillStyle = 'rgba(3,8,6,0.12)';
-      ctx.fillRect(0, 0, cv.width, cv.height);
-      ctx.font = '15px ui-monospace, monospace';
-      for (var i = 0; i < cols.length; i++){
-        var ch = glyphs[(Math.random() * glyphs.length) | 0];
-        var x = i * 16 + 4, y = cols[i] * 16;
-        ctx.fillStyle = Math.random() > 0.96 ? '#d9f99d' : 'rgba(134,239,172,0.82)';
-        ctx.fillText(ch, x, y);
-        if (y > cv.height && Math.random() > 0.975) cols[i] = 0;
-        cols[i] += 0.72;
-      }
-      if (Date.now() < until) raf = requestAnimationFrame(frame);
-      else finish();
-    }
-    function finish(){
-      active = false;
-      cv.style.opacity = '0';
-      setTimeout(function(){
-        cancelAnimationFrame(raf); raf = 0;
-        ctx.clearRect(0, 0, cv.width, cv.height);
-      }, 850);
-    }
-    function start(ms){
-      if (reduce) return false;
-      active = true;
-      size();
-      cv.style.opacity = '1';
-      ctx.fillStyle = 'rgba(3,8,6,1)';
-      ctx.fillRect(0, 0, cv.width, cv.height);
-      until = Date.now() + (ms || 9000);
-      if (!raf) raf = requestAnimationFrame(frame);
-      return true;
-    }
-    addEventListener('resize', function(){ if (active) size(); }, {passive:true});
-    return {start: start};
-  })();
-
   /* ---- commands ---- */
   var partyOn = false;
   function setParty(on){
@@ -332,53 +277,12 @@
     else confetti.stop();
   }
 
-  function hackSequence(){
-    var steps = [
-      'initialising exploit framework ... ok',
-      'scanning localhost for vulnerabilities ... 3 found',
-      'bypassing firewall ... ok',
-      'escalating privileges ... ok',
-      'downloading the mainframe ... 12%',
-      'downloading the mainframe ... 47%',
-      'downloading the mainframe ... 83%',
-      'downloading the mainframe ... 100%',
-      'uploading backdoor ... ok',
-      'covering tracks ... ok'
-    ];
-    var i = 0;
-    line('starting totally legitimate hack ...', 'sys');
-    var t = setInterval(function(){
-      if (i >= steps.length){
-        clearInterval(t);
-        line('hack complete. nothing happened. you are still on a static page.', 'warn');
-        line('try `party` instead. it does more.', 'dim');
-        beep(220, 0.12, 'sawtooth', 0, 0.04);
-        return;
-      }
-      line('  ' + steps[i], i === steps.length - 1 ? 'ok' : 'dim');
-      beep(140 + i * 18, 0.06, 'square', 0, 0.022);
-      i++;
-    }, 380);
-  }
-
-  var coffee = [
-    '      ( (',
-    '       ) )',
-    '    ........',
-    '    |      |]',
-    '    \\      /',
-    '     `----\''
-  ].join('\n');
-
   function run(raw){
     var cmd = raw.trim();
     if (!cmd) return;
     echo(cmd);
     history.push(cmd); hIndex = history.length;
-    var lower = cmd.toLowerCase();
-    var parts = lower.split(/\s+/);
-    var base = parts[0];
-    var arg = parts.slice(1).join(' ');
+    var base = cmd.toLowerCase().split(/\s+/)[0];
 
     switch (base){
       case 'chess':
@@ -389,59 +293,6 @@
         beep(1046.5, 0.26, 'triangle', 0.3, 0.05);
         break;
 
-      case 'whoami':
-        line('guest. but the partyhouse remembers faces.', 'ok'); break;
-
-      case 'ls':
-        line('party.sh   secrets.txt   README.md   .hidden', 'dim');
-        line('(one of these is more interesting than the others)', 'dim'); break;
-
-      case 'cat':
-        if (arg === 'secrets.txt' || arg === 'secret.txt'){
-          line('the best easter eggs are the friends we made along the way.', 'ok');
-          line('also: you are probably the only person who will ever read this.', 'dim');
-        } else if (arg === 'party.sh'){
-          line('while true; do have_fun; done', 'dim');
-        } else if (arg === 'readme.md' || arg === 'readme'){
-          line('there is no readme. there is only the partyhouse.', 'dim');
-        } else if (arg === '.hidden'){
-          line('you found me. now try `party`.', 'ok');
-        } else if (arg === ''){
-          line('cat: missing file. try `ls`.', 'err');
-        } else {
-          line('cat: ' + arg + ': no such file. try `ls`.', 'err');
-        }
-        break;
-
-      case 'secret':
-        line('the password is the friends you made along the way.', 'ok');
-        line('...and maybe try typing `6767`.', 'dim');
-        beep(659.25, 0.12, 'sine', 0, 0.04);
-        beep(987.77, 0.18, 'sine', 0.12, 0.04);
-        break;
-
-      case 'party':
-      case 'disco':
-        setParty(!partyOn);
-        line(partyOn ? 'PARTY MODE ENGAGED. type `party` again to stop.' : 'party mode off. the room feels colder.', partyOn ? 'rainbow' : 'dim');
-        break;
-
-      case 'matrix':
-        if (matrix.start(9000)) line('wake up, guest...', 'ok');
-        else line('motion is off in your system settings. respect.', 'warn');
-        break;
-
-      case 'hack':
-        hackSequence(); break;
-
-      case 'sudo':
-        line('guest is not in the sudoers file.', 'err');
-        line('this incident has been reported to absolutely nobody.', 'dim');
-        break;
-
-      case 'coffee':
-        line(coffee, 'warn'); break;
-
       case '6767':
         line('neutronic was here.', 'rainbow');
         line('the corner is stamped. the bench is warm.', 'dim');
@@ -449,39 +300,6 @@
         beep(783.99, 0.1, 'triangle', 0.1, 0.04);
         beep(1046.5, 0.22, 'triangle', 0.2, 0.04);
         break;
-
-      case 'konami':
-        line('↑ ↑ ↓ ↓ ← → ← → B A', 'ok');
-        line('try actually pressing it.', 'dim'); break;
-
-      case 'uname':
-        line('partyhouse 1.0 (linux, probably)', 'dim'); break;
-
-      case 'date':
-        line(new Date().toString(), 'dim'); break;
-
-      case 'rm':
-        if (arg.indexOf('-rf') === 0){
-          line('nice try. this terminal is a figment of your imagination.', 'warn');
-        } else {
-          line('rm: permission denied. the partyhouse is read-only.', 'err');
-        }
-        break;
-
-      case 'exit':
-      case 'quit':
-        line('there is no exit. only the partyhouse.', 'dim'); break;
-
-      case 'hello':
-      case 'hi':
-      case 'hey':
-        line('hey. you found the door.', 'ok'); break;
-
-      case 'clear':
-        clearOut(); return;
-
-      case 'echo':
-        line(cmd.slice(5) || '', 'dim'); break;
 
       default:
         line(base + ': command not found.', 'err');
