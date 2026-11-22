@@ -574,37 +574,56 @@
     statusEl.textContent = 'Loading reviews…';
 
     var url = API + '?state=open&per_page=100&sort=created&direction=desc';
+    var snapUrl = 'reviews.json?v=' + Date.now();
 
-    fetch(url, {headers: {'Accept': 'application/vnd.github+json'}})
-      .then(function(r){
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-      })
-      .then(function(items){
-        var out = [];
-        (items || []).forEach(function(issue){
-          if (issue.pull_request) return;
-          var r = parseIssue(issue);
-          if (!r) return;
-          if (bad(r.name) || bad(r.text)) return;
-          out.push(r);
+    function collect(items){
+      var out = [];
+      (items || []).forEach(function(issue){
+        if (issue.pull_request) return;
+        var r = parseIssue(issue);
+        if (!r) return;
+        if (bad(r.name) || bad(r.text)) return;
+        out.push(r);
+      });
+      return out;
+    }
+    function show(items){
+      var out = collect(items);
+      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({t: Date.now(), items: out})); } catch(err) {}
+      render(out);
+    }
+    function loadSnapshot(){
+      return fetch(snapUrl, {headers: {'Accept': 'application/json'}})
+        .then(function(r){
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
         });
-        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({t: Date.now(), items: out})); } catch(err) {}
-        render(out);
-      })
-      .catch(function(){
-        if (cached && cached.items) {
-          render(cached.items);
-          statusEl.hidden = false;
-          statusEl.className = 'revstatus err';
-          statusEl.textContent = 'Could not refresh right now — showing the last loaded reviews.';
-        } else {
-          statusEl.hidden = false;
-          statusEl.className = 'revstatus err';
-          statusEl.textContent = 'Could not load reviews right now. Try refresh in a moment.';
-        }
-      })
-      .then(function(){ loading = false; });
+    }
+    function failed(){
+      if (cached && cached.items) {
+        render(cached.items);
+        statusEl.hidden = true;
+        return;
+      }
+      return loadSnapshot().then(show).catch(function(){
+        statusEl.hidden = false;
+        statusEl.className = 'revstatus err';
+        statusEl.textContent = 'Could not load reviews right now. Try refresh in a moment.';
+      });
+    }
+
+    if (!force) {
+      loadSnapshot().then(show).catch(failed).then(function(){ loading = false; });
+    } else {
+      fetch(url, {headers: {'Accept': 'application/vnd.github+json'}})
+        .then(function(r){
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(show)
+        .catch(failed)
+        .then(function(){ loading = false; });
+    }
   }
 
   (function(){
