@@ -102,8 +102,7 @@
 <canvas id="matrix" aria-hidden="true"></canvas>
 
 <main>
-  <p class="kick">Access granted</p>
-  <h1>You found the <span class="grad">partyhouse</span>.</h1>
+  <h1>You found the <span class="grad">easter egg</span>.</h1>
   <p class="sub">There was no link here. No menu item. No sitemap entry. Just you, the source, and a terminal that probably shouldn't exist.</p>
 
   <section class="term" aria-label="Secret terminal">
@@ -111,11 +110,11 @@
     <div class="term-out" id="out" aria-live="polite"></div>
     <form class="term-form" id="termForm" autocomplete="off">
       <span class="prompt" aria-hidden="true">guest@partyhouse:~$</span>
-      <input id="cmd" type="text" placeholder="type help and press enter" aria-label="Terminal command" spellcheck="false" autocapitalize="off">
+      <input id="cmd" type="text" placeholder="type a word and press enter" aria-label="Terminal command" spellcheck="false" autocapitalize="off">
     </form>
   </section>
 
-  <p class="hint">Start with <code>help</code>. Or break something. Either works.</p>
+  <p class="hint">No command list. No hints. Type something and see.</p>
   <a class="back" href="../index.html">&larr; back to the site</a>
 </main>
 
@@ -371,29 +370,6 @@
     '     `----\''
   ].join('\n');
 
-  function help(){
-    var rows = [
-      ['help', 'this list'],
-      ['whoami', 'who exactly do you think you are'],
-      ['ls', 'list the room'],
-      ['cat <file>', 'read something'],
-      ['secret', 'asks nicely for the secret'],
-      ['party', 'toggles party mode'],
-      ['matrix', 'there is no spoon'],
-      ['hack', 'extremely illegal, definitely real'],
-      ['coffee', 'brews a cup'],
-      ['sudo', 'nice try'],
-      ['clear', 'wipes the screen'],
-      ['exit', 'there is no exit']
-    ];
-    line('available commands:', 'sys');
-    rows.forEach(function(r){
-      line('  ' + r[0] + '  —  ' + r[1], 'dim');
-    });
-    line('', 'dim');
-    line('psst: some things are not on this list.', 'dim');
-  }
-
   function run(raw){
     var cmd = raw.trim();
     if (!cmd) return;
@@ -405,8 +381,13 @@
     var arg = parts.slice(1).join(' ');
 
     switch (base){
-      case 'help':
-        help(); break;
+      case 'chess':
+        line('NEUTRONIC-EASTERCHESS99!', 'rainbow');
+        beep(523.25, 0.1, 'triangle', 0, 0.05);
+        beep(659.25, 0.1, 'triangle', 0.1, 0.05);
+        beep(783.99, 0.1, 'triangle', 0.2, 0.05);
+        beep(1046.5, 0.26, 'triangle', 0.3, 0.05);
+        break;
 
       case 'whoami':
         line('guest. but the partyhouse remembers faces.', 'ok'); break;
@@ -503,7 +484,7 @@
         line(cmd.slice(5) || '', 'dim'); break;
 
       default:
-        line(base + ': command not found. try `help`.', 'err');
+        line(base + ': command not found.', 'err');
         beep(160, 0.07, 'square', 0, 0.025);
     }
   }
@@ -558,7 +539,7 @@
   var boot = [
     ['Neutronic secret terminal v0.1', 'sys'],
     ['link established. no witnesses.', 'dim'],
-    ['type `help` to see what this thing does.', 'dim']
+    ['no command list. type something.', 'dim']
   ];
   boot.forEach(function(b, i){
     setTimeout(function(){ line(b[0], b[1]); }, 260 + i * 420);
