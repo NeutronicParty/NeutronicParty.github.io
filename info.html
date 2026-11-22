@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Info — Neutronic</title>
+<meta name="description" content="Neutronic privacy, data handling, and policy information.">
+<style>
+  :root{
+    --void:#07090c;--panel:#0d1117;--panel-2:#11161e;--line:#1c2330;
+    --ink:#eef2f7;--muted:#8b96a6;--dim:#5b6675;
+    --cyan:#22d3ee;--lime:#a3e635;--violet:#8b5cf6;
+    --radius:16px;--max:880px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;background:var(--void);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--cyan);color:#04070a}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(7,9,12,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;letter-spacing:-.02em}
+  .mark{width:34px;height:34px;border-radius:9px;object-fit:contain;box-shadow:0 0 22px -4px rgba(34,211,238,.5)}
+  .nl{display:flex;gap:30px;font-size:14px;color:var(--muted)}
+  .nl a:hover{color:var(--ink)}
+  .nl a.active{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:9px;border-radius:999px;font-weight:650;font-size:14px;transition:transform .16s,opacity .16s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-p{background:linear-gradient(120deg,var(--cyan),#67e8f9);color:#04070a;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(34,211,238,.8)}
+  @media(max-width:780px){.nl{display:none}}
+
+  .pagehead{padding:72px 0 44px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+  .glow{position:absolute;top:-200px;left:-100px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(34,211,238,.16),rgba(139,92,246,.08) 50%,transparent 70%);filter:blur(30px);pointer-events:none}
+  .pagehead .wrap{position:relative;z-index:1}
+  .kick{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .kick::before{content:"";width:22px;height:1px;background:var(--cyan);display:inline-block}
+  h1{font-size:clamp(34px,6vw,58px);letter-spacing:-.04em;line-height:1.02;font-weight:850}
+  .pagehead p{color:var(--muted);font-size:16.5px;margin-top:18px;max-width:54ch}
+
+  .body{padding:56px 0 40px}
+  .block{margin-bottom:44px}
+  .block h2{font-size:clamp(20px,3vw,26px);letter-spacing:-.02em;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+  .block h2 .num{font-size:12px;letter-spacing:.14em;color:var(--cyan);font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .block p{color:#c3cbd6;font-size:15.5px;margin-bottom:14px}
+  .block p:last-child{margin-bottom:0}
+  .block strong{color:var(--ink);font-weight:650}
+
+  .list{list-style:none;display:flex;flex-direction:column;gap:12px;margin:8px 0 4px}
+  .list li{display:flex;gap:12px;align-items:flex-start;color:#c3cbd6;font-size:15px}
+  .list .tick{color:var(--lime);font-weight:800;flex:none;margin-top:2px}
+  .list b{color:var(--ink);font-weight:650}
+
+  .callout{border:1px solid var(--line);border-radius:var(--radius);padding:26px 28px;background:
+    radial-gradient(500px circle at 0% 0%,rgba(34,211,238,.08),transparent 60%),var(--panel)}
+  .callout h2{margin-bottom:14px}
+
+  .warn{border:1px solid #3a2418;border-radius:var(--radius);padding:30px 30px;background:linear-gradient(180deg,#1a1410,#0f0c09)}
+  .warn h2{color:#ffb59a}
+  .warn h2 .num{color:#ff8a5c}
+  .warn p{color:#d3c4bc}
+  .warn p strong{color:#fff}
+
+  .cta-row{margin-top:44px;display:flex;gap:12px;flex-wrap:wrap}
+  .btn-l{background:linear-gradient(120deg,var(--lime),#d9f99d);color:#0a1005;padding:13px 22px;box-shadow:0 10px 30px -12px rgba(163,230,53,.75)}
+
+  footer{border-top:1px solid var(--line);margin-top:64px;padding:40px 0}
+  .fr{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
+  .fl{display:flex;gap:24px;font-size:13.5px;color:var(--muted);flex-wrap:wrap}
+  .fl a:hover{color:var(--ink)}
+  .copy{font-size:12.5px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="index.html"><img class="mark" src="logo.png" alt="Neutronic logo"> Neutronic</a>
+      <div class="nl">
+        <a href="index.html#work">What we do</a>
+        <a href="index.html#nengine">NEngine</a>
+        <a class="active" href="info.html">Info</a>
+        <a href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Contact</a>
+      </div>
+      <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="pagehead">
+    <div class="glow"></div>
+    <div class="wrap">
+      <p class="kick">Info</p>
+      <h1>Privacy, data, and what we stand for.</h1>
+      <p>Everything you need to know about what we log, what we don't, how to opt out, and what we refuse to be part of.</p>
+    </div>
+  </section>
+
+  <div class="wrap body">
+
+    <div class="block">
+      <h2><span class="num">01</span> Your data</h2>
+      <p><strong>No user data at all will be shared to anyone outside of our development team.</strong> Your data is automatically deleted after a period of time and will not be used against you or for money.</p>
+      <p>All products are completely free and we make no money from anything. We are not associated with any other teams such as YouTube, Spotify, GitHub, etc.</p>
+    </div>
+
+    <div class="block">
+      <h2><span class="num">02</span> What is logged</h2>
+      <p>The data logged consists of the following, and no more:</p>
+      <ul class="list">
+        <li><span class="tick">✓</span><span><b>User IP</b></span></li>
+        <li><span class="tick">✓</span><span><b>Time-Zone</b></span></li>
+        <li><span class="tick">✓</span><span><b>UserAgent</b> — browser &amp; OS</span></li>
+      </ul>
+    </div>
+
+    <div class="block callout">
+      <h2><span class="num">03</span> Opting out</h2>
+      <p>If you would like your data <strong>not</strong> to be logged, join the Discord server and open a ticket to opt out. Please never be impatient — you will almost always (99% of the time) get a response in your ticket.</p>
+      <p>When you opt out, <strong>no data except for key usage will be logged</strong>. Keys are entirely free and do not require any tasks such as off-site links or viewing ads or promotional content.</p>
+    </div>
+
+    <div class="block warn">
+      <h2><span class="num">04</span> What we do not support</h2>
+      <p><strong>We do not encourage any kind of piracy, cybercrime, selling of data, adblocking, or attacks.</strong></p>
+      <p>Neutronic exists to build tools and apps that make people's lives easier, and that purpose has a hard boundary around it. We do not create, distribute, host, promote, or assist with software or services whose purpose is to pirate or redistribute copyrighted material without permission, to gain unauthorised access to systems or accounts, to intercept or traffic in other people's private data, to disable advertising or the revenue that funds creators, or to launch attacks against people, companies, or infrastructure of any kind. We are not affiliated with, endorsed by, or acting on behalf of any platform, publisher, or service, and nothing we make is intended to be used against them. Anyone who uses our tools is expected to do so lawfully and within the terms of whatever service they touch. If a request or a use case crosses into any of the territory above, it is not something we will help with, and it does not represent what Neutronic is. We build for people who want good tools, not for people who want to take from others — and we would rather ship nothing than ship something built for that.</p>
+    </div>
+
+    <div class="cta-row">
+      <a class="btn btn-l" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Join the Discord</a>
+      <a class="btn btn-p" href="index.html">Back to home</a>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fr">
+      <a class="logo" href="index.html"><img class="mark" src="logo.png" alt="Neutronic logo"> Neutronic</a>
+      <div class="fl">
+        <a href="info.html">Info</a>
+        <a href="index.html#nengine">NEngine</a>
+        <a href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+      </div>
+      <span class="copy">© 2026 Neutronic</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
