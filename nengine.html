@@ -232,24 +232,30 @@
     var bctx = back.getContext('2d');
     var fctx = front.getContext('2d');
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var W = 0, H = 0, DPR = 1, F = 900;
+    var W = 0, H = 0, DPR = 1, F = 900, TAU = 6.2832;
     var orbs = [];
     var rnd = function(a,b){ return a + Math.random()*(b-a); };
 
-    function rgba(hex, a){
+    function rgb(hex){
       var n = parseInt(hex.slice(1), 16);
-      return 'rgba(' + ((n>>16)&255) + ',' + ((n>>8)&255) + ',' + (n&255) + ',' + a + ')';
+      return [(n>>16)&255, (n>>8)&255, n&255];
+    }
+    function rgba(hex, a){ var c = rgb(hex); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+    function mul(hex, f){
+      var c = rgb(hex);
+      var h = function(v){ v = Math.max(0, Math.min(255, Math.round(v))); return ('0' + v.toString(16)).slice(-2); };
+      return '#' + h(c[0]*f) + h(c[1]*f) + h(c[2]*f);
     }
 
     function makeOrbs(){
-      var base = Math.min(W * 0.52, H * 1.15);
+      var base = Math.min(W * 0.55, H * 1.25);
       orbs = [
-        { tiltX:1.22, tiltZ:0.00, rad:base*0.60, speed:0.52, px:14, core:'#eaf2ff', mid:'#3b82f6',
-          theta:rnd(0,6.283), phase:rnd(0,6.283), wob:0.12, wf:2.0, wp:rnd(0,6.283) },
-        { tiltX:1.02, tiltZ:2.27, rad:base*0.80, speed:0.36, px:10, core:'#d4fbff', mid:'#22d3ee',
-          theta:rnd(0,6.283), phase:rnd(0,6.283), wob:0.10, wf:2.6, wp:rnd(0,6.283) },
-        { tiltX:1.46, tiltZ:4.36, rad:base*0.44, speed:0.82, px:8,  core:'#e6e9ff', mid:'#6366f1',
-          theta:rnd(0,6.283), phase:rnd(0,6.283), wob:0.14, wf:1.7, wp:rnd(0,6.283) }
+        { tiltX:1.22, tiltZ:0.00, rad:base*0.60, speed:0.52, px:16, core:'#dbeafe', mid:'#3b82f6',
+          theta:rnd(0,TAU), phase:rnd(0,TAU), wob:0.12, wf:2.0, wp:rnd(0,TAU) },
+        { tiltX:1.02, tiltZ:2.27, rad:base*0.80, speed:0.36, px:11, core:'#cffafe', mid:'#22d3ee',
+          theta:rnd(0,TAU), phase:rnd(0,TAU), wob:0.10, wf:2.6, wp:rnd(0,TAU) },
+        { tiltX:1.46, tiltZ:4.36, rad:base*0.44, speed:0.82, px:9,  core:'#e0e7ff', mid:'#6366f1',
+          theta:rnd(0,TAU), phase:rnd(0,TAU), wob:0.14, wf:1.7, wp:rnd(0,TAU) }
       ];
     }
 
@@ -265,34 +271,50 @@
       return { x: W * 0.5 + x1 * sc, y: H * 0.5 + y2 * sc, z: z2, s: sc };
     }
 
-    function glow(ctx, x, y, px, core, mid, alpha, solid){
-      var R = px * 4.6;
+    function halo(ctx, x, y, px, mid, alpha){
+      var R = px * 4.8;
       var g = ctx.createRadialGradient(x, y, 0, x, y, R);
-      g.addColorStop(0, 'rgba(255,255,255,' + (0.95*alpha) + ')');
-      g.addColorStop(0.16, rgba(core, 0.9*alpha));
-      g.addColorStop(0.42, rgba(mid, 0.4*alpha));
+      g.addColorStop(0, rgba(mid, 0.55 * alpha));
+      g.addColorStop(0.32, rgba(mid, 0.26 * alpha));
+      g.addColorStop(0.68, rgba(mid, 0.07 * alpha));
       g.addColorStop(1, rgba(mid, 0));
       ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(x, y, R, 0, 6.2832); ctx.fill();
-      if (solid){
-        ctx.fillStyle = 'rgba(255,255,255,' + (0.95*alpha) + ')';
-        ctx.beginPath(); ctx.arc(x, y, Math.max(0.6, px*0.42), 0, 6.2832); ctx.fill();
-      }
+      ctx.beginPath(); ctx.arc(x, y, R, 0, TAU); ctx.fill();
+    }
+
+    function sphere(ctx, x, y, px, core, mid, alpha){
+      var g = ctx.createRadialGradient(x - px*0.34, y - px*0.36, px*0.06, x, y, px);
+      g.addColorStop(0, 'rgba(255,255,255,' + (0.98 * alpha) + ')');
+      g.addColorStop(0.28, rgba(core, 0.96 * alpha));
+      g.addColorStop(0.66, rgba(mid, 0.94 * alpha));
+      g.addColorStop(0.92, rgba(mul(mid, 0.5), 0.95 * alpha));
+      g.addColorStop(1, rgba(mul(mid, 0.22), 0.95 * alpha));
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(x, y, px, 0, TAU); ctx.fill();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.beginPath(); ctx.arc(x, y, px*0.99, 0, TAU);
+      ctx.strokeStyle = rgba(core, 0.32 * alpha);
+      ctx.lineWidth = Math.max(0.8, px * 0.09);
+      ctx.stroke();
     }
 
     function drawRings(){
-      var steps = 96;
+      var steps = 100;
       for (var k = 0; k < orbs.length; k++){
         var o = orbs[k];
         var prev = project(o, 0);
         for (var i = 1; i <= steps; i++){
-          var p = project(o, (i / steps) * 6.2832);
+          var th = (i / steps) * TAU;
+          var p = project(o, th);
+          var d = Math.abs(((th - o.theta) % TAU + TAU + TAU/2) % TAU - TAU/2);
+          var near = Math.exp(-(d*d) / (0.55*0.55));
           var ctx = ((p.z + prev.z) * 0.5 > 0) ? fctx : bctx;
           ctx.beginPath();
           ctx.moveTo(prev.x, prev.y);
           ctx.lineTo(p.x, p.y);
-          ctx.strokeStyle = 'rgba(96,165,250,0.07)';
-          ctx.lineWidth = 1;
+          ctx.strokeStyle = rgba('#60a5fa', 0.05 + 0.42 * near);
+          ctx.lineWidth = 1 + near * 0.8;
           ctx.stroke();
           prev = p;
         }
@@ -307,14 +329,17 @@
       drawRings();
       for (var k = 0; k < orbs.length; k++){
         var o = orbs[k];
-        var TRAIL = 13;
+        var TRAIL = 16;
         for (var i = TRAIL; i >= 1; i--){
           var t = i / TRAIL;
-          var tp = project(o, o.theta - i * 0.05);
-          glow(tp.z > 0 ? fctx : bctx, tp.x, tp.y, o.px * tp.s * (1 - 0.55*t), o.core, o.mid, 0.4 * Math.pow(1 - t, 2.2), false);
+          var tp = project(o, o.theta - i * 0.045);
+          halo(tp.z > 0 ? fctx : bctx, tp.x, tp.y, o.px * tp.s * (1 - 0.5*t), o.mid, 0.5 * Math.pow(1 - t, 2.0));
         }
         var hp = project(o, o.theta);
-        glow(hp.z > 0 ? fctx : bctx, hp.x, hp.y, o.px * hp.s, o.core, o.mid, 1, true);
+        var ctx = hp.z > 0 ? fctx : bctx;
+        var px = o.px * hp.s;
+        halo(ctx, hp.x, hp.y, px, o.mid, 1);
+        sphere(ctx, hp.x, hp.y, px, o.core, o.mid, 1);
       }
     }
 
