@@ -79,6 +79,11 @@
   @keyframes drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-40px,50px,0) scale(1.08)}}
   .hero-in{position:relative;z-index:1;max-width:none;text-align:center}
   .eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);background:rgba(13,17,23,.7);border-radius:999px;padding:6px 14px;font-size:12.5px;color:var(--muted);margin-bottom:28px}
+  .rating{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:rgba(13,17,23,.72);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:650;color:var(--muted);margin-bottom:24px;transition:border-color .16s,transform .16s;white-space:nowrap}
+  .rating:hover{border-color:#2c3646;transform:translateY(-1px)}
+  .rating .rs{color:#fbbf24;font-size:15px;line-height:1;text-shadow:0 0 14px rgba(251,191,36,.45)}
+  .rating b{color:var(--ink);font-weight:800}
+  .rating .rc{color:var(--dim);font-weight:600}
   .pulse{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(125,211,252,.55);animation:pulse 2.4s infinite}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(125,211,252,.5)}70%{box-shadow:0 0 0 9px rgba(125,211,252,0)}100%{box-shadow:0 0 0 0 rgba(125,211,252,0)}}
   h1{font-size:clamp(40px,7.4vw,82px);line-height:.98;letter-spacing:-.04em;font-weight:850}
@@ -219,6 +224,11 @@
         </div>
       </div>
       <div class="hero-in">
+        <a class="rating" href="reviews.html" id="siteRating" aria-label="Average site rating">
+          <span class="rs" aria-hidden="true">&#9733;</span>
+          <span><b id="ratingScore">5</b> stars total</span>
+          <span class="rc" id="ratingCount">(1)</span>
+        </a>
         <h1 class="lens" aria-label="Neutronic Partyhouse"><span class="lens-line">Neutronic</span><br><span class="grad lens-line">Partyhouse</span></h1>
       </div>
       <div class="engine right rust reveal">
@@ -393,6 +403,79 @@
     px=cx=hr0.left+hr0.width/2; py=cy=hr0.top+hr0.height/2;
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(measure);
   })();
+  (function(){
+    var box = document.getElementById('siteRating');
+    if (!box) return;
+    var scoreEl = document.getElementById('ratingScore');
+    var countEl = document.getElementById('ratingCount');
+    var API = 'https://api.github.com/repos/Strangergithun/Strangergithun.github.io/issues?state=open&per_page=100&sort=created&direction=desc';
+    var CACHE_KEY = 'neutronic_rating_v1';
+    var CACHE_MS = 5 * 60 * 1000;
+
+    function decodeReview(b64){
+      var bin = atob(b64);
+      var bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return JSON.parse(new TextDecoder().decode(bytes));
+    }
+
+    function issueStars(issue){
+      var m = /<!--review:([A-Za-z0-9+/=]+)-->/.exec(issue.body || '');
+      if (m) {
+        try {
+          var o = decodeReview(m[1]);
+          var s = Math.round(+o.stars);
+          if (o && o.name && o.text && s >= 1 && s <= 5) return s;
+        } catch(err) {}
+      }
+      var t = /^Review:\s*(.+?)\s*\((\d)\s*\/\s*5\)/.exec(issue.title || '');
+      if (t) {
+        var n = +t[2];
+        if (n >= 1 && n <= 5) return n;
+      }
+      return null;
+    }
+
+    function paint(sum, n){
+      var total = n + 1;
+      var avg = (sum + 5) / total;
+      var txt = avg.toFixed(1).replace(/\.0$/, '');
+      scoreEl.textContent = txt;
+      countEl.textContent = '(' + total + ')';
+      box.setAttribute('aria-label', 'Rated ' + txt + ' out of 5 stars from ' + total + ' reviews');
+      box.title = txt + ' out of 5 from ' + total + ' reviews';
+    }
+
+    function tally(issues){
+      var sum = 0, n = 0;
+      issues.forEach(function(issue){
+        if (issue.pull_request) return;
+        var s = issueStars(issue);
+        if (s !== null) { sum += s; n++; }
+      });
+      return {sum: sum, n: n};
+    }
+
+    function fromCache(){
+      try {
+        var raw = sessionStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        var c = JSON.parse(raw);
+        if (!c || Date.now() - c.ts > CACHE_MS) return null;
+        return c;
+      } catch(err) { return null; }
+    }
+
+    var cached = fromCache();
+    if (cached) paint(cached.sum, cached.n);
+
+    fetch(API, {headers: {'Accept': 'application/vnd.github+json'}})
+      .then(function(r){ if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then(function(issues){
+        var t = tally(issues);
+        paint(t.sum, t.n);
+        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({sum: t.sum, n: t.n, ts: Date.now()})); } catch(err) {}
+      })
+      .catch(function(){ if (!cached) paint(0, 0); });
+  })();
 </script>
-</body>
-</html>
