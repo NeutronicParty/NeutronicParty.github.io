@@ -6,8 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>YouTubeD — download anything — Neutronic</title>
-<meta name="description" content="YouTubeD — paste a link, pick audio or video, and keep the file at the highest quality the source offers.">
+<title>YouTubeD — get the command — Neutronic</title>
+<meta name="description" content="YouTubeD — paste a link and copy a yt-dlp command for audio or video. No server, nothing uploaded.">
 <style>
   :root{
     --void:#07090c;--panel:#0d1117;--panel-2:#11161e;--line:#1c2330;
@@ -60,7 +60,7 @@
   h1 .grad{background-image:linear-gradient(105deg,var(--cyan) 0%,var(--sky) 52%,var(--violet) 100%);
     background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent}
   @keyframes drop{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-  .sub{color:var(--muted);font-size:clamp(14.5px,2.3vw,16.5px);margin:16px auto 0;max-width:48ch;
+  .sub{color:var(--muted);font-size:clamp(14.5px,2.3vw,16.5px);margin:16px auto 0;max-width:54ch;
     animation:drop .7s .08s cubic-bezier(.2,.7,.2,1) both}
 
   .app{margin:38px auto 0;max-width:700px;text-align:left;border:1px solid var(--line);border-radius:var(--radius);
@@ -74,67 +74,31 @@
 
   .linkrow{display:flex;gap:10px;flex-wrap:wrap}
   .linkrow input{flex:1;min-width:220px;background:rgba(7,9,12,.8);border:1px solid var(--line);border-radius:12px;
-    padding:13px 15px;color:var(--ink);font-size:14px;outline:none;transition:border-color .16s,box-shadow .16s}
+    padding:13px 15px;color:var(--ink);font-size:14px;outline:none;transition:border-color .16s,box-shadow .16s;
+    -webkit-user-select:text;user-select:text}
   .linkrow input:focus{border-color:#dc2626;box-shadow:0 0 0 3px rgba(239,68,68,.15)}
   .linkrow input::placeholder{color:#39465a}
   .hint{font-size:12.5px;color:var(--dim);margin-top:10px}
   .hint kbd{font-family:inherit;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:11.5px}
 
-  .net{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12px;color:var(--dim)}
-  .net .dot{width:7px;height:7px;border-radius:50%;background:#3b4252;flex:none}
-  .net.on .dot{background:var(--green);box-shadow:0 0 10px rgba(134,239,172,.7)}
-  .net.off .dot{background:var(--cyan);box-shadow:0 0 10px rgba(239,68,68,.55)}
-  .net b{color:var(--muted);font-weight:600}
+  .cmds{margin-top:20px;border-top:1px solid var(--line);padding-top:18px}
+  .cmd{border:1px solid var(--line);border-radius:12px;background:var(--panel-2);padding:12px 14px;margin-top:12px}
+  .cmd-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .cmd-head b{font-size:13.5px;display:flex;align-items:center;gap:7px}
+  .cmd code{display:block;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;font-size:12.5px;line-height:1.55;color:var(--sky);word-break:break-all;
+    -webkit-user-select:text;user-select:text}
+  .cmd .cpy{padding:6px 13px;font-size:12px;flex:none}
 
-  details{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
-  summary{cursor:pointer;font-size:12.5px;color:var(--dim);letter-spacing:.04em;list-style:none}
-  summary::-webkit-details-marker{display:none}
-  summary::before{content:"▸ ";color:var(--dim)}
-  details[open] summary::before{content:"▾ "}
-  .cfg{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-  .cfg input{flex:1;min-width:200px;background:rgba(7,9,12,.8);border:1px solid var(--line);border-radius:10px;
-    padding:10px 13px;color:var(--ink);font-size:13px;outline:none}
-  .cfg input:focus{border-color:#dc2626}
+  .osrow{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12px;color:var(--dim);flex-wrap:wrap}
+  .os{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:999px;
+    padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;transition:border-color .16s,color .16s,background .16s}
+  .os:hover{color:var(--ink)}
+  .os.on{color:var(--ink);border-color:#b91c1c;background:rgba(239,68,68,.1)}
+  .inst{margin-top:14px;font-size:12.5px;color:var(--dim);line-height:1.9}
+  .inst code{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:5px;padding:1px 6px;
+    font-size:11.5px;color:var(--sky);-webkit-user-select:text;user-select:text}
 
-  .setup{margin-top:16px;border:1px solid #5a2626;border-radius:12px;padding:14px 16px;background:rgba(239,68,68,.07);
-    font-size:13px;color:#f3d3d3;display:none}
-  .setup.show{display:block}
-  .setup code{display:inline-block;margin-top:8px;background:rgba(0,0,0,.35);border:1px solid var(--line);
-    border-radius:7px;padding:7px 10px;color:var(--sky);font-size:12.5px;word-break:break-all}
-  .setup a{color:var(--sky);text-decoration:underline;text-underline-offset:2px}
-
-  .result{display:none;margin-top:22px;border-top:1px solid var(--line);padding-top:20px}
-  .result.show{display:block}
-  .vcard{display:flex;gap:16px;align-items:flex-start}
-  .thumb{width:168px;aspect-ratio:16/9;border-radius:10px;object-fit:cover;background:#0a0e14;border:1px solid var(--line);flex:none}
-  .vmeta{min-width:0;flex:1}
-  .vmeta h3{font-size:16px;line-height:1.35;font-weight:700;letter-spacing:-.01em;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .vmeta p{font-size:12.5px;color:var(--muted);margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .vmeta .q{display:inline-block;margin-top:8px;font-size:11.5px;color:var(--sky);border:1px solid #5a2626;
-    background:rgba(239,68,68,.08);border-radius:999px;padding:3px 10px}
-
-  .modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
-  .mode{display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;border-radius:12px;
-    padding:14px 16px;border:1px solid var(--line);background:var(--panel-2);cursor:pointer;font-family:inherit;
-    color:var(--ink);transition:border-color .16s,transform .16s,background .16s}
-  .mode:hover:not(:disabled){border-color:#b91c1c;transform:translateY(-2px)}
-  .mode:disabled{opacity:.45;cursor:not-allowed}
-  .mode b{font-size:14.5px;display:flex;align-items:center;gap:8px}
-  .mode small{font-size:12px;color:var(--muted)}
-  .mode .ic{font-size:15px;line-height:1}
-
-  .prog{display:none;margin-top:20px}
-  .prog.show{display:block}
-  .prog-head{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:8px}
-  .track{height:9px;border-radius:999px;background:#0a0e14;border:1px solid var(--line);overflow:hidden}
-  .fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#ef4444,#f97316,#fca5a5);
-    transition:width .35s ease}
-  .donebox{display:none;margin-top:16px;border:1px solid #1f4d33;background:rgba(134,239,172,.07);
-    border-radius:12px;padding:14px 16px;font-size:13.5px;color:#c9f5d9}
-  .donebox.show{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
-  .donebox span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .donebox a{color:#04150a;background:var(--green);border-radius:999px;padding:8px 16px;font-weight:700;font-size:13px;flex:none}
   .errbox{display:none;margin-top:16px;border:1px solid #5a2626;background:rgba(239,68,68,.08);
     border-radius:12px;padding:13px 16px;font-size:13px;color:var(--red)}
   .errbox.show{display:block}
@@ -153,14 +117,11 @@
   @media(max-width:780px){.nl{display:none}nav{display:flex;justify-content:space-between}}
   @media(max-width:600px){
     main{padding-top:7vh}
-    .vcard{flex-direction:column}
-    .thumb{width:100%}
-    .modes{grid-template-columns:1fr}
+    .cmd-head{flex-wrap:wrap}
   }
   @media(prefers-reduced-motion:reduce){
     h1,.sub,.app{animation:none}
-    .btn:hover,.mode:hover:not(:disabled){transform:none}
-    .fill{transition:none}
+    .btn:hover{transform:none}
   }
 </style>
 <script src="/spamguard.js"></script>
@@ -187,79 +148,45 @@
 <main>
   <div class="wrap">
     <p class="kick">YouTubeD</p>
-    <h1>Download <span class="grad">anything.</span></h1>
-    <p class="sub">Paste a link. Pick audio or video. Keep the file at the highest quality the source has.</p>
+    <h1>Get the <span class="grad">command.</span></h1>
+    <p class="sub">Paste a link, copy the yt-dlp command for audio or video, run it on your own machine. Nothing is uploaded and nothing depends on a server.</p>
 
-    <section class="app" aria-label="Downloader">
+    <section class="app" aria-label="Command builder">
       <div class="app-bar" aria-hidden="true"><i></i><i></i><i></i><span>guest@partyhouse — youtubed</span></div>
       <div class="app-body">
         <form class="linkrow" id="linkForm" autocomplete="off">
           <input id="url" type="url" inputmode="url" placeholder="https://…" aria-label="Video link" spellcheck="false" required>
-          <button class="btn btn-p" id="fetchBtn" type="submit">Fetch</button>
+          <button class="btn btn-p" type="submit">Make command</button>
         </form>
-        <p class="hint">Works with YouTube and anything else yt-dlp supports. <kbd>Enter</kbd> to fetch.</p>
+        <p class="hint">Works with YouTube and anything else yt-dlp supports. <kbd>Enter</kbd> to build.</p>
 
-        <div class="net" id="net" aria-live="polite">
-          <span class="dot" aria-hidden="true"></span>
-          <span id="netText">checking backend…</span>
+        <div class="cmds" id="cmds" hidden>
+          <div class="cmd">
+            <div class="cmd-head"><b><span aria-hidden="true">♪</span> Audio · MP3</b>
+              <button class="btn btn-g cpy" type="button" data-copy="audioCmd">Copy</button></div>
+            <code id="audioCmd"></code>
+          </div>
+          <div class="cmd">
+            <div class="cmd-head"><b><span aria-hidden="true">▶</span> Video · MP4</b>
+              <button class="btn btn-g cpy" type="button" data-copy="videoCmd">Copy</button></div>
+            <code id="videoCmd"></code>
+          </div>
+          <div class="osrow" role="group" aria-label="Shell">
+            <span>Shell</span>
+            <button class="os" type="button" data-os="posix">macOS / Linux</button>
+            <button class="os" type="button" data-os="win">Windows</button>
+          </div>
+          <div class="inst" id="inst"></div>
         </div>
 
-        <div class="setup" id="setup">
-          <b>Downloader offline.</b> The service that fetches files isn't answering right now.
-          <span id="localHint" hidden>Running it yourself? <code>python3 youtubed/server.py</code>
-          then open <a href="http://localhost:8099/youtubed/">http://localhost:8099/youtubed/</a>.</span>
-          Hosting the API somewhere else? Put its URL in settings.
-        </div>
-
-        <details id="cfgBox">
-          <summary>Backend settings</summary>
-          <div class="cfg">
-            <input id="apiBase" type="text" placeholder="https://api.example.com (blank = same origin)" spellcheck="false">
-            <button class="btn btn-g" id="saveApi" type="button">Save</button>
-          </div>
-          <p class="hint">Blank means same origin. If this page is on the live site, the backend must be an https URL — browsers block http from https pages.</p>
-        </details>
-
-        <div class="result" id="result">
-          <div class="vcard">
-            <img class="thumb" id="thumb" alt="" referrerpolicy="no-referrer">
-            <div class="vmeta">
-              <h3 id="vtitle">—</h3>
-              <p id="vsub">—</p>
-              <span class="q" id="vquality">—</span>
-            </div>
-          </div>
-
-          <div class="modes">
-            <button class="mode" id="audioBtn" type="button">
-              <b><span class="ic" aria-hidden="true">♪</span> Audio · MP3</b>
-              <small id="audioSub">320 kbps, best source audio</small>
-            </button>
-            <button class="mode" id="videoBtn" type="button">
-              <b><span class="ic" aria-hidden="true">▶</span> Video · MP4</b>
-              <small id="videoSub">best quality, merged</small>
-            </button>
-          </div>
-
-          <div class="prog" id="prog" aria-live="polite">
-            <div class="prog-head"><span id="stage">starting…</span><span id="pct">0%</span></div>
-            <div class="track"><div class="fill" id="fill"></div></div>
-          </div>
-
-          <div class="donebox" id="done">
-            <span id="doneName">ready</span>
-            <a id="saveLink" href="#" download>Save file</a>
-          </div>
-
-          <div class="errbox" id="err" role="alert"></div>
-        </div>
+        <div class="errbox" id="err" role="alert"></div>
       </div>
     </section>
 
     <div class="steps">
-      <div class="step"><b>1 · Paste</b><span>Drop any supported link in the box and hit fetch.</span></div>
-      <div class="step"><b>2 · Pick</b><span>Audio as MP3 320, or video as MP4 at the best resolution.</span></div>
-      <div class="step"><b>3 · Keep</b><span>The file is pulled to your machine and saved. No account, no ads.</span></div>
+      <div class="step"><b>1 · Paste</b><span>Drop any supported link into the box.</span></div>
+      <div class="step"><b>2 · Copy</b><span>Grab the audio or video command.</span></div>
+      <div class="step"><b>3 · Run</b><span>Paste it into Terminal or PowerShell and yt-dlp saves the file.</span></div>
     </div>
   </div>
 </main>
@@ -280,205 +207,99 @@
   </div>
 </footer>
 
-<script src="config.js"></script>
 <script>
 (function(){
   'use strict';
 
   var $ = function(id){ return document.getElementById(id); };
-  var form = $('linkForm'), urlInput = $('url'), fetchBtn = $('fetchBtn');
-  var net = $('net'), netText = $('netText'), setup = $('setup');
-  var result = $('result'), thumb = $('thumb'), vtitle = $('vtitle'), vsub = $('vsub'), vquality = $('vquality');
-  var audioBtn = $('audioBtn'), videoBtn = $('videoBtn'), audioSub = $('audioSub'), videoSub = $('videoSub');
-  var prog = $('prog'), fill = $('fill'), stageEl = $('stage'), pctEl = $('pct');
-  var done = $('done'), doneName = $('doneName'), saveLink = $('saveLink');
-  var err = $('err'), apiInput = $('apiBase'), saveApi = $('saveApi');
+  var form = $('linkForm'), urlInput = $('url'), cmds = $('cmds');
+  var audioCmd = $('audioCmd'), videoCmd = $('videoCmd');
+  var err = $('err'), inst = $('inst');
 
-  var API_KEY = 'youtubed_api';
-  var current = null, timer = 0, healthTimer = 0, busy = false;
+  var os = /Windows/i.test(navigator.userAgent) ? 'win' : 'posix';
+  var current = '';
 
-  function apiBase(){
-    var v = '';
-    try { v = localStorage.getItem(API_KEY) || ''; } catch(e){}
-    if (!v && typeof window.YOUTUBED_API === 'string') v = window.YOUTUBED_API;
-    return v.replace(/\/+$/, '');
-  }
-  function setNet(kind, text){
-    net.className = 'net' + (kind ? ' ' + kind : '');
-    netText.textContent = text;
-  }
-  function showErr(msg){
-    err.textContent = msg;
-    err.classList.add('show');
-  }
+  var INSTALL = {
+    posix: 'Install first: <code>brew install yt-dlp ffmpeg</code> on macOS, or <code>pipx install yt-dlp</code> + <code>sudo apt install ffmpeg</code> on Linux.',
+    win: 'Install first: <code>winget install yt-dlp.yt-dlp</code> and <code>winget install Gyan.FFmpeg</code>, then open a new terminal.'
+  };
+
+  function showErr(msg){ err.textContent = msg; err.classList.add('show'); }
   function clearErr(){ err.classList.remove('show'); err.textContent = ''; }
 
-  function api(path, opts, timeoutMs){
-    var ctrl = new AbortController();
-    var t = setTimeout(function(){ ctrl.abort(); }, timeoutMs || 90000);
-    opts = opts || {};
-    opts.signal = ctrl.signal;
-    opts.cache = 'no-store';
-    return fetch(apiBase() + path, opts).then(function(r){
-      return r.text().then(function(text){
-        var data = null;
-        try { data = text ? JSON.parse(text) : null; } catch(e){}
-        if (!r.ok) throw new Error((data && data.error) || ('server said ' + r.status));
-        if (!data) throw new Error('bad response from backend');
-        return data;
-      });
-    }).finally(function(){ clearTimeout(t); });
+  function safeUrl(raw){
+    var v = String(raw || '').trim();
+    if (!/^https?:\/\//i.test(v)) return null;
+    if (/['"`$\\\s]/.test(v)) return null;
+    try {
+      var u = new URL(v);
+      if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+    } catch(e){ return null; }
+    return v;
   }
 
-  function checkHealth(attempt){
-    attempt = attempt || 0;
-    clearTimeout(healthTimer);
-    if (!attempt) setNet('', 'checking backend…');
-    return api('/api/health', {}, 5000).then(function(d){
-      if (!d.ok) throw new Error('yt-dlp missing on the backend');
-      setNet('on', 'backend online · yt-dlp ' + (d.version || '?'));
-      setup.classList.remove('show');
-      return true;
-    }).catch(function(){
-      var local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
-      var canWake = local || apiBase() !== '';
-      if (canWake && attempt < 6){
-        if (!attempt){ setNet('off', 'backend offline — waking it up…'); setup.classList.add('show'); }
-        healthTimer = setTimeout(function(){ checkHealth(attempt + 1); }, 4000);
-      } else {
-        setNet('off', 'backend offline — the download service is not answering');
-        setup.classList.add('show');
-      }
-      return false;
-    });
+  function quote(v, shell){
+    return shell === 'win' ? '"' + v + '"' : "'" + v + "'";
   }
 
-  function fmtDur(s){
-    if (!s && s !== 0) return '';
-    s = Math.round(s);
-    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
-    var mm = String(m).padStart(2, '0'), ss = String(sec).padStart(2, '0');
-    return h ? h + ':' + mm + ':' + ss : m + ':' + ss;
-  }
-  function setBusy(on){
-    busy = on;
-    fetchBtn.disabled = on;
-    audioBtn.disabled = on || !current;
-    videoBtn.disabled = on || !current;
+  function render(){
+    var q = quote(current, os);
+    audioCmd.textContent = 'yt-dlp -x --audio-format mp3 --audio-quality 0 ' + q;
+    videoCmd.textContent = 'yt-dlp -f ' + (os === 'win' ? '"bv*+ba/b"' : "'bv*+ba/b'") +
+      ' --merge-output-format mp4 ' + q;
+    inst.innerHTML = INSTALL[os];
+    var buttons = document.querySelectorAll('.os');
+    for (var i = 0; i < buttons.length; i++){
+      buttons[i].classList.toggle('on', buttons[i].getAttribute('data-os') === os);
+    }
+    cmds.hidden = false;
   }
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
-    if (busy) return;
-    var url = urlInput.value.trim();
-    if (!url) return;
     clearErr();
-    done.classList.remove('show');
-    prog.classList.remove('show');
-    result.classList.remove('show');
-    current = null;
-    setBusy(true);
-    fetchBtn.textContent = 'Reading…';
-
-    api('/api/info', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: url })
-    }, 120000).then(function(d){
-      current = d;
-      thumb.src = d.thumbnail || '';
-      thumb.alt = d.title || 'thumbnail';
-      vtitle.textContent = d.title || 'Untitled';
-      var bits = [];
-      if (d.uploader) bits.push(d.uploader);
-      if (d.duration) bits.push(fmtDur(d.duration));
-      if (d.extractor) bits.push(d.extractor);
-      vsub.textContent = bits.join(' · ') || 'ready';
-      vquality.textContent = d.maxHeight ? 'up to ' + d.maxHeight + 'p' : 'best available';
-      videoSub.textContent = d.maxHeight ? 'up to ' + d.maxHeight + 'p, merged MP4' : 'best quality, merged MP4';
-      audioSub.textContent = d.maxAudioKbps ? 'MP3 320 · source ~' + d.maxAudioKbps + ' kbps' : '320 kbps, best source audio';
-      result.classList.add('show');
-    }).catch(function(ex){
-      showErr(ex.message || 'could not read that link');
-      if (/fetch|network|abort|Failed/i.test(ex.message || '')) checkHealth();
-    }).finally(function(){
-      fetchBtn.textContent = 'Fetch';
-      setBusy(false);
-    });
+    var v = safeUrl(urlInput.value);
+    if (!v){
+      cmds.hidden = true;
+      showErr('That does not look like a link. Paste a full http(s) URL.');
+      return;
+    }
+    current = v;
+    render();
   });
 
-  function poll(id){
-    clearTimeout(timer);
-    api('/api/status?id=' + encodeURIComponent(id), {}, 8000).then(function(d){
-      var p = Math.max(0, Math.min(100, d.progress || 0));
-      fill.style.width = p + '%';
-      pctEl.textContent = Math.round(p) + '%';
-      if (d.state === 'queued') stageEl.textContent = 'queued…';
-      else if (d.state === 'running') stageEl.textContent = d.stage === 'finishing' ? 'finishing file…' : 'downloading…';
-      else if (d.state === 'done'){
-        stageEl.textContent = 'done';
-        fill.style.width = '100%';
-        pctEl.textContent = '100%';
-        var href = apiBase() + '/api/file?id=' + encodeURIComponent(id);
-        doneName.textContent = d.filename || 'ready';
-        saveLink.href = href;
-        done.classList.add('show');
-        setBusy(false);
-        var frame = document.createElement('iframe');
-        frame.style.display = 'none';
-        frame.src = href;
-        document.body.appendChild(frame);
-        setTimeout(function(){ frame.remove(); }, 60000);
-        return;
-      } else if (d.state === 'error'){
-        showErr(d.error || 'download failed');
-        prog.classList.remove('show');
-        setBusy(false);
-        return;
+  var osButtons = document.querySelectorAll('.os');
+  for (var i = 0; i < osButtons.length; i++){
+    osButtons[i].addEventListener('click', function(){
+      os = this.getAttribute('data-os');
+      if (current) render();
+    });
+  }
+
+  var copyButtons = document.querySelectorAll('[data-copy]');
+  for (var j = 0; j < copyButtons.length; j++){
+    copyButtons[j].addEventListener('click', function(){
+      var el = $(this.getAttribute('data-copy'));
+      if (!el || !el.textContent) return;
+      var button = this, text = el.textContent;
+      function done(){ button.textContent = 'Copied'; setTimeout(function(){ button.textContent = 'Copy'; }, 1200); }
+      function fallback(){
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch(e){}
+        ta.remove();
       }
-      timer = setTimeout(function(){ poll(id); }, 900);
-    }).catch(function(ex){
-      showErr(ex.message || 'lost the backend');
-      prog.classList.remove('show');
-      setBusy(false);
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
     });
   }
-
-  function start(mode){
-    if (!current || busy) return;
-    clearErr();
-    done.classList.remove('show');
-    prog.classList.add('show');
-    fill.style.width = '0%';
-    pctEl.textContent = '0%';
-    stageEl.textContent = 'starting…';
-    setBusy(true);
-
-    api('/api/start', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: current.webpage_url || urlInput.value.trim(), mode: mode })
-    }, 20000).then(function(d){
-      poll(d.id);
-    }).catch(function(ex){
-      showErr(ex.message || 'could not start the download');
-      prog.classList.remove('show');
-      setBusy(false);
-      checkHealth();
-    });
-  }
-
-  audioBtn.addEventListener('click', function(){ start('audio'); });
-  videoBtn.addEventListener('click', function(){ start('video'); });
-
-  saveApi.addEventListener('click', function(){
-    try {
-      var v = apiInput.value.trim();
-      if (v) localStorage.setItem(API_KEY, v); else localStorage.removeItem(API_KEY);
-    } catch(e){}
-    checkHealth();
-  });
-  apiInput.value = apiBase();
 
   /* ---- background: drifting stars + mouse parallax ---- */
   (function(){
@@ -526,12 +347,6 @@
     }, {passive:true});
     resize(); frame();
   })();
-
-  var localHint = $('localHint');
-  if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) localHint.hidden = false;
-
-  setBusy(false);
-  checkHealth();
 })();
 </script>
 </body>
