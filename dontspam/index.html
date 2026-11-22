@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Slow down — Neutronic</title>
+<style>
+  :root{
+    --void:#07090c;--panel:#0d1117;--line:#1c2330;
+    --ink:#eef2f7;--muted:#8b96a6;--dim:#5b6675;
+    --red:#ef4444;--orange:#f97316;--cyan:#3b82f6;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--void);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;flex-direction:column;-webkit-user-select:none;user-select:none;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--red);color:#0a0303}
+
+  .glow{position:fixed;top:-240px;left:50%;transform:translateX(-50%);width:720px;height:720px;border-radius:50%;
+    background:radial-gradient(circle,rgba(239,68,68,.20),rgba(249,115,22,.08) 46%,transparent 70%);
+    filter:blur(42px);pointer-events:none}
+  header{position:relative;z-index:2;border-bottom:1px solid var(--line);background:rgba(7,9,12,.72)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 24px}
+  nav{display:flex;align-items:center;height:70px}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;letter-spacing:-.02em}
+  .mark{width:34px;height:34px;border-radius:9px;object-fit:contain;box-shadow:0 0 22px -4px rgba(239,68,68,.5)}
+
+  main{position:relative;z-index:2;flex:1;display:flex;align-items:center;justify-content:center;
+    padding:8vh 24px;text-align:center}
+  .box{max-width:520px}
+  .kick{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--red);
+    display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px}
+  .kick::before,.kick::after{content:"";width:26px;height:1px;background:var(--red);display:inline-block;opacity:.7}
+  h1{font-size:clamp(38px,8vw,64px);line-height:1.02;letter-spacing:-.045em;font-weight:870;
+    background-image:linear-gradient(105deg,#fca5a5 0%,#f87171 45%,#f97316 100%);
+    background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent}
+  p{color:var(--muted);font-size:15.5px;margin-top:16px}
+  .count{margin-top:26px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:13px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+  .back{display:inline-flex;align-items:center;gap:8px;margin-top:26px;font-size:13.5px;font-weight:650;
+    border:1px solid var(--line);border-radius:999px;padding:11px 20px;color:var(--muted);
+    transition:color .16s,border-color .16s,transform .16s}
+  .back:hover{color:var(--ink);border-color:#2c3646;transform:translateY(-2px)}
+  .back.wait{opacity:.45;pointer-events:none;border-style:dashed}
+  .note{margin-top:30px;font-size:12.5px;color:var(--dim)}
+  .note a{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+
+  @media(prefers-reduced-motion:reduce){.back:hover{transform:none}}
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="/"><img class="mark" src="/logo.png" alt="Neutronic logo"> Neutronic</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="box">
+    <p class="kick">Hold on</p>
+    <h1>Slow down.</h1>
+    <p>You're reloading the site too much. Three reloads in three seconds is not a refresh, it's a drum solo. Give it a second.</p>
+    <p class="count" id="count" aria-live="polite">you can head back now</p>
+    <a class="back" id="back" href="/">&larr; Back to the site</a>
+    <p class="note">Still stuck? <a href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Ask in the Discord</a>.</p>
+  </div>
+</main>
+
+<script>
+(function(){
+  'use strict';
+  var count = document.getElementById('count');
+  var back = document.getElementById('back');
+  var until = 0;
+  try { until = Number(sessionStorage.getItem('nsp_until') || 0); } catch (e) {}
+
+  function tick(){
+    var left = Math.ceil((until - Date.now()) / 1000);
+    if (left > 0){
+      count.textContent = 'back in ' + left + 's';
+      back.classList.add('wait');
+      back.setAttribute('aria-disabled', 'true');
+    } else {
+      count.textContent = 'you can head back now';
+      back.classList.remove('wait');
+      back.removeAttribute('aria-disabled');
+      try { sessionStorage.removeItem('nsp_until'); } catch (e) {}
+    }
+  }
+  tick();
+  setInterval(tick, 250);
+})();
+</script>
+</body>
+</html>

@@ -189,6 +189,10 @@
   .engine.rust .kick{color:#c084fc}
   .engine.rust .kick::before{background:#c084fc}
   .engine.rust .tick{color:#c084fc}
+  #engineLeft.youtubed{background:radial-gradient(520px circle at 0% 0%,rgba(239,68,68,.14),transparent 62%),var(--panel);border-color:#4a2630}
+  #engineLeft.youtubed .kick{color:#ef4444}
+  #engineLeft.youtubed .kick::before{background:#ef4444}
+  #engineLeft.youtubed .tick{color:#ef4444}
   @media(min-width:901px){.engine.right{margin-left:0;margin-right:calc(-1 * min(240px, 32px + max(0px, (100vw - 1168px) / 2)))}}
   @media(max-width:900px){.engine.right{margin-right:0}}
   .engine .kick{margin-bottom:10px}
@@ -216,6 +220,7 @@
 
   header .wrap{max-width:none}
 </style>
+<script src="/spamguard.js"></script>
 </head>
 <body>
 
@@ -280,12 +285,12 @@
 
   <template id="youtubedBlock">
     <p class="kick">YouTubeD</p>
-    <h3>Music, but downloaded.</h3>
-    <p class="engine-desc">Paste a link, pick video or audio, and keep the file. The downloader is next on the bench — this block is its placeholder for now.</p>
+    <h3>Download anything.</h3>
+    <p class="engine-desc">Paste a link, pick audio or video, and keep the file at the highest quality the source offers. Backed by yt-dlp, so it works far past YouTube.</p>
     <ul>
-      <li><span class="tick">✓</span><span><b>Video + audio</b> — choose the quality, keep the file</span></li>
-      <li><span class="tick">✓</span><span><b>Playlists</b> — queue a whole list in one go</span></li>
-      <li><span class="tick">✓</span><span><b>Native</b> — one small binary, no browser tab</span></li>
+      <li><span class="tick">✓</span><span><b>Video or audio</b> — best MP4, or MP3 at 320k</span></li>
+      <li><span class="tick">✓</span><span><b>Any site</b> — anything yt-dlp can read</span></li>
+      <li><span class="tick">✓</span><span><b>No ads, no account</b> — paste, pick, keep</span></li>
     </ul>
     <div class="engine-side">
       <a class="btn btn-y" href="youtubed/">Check it out →</a>
@@ -380,6 +385,7 @@
         original.forEach(function(n){ frag.appendChild(n.cloneNode(true)); });
       }
       box.replaceChildren(frag);
+      box.classList.toggle('youtubed', showing);
       btn.textContent=showing?'Back to NEngine':'More software';
       btn.setAttribute('aria-pressed', showing?'true':'false');
     }
