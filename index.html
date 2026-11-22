@@ -62,6 +62,7 @@
   .btn-g:hover{border-color:#2c3646}
   .btn-l{background:linear-gradient(120deg,var(--lime),#93c5fd);color:#0a1005;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(125,211,252,.75)}
   .btn-l .dot-i{width:7px;height:7px;border-radius:50%;background:#0a1005;animation:pulse 2.4s infinite}
+  .btn-r{background:linear-gradient(120deg,#a855f7,#ec4899);color:#fff;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(168,85,247,.8)}
   @media(max-width:780px){.nl{display:none}nav{display:flex;justify-content:space-between}}
 
   .hero{position:relative;padding:88px 0 80px;overflow:hidden}
@@ -153,6 +154,12 @@
   .engine{justify-self:stretch;width:auto;max-width:none;border:1px solid var(--line);border-radius:22px;padding:30px;
     background:radial-gradient(520px circle at 0% 0%,rgba(125,211,252,.12),transparent 62%),var(--panel)}
   @media(min-width:901px){.engine{margin-left:calc(-1 * min(240px, 32px + max(0px, (100vw - 1168px) / 2)))}}
+  .engine.rust{background:radial-gradient(520px circle at 100% 0%,rgba(168,85,247,.18),transparent 62%),var(--panel);border-color:#3b2459}
+  .engine.rust .kick{color:#c084fc}
+  .engine.rust .kick::before{background:#c084fc}
+  .engine.rust .tick{color:#c084fc}
+  @media(min-width:901px){.engine.right{margin-left:0;margin-right:calc(-1 * min(240px, 32px + max(0px, (100vw - 1168px) / 2)))}}
+  @media(max-width:900px){.engine.right{margin-right:0}}
   .engine .kick{margin-bottom:10px}
   .engine h3{font-size:clamp(20px,2.6vw,26px);letter-spacing:-.025em;font-weight:820;margin-bottom:10px}
   .engine .engine-desc{color:var(--muted);font-size:14.5px}
@@ -213,6 +220,19 @@
       </div>
       <div class="hero-in">
         <h1 class="lens" aria-label="Neutronic Partyhouse"><span class="lens-line">Neutronic</span><br><span class="grad lens-line">Partyhouse</span></h1>
+      </div>
+      <div class="engine right rust reveal">
+        <p class="kick">Rustify</p>
+        <h3>Music, but native.</h3>
+        <p class="engine-desc">A native YouTube Music client written in Rust. No browser, no Electron, no Spotify client — GTK, yt-dlp, and one small binary.</p>
+        <ul>
+          <li><span class="tick">✓</span><span><b>Native</b> — GTK3, not a web wrapper</span></li>
+          <li><span class="tick">✓</span><span><b>yt-dlp</b> search and streaming</span></li>
+          <li><span class="tick">✓</span><span>One terminal command to install</span></li>
+        </ul>
+        <div class="engine-side">
+          <a class="btn btn-r" href="rustify.html">Check it out →</a>
+        </div>
       </div>
     </div>
   </section>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Rustify — native YouTube Music, in Rust</title>
+<meta name="description" content="Rustify is a native YouTube Music client written in Rust. GTK3, yt-dlp, no browser or Electron. One terminal command installs and sets everything up.">
+<style>
+  :root{
+    --void:#0b0712;--panel:#120b1d;--panel-2:#1a1029;--line:#2a1b40;
+    --ink:#f5efff;--muted:#a89bbd;--dim:#75678a;
+    --cyan:#a855f7;--lime:#e879f9;--violet:#7e22ce;
+    --radius:16px;--max:900px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;background:var(--void);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-user-select:none;user-select:none}
+  ::selection{background:var(--cyan);color:#12051f}
+  input,textarea,select,code,pre,kbd,.keyval,#installCmd,.selectable,.selectable *{-webkit-user-select:text;user-select:text}
+  img{-webkit-user-drag:none;user-select:none}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:#170d24;border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:#e9d5ff;overflow-wrap:anywhere;max-width:100%}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(11,7,18,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  header .wrap{max-width:none}
+  nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:70px}
+  nav .logo{justify-self:start}
+  nav .nl{justify-self:center}
+  nav > .btn{justify-self:end}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;letter-spacing:-.02em}
+  .mark{width:34px;height:34px;border-radius:9px;object-fit:contain;box-shadow:0 0 22px -4px rgba(168,85,247,.55)}
+  .nl{display:flex;gap:30px;font-size:14px;color:var(--muted)}
+  .nl a:hover{color:var(--ink)}
+  .nl a.active{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:9px;border-radius:999px;font-weight:650;font-size:14px;transition:transform .16s,opacity .16s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-p{background:linear-gradient(120deg,var(--cyan),#c084fc);color:#12051f;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(168,85,247,.85)}
+  .btn-l{background:linear-gradient(120deg,var(--lime),#f5d0fe);color:#1a0526;padding:14px 26px;font-size:15px;box-shadow:0 14px 34px -14px rgba(232,121,249,.85)}
+  .btn-g{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:13px 22px}
+  .btn-g:hover{border-color:#3d2a5c}
+  @media(max-width:820px){.nl{display:none}nav{display:flex;justify-content:space-between}}
+
+  .hero{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    padding:70px 24px 40px;overflow:hidden;min-height:74vh}
+  .hero::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:640px;height:640px;border-radius:50%;
+    background:radial-gradient(circle,rgba(168,85,247,.22),rgba(126,34,206,.12) 45%,transparent 68%);filter:blur(30px);pointer-events:none}
+  .stage{position:relative;display:inline-block;padding:clamp(70px,14vmin,120px) clamp(24px,6vw,60px)}
+  .stage h1{position:relative;z-index:2;font-size:clamp(44px,9vw,94px);line-height:1.04;letter-spacing:-.045em;font-weight:880;
+    padding:0 .02em .14em;overflow:visible;
+    background:linear-gradient(110deg,#fff 10%,#f3e8ff 45%,#d8b4fe 75%,#a855f7 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 60px rgba(168,85,247,.28)}
+  .orbfx{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1}
+  .orbfx.front{z-index:3}
+  .hero-sub{position:relative;z-index:4;color:var(--muted);font-size:clamp(15px,2.4vw,18px);max-width:48ch;margin:6px auto 0}
+  .hero-cta{position:relative;z-index:4;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+  .hero-note{position:relative;z-index:4;margin-top:16px;font-size:12.5px;color:var(--dim)}
+
+  .sec{padding:64px 0;border-top:1px solid var(--line)}
+  .sec:first-of-type{border-top:none}
+  .kick{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .kick::before{content:"";width:22px;height:1px;background:var(--cyan);display:inline-block}
+  h2{font-size:clamp(24px,4.4vw,36px);letter-spacing:-.03em;line-height:1.08;font-weight:830;margin-bottom:16px}
+  .sec p{color:#d3c8e4;font-size:15.5px;margin-bottom:14px;max-width:70ch}
+  .sec p:last-child{margin-bottom:0}
+  .sec strong{color:var(--ink);font-weight:650}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:24px}
+  .card{border:1px solid var(--line);border-radius:14px;padding:20px 22px;
+    background:radial-gradient(360px circle at 0% 0%,rgba(168,85,247,.08),transparent 70%),var(--panel)}
+  .card b{display:block;font-size:14.5px;color:var(--ink);margin-bottom:6px;font-weight:700}
+  .card span{font-size:13.5px;color:var(--muted);line-height:1.55}
+
+  .cmdbox{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:22px 0 6px;
+    border:1px solid #4c2a7a;border-radius:14px;padding:18px 22px;
+    background:radial-gradient(420px circle at 0% 0%,rgba(168,85,247,.16),transparent 70%),var(--panel)}
+  .cmdbox code{flex:1;min-width:0;white-space:pre-wrap;word-break:break-all;background:none;border:none;padding:0;
+    font-size:clamp(13px,2.5vw,15px);font-weight:700;color:#e9d5ff;letter-spacing:.01em}
+  .copybtn{display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:13.5px;
+    color:#1a0526;background:linear-gradient(120deg,var(--lime),#f5d0fe);padding:11px 18px;border-radius:999px;transition:transform .15s,filter .15s;white-space:nowrap}
+  .copybtn:hover{transform:translateY(-1px)}
+  .copybtn.done{background:linear-gradient(120deg,#86efac,#bbf7d0)}
+  .cmdnote{margin-top:14px;font-size:13px;color:var(--dim)}
+  @media(max-width:560px){
+    .cmdbox{flex-direction:column;align-items:stretch}
+    .cmdbox code{width:100%}
+    .copybtn{align-self:flex-start}
+  }
+
+  .steps{list-style:none;counter-reset:s;margin:8px 0}
+  .steps li{counter-increment:s;position:relative;padding-left:44px;margin-bottom:18px;color:#d3c8e4;font-size:15.5px}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:0;width:29px;height:29px;border-radius:50%;display:grid;place-items:center;
+    font-size:13px;font-weight:800;color:#f3e8ff;background:linear-gradient(135deg,#7e22ce,#a855f7);border:1px solid #4c2a7a}
+  .steps li b{color:var(--ink);font-weight:650}
+
+  .callout{border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;
+    background:radial-gradient(500px circle at 0% 0%,rgba(168,85,247,.09),transparent 60%),var(--panel);margin:22px 0}
+  .callout p{margin-bottom:10px}
+  .callout p:last-child{margin-bottom:0}
+  .callout a{color:var(--cyan);text-decoration:underline;text-underline-offset:2px}
+
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:40px 0}
+  .fr{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
+  .fl{display:flex;gap:24px;font-size:13.5px;color:var(--muted);flex-wrap:wrap}
+  .fl a:hover{color:var(--ink)}
+  .copy{font-size:12.5px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="index.html"><img class="mark" src="logo.png" alt="Neutronic logo"> Neutronic</a>
+      <div class="nl">
+        <a href="info.html">Info</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="help.html">Help</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
+      <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="stage">
+      <canvas class="orbfx back" aria-hidden="true"></canvas>
+      <h1>Rustify</h1>
+      <canvas class="orbfx front" aria-hidden="true"></canvas>
+    </div>
+    <p class="hero-sub">A native YouTube Music client written in Rust. No browser, no Electron, no Spotify client — just GTK, yt-dlp, and one small binary.</p>
+    <div class="hero-cta">
+      <a class="btn btn-l" href="#install">Install</a>
+      <a class="btn btn-g" href="#features">What it does</a>
+    </div>
+    <p class="hero-note">Linux · GTK3 · yt-dlp · open source</p>
+  </section>
+
+  <section class="sec" id="features">
+    <div class="wrap">
+      <p class="kick">What it is</p>
+      <h2>Music, without the browser.</h2>
+      <p>Rustify is a <strong>native desktop client for YouTube Music</strong>. Search and stream resolution go through <strong>yt-dlp</strong>; audio is decoded and played by <strong>rodio</strong> over cpal. Art comes straight from YouTube's CDN. The UI is GTK3, with WebKitGTK used only for the YouTube Music login cookie — the app itself is not a web wrapper.</p>
+      <div class="grid">
+        <div class="card"><b>Native GTK3</b><span>A real desktop window, real menus, real keyboard focus. No Chromium under the hood.</span></div>
+        <div class="card"><b>yt-dlp streaming</b><span>Search, resolve, and stream tracks with the same extractor the rest of the world uses.</span></div>
+        <div class="card"><b>Downloads & imports</b><span>Save the current track to an imports folder and play local files alongside streams.</span></div>
+        <div class="card"><b>Lyrics</b><span>Synced lyrics from lrclib.net with a Genius fallback, right in the player and mini player.</span></div>
+        <div class="card"><b>Themes</b><span>Purple Rustify is the default; other palettes swap the whole sheet without moving the layout.</span></div>
+        <div class="card"><b>Small and fast</b><span>One stripped Rust binary, no Electron, no bundled browser, low memory at idle.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="install">
+    <div class="wrap">
+      <p class="kick">Install</p>
+      <h2>One command. Nothing else needed.</h2>
+      <p>Run this in a terminal on a Linux desktop. It sets up everything from scratch — system packages, Rust if it is missing, yt-dlp, the app, a launcher, and the imports folder. You do not need an installer, an app image, a source folder, or any files before you run it.</p>
+      <div class="cmdbox">
+        <code id="installCmd">curl -fsSL https://strangergithun.github.io/install-rustify.sh | bash</code>
+        <button class="copybtn" id="copyCmd" type="button" aria-label="Copy the install command">Copy command</button>
+      </div>
+      <p class="cmdnote">Paste it into a terminal and press Enter. It will ask for your sudo password for the system packages.</p>
+      <ol class="steps">
+        <li><b>Open a terminal</b> on your Linux desktop.</li>
+        <li><b>Paste the command</b> above and press Enter.</li>
+        <li><b>Enter your sudo password</b> when it asks — that is for GTK, WebKitGTK, ffmpeg, and the other system pieces.</li>
+        <li><b>Wait.</b> The script downloads the source, installs dependencies, installs Rust 1.80+ via rustup if needed, builds Rustify when the prebuilt binary cannot run, and unpacks yt-dlp for fast startup.</li>
+        <li><b>Rustify launches</b> when it is done. After that, run <code>rustify</code> or open it from the app menu.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <p class="kick">What the command sets up</p>
+      <h2>From empty machine to working app.</h2>
+      <p>The script is not a wrapper around an existing install — it is the install. It detects apt, dnf, pacman, zypper, or apk and installs the runtime and build packages it needs. Then it puts everything in the right place under your home directory.</p>
+      <div class="grid">
+        <div class="card"><b>System runtime</b><span>GTK3, WebKitGTK 4.1, libsoup3, OpenSSL, ALSA, ffmpeg, Python 3, curl, librsvg, and the Inter font.</span></div>
+        <div class="card"><b>Rust toolchain</b><span>If rustc/cargo are missing or older than 1.80, rustup installs a stable toolchain.</span></div>
+        <div class="card"><b>yt-dlp</b><span>The latest yt-dlp zipapp, unpacked and precompiled under <code>~/.local/share/rustify</code> for fast calls.</span></div>
+        <div class="card"><b>The app</b><span><code>~/.local/bin/rustify</code> — a single native binary you can launch from anywhere.</span></div>
+        <div class="card"><b>Launcher + icon</b><span>A desktop entry in <code>~/.local/share/applications</code> and the icon in your hicolor theme.</span></div>
+        <div class="card"><b>Imports folder</b><span><code>~/.local/share/rustify/imports</code> for downloaded tracks and local files.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <p class="kick">Requirements</p>
+      <h2>What you need first.</h2>
+      <p><strong>A Linux desktop</strong> with X11 or Wayland — Debian/Ubuntu/Mint, Fedora, Arch, openSUSE, and Alpine are detected automatically. <strong>An internet connection</strong> for the download, packages, and yt-dlp. <strong>sudo access</strong> for system packages. About <strong>2 GB free disk</strong> if the machine has to build from source; much less when the prebuilt binary runs.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <p class="kick">Troubleshooting</p>
+      <h2>If something sticks.</h2>
+      <div class="callout">
+        <p><strong><code>rustify: command not found</code></strong> — <code>~/.local/bin</code> is probably not on your PATH. Run <code>~/.local/bin/rustify</code> directly, or add <code>export PATH="$HOME/.local/bin:$PATH"</code> to your shell profile.</p>
+        <p><strong>The prebuilt binary will not start</strong> — that is expected on some distros. The installer detects it, installs the runtime libraries, and falls back to a source build automatically.</p>
+        <p><strong>The source build fails</strong> — install the dev packages for your distro and run the command again. On Debian/Ubuntu: <code>sudo apt install build-essential pkg-config libssl-dev libgtk-3-dev libwebkit2gtk-4.1-dev libsoup-3.0-dev</code>.</p>
+        <p><strong>Updating</strong> — run the same command again. It stops the running copy, replaces the binary, refreshes yt-dlp, and relaunches.</p>
+        <p><strong>Uninstalling</strong> — <code>rm -f ~/.local/bin/rustify ~/.local/bin/yt-dlp ~/.local/share/applications/rustify.desktop; rm -rf ~/.local/share/rustify</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <p class="kick">Ready</p>
+      <h2>Copy, paste, listen.</h2>
+      <p>The whole setup is that one line. No account, no key, no browser extension.</p>
+      <div class="cta-row">
+        <a class="btn btn-l" href="#install">Back to the command</a>
+        <a class="btn btn-g" href="index.html">Back to Neutronic</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fr">
+      <a class="logo" href="index.html"><img class="mark" src="logo.png" alt="Neutronic logo"> Neutronic</a>
+      <div class="fl">
+        <a href="info.html">Info</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="help.html">Help</a>
+        <a href="tutorial.html">Deep tutorial</a>
+        <a href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+      </div>
+      <span class="copy">© 2026 Neutronic</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var btn = document.getElementById('copyCmd');
+    var cmd = 'curl -fsSL https://strangergithun.github.io/install-rustify.sh | bash';
+    if (!btn) return;
+    btn.addEventListener('click', function(){
+      function ok(){
+        btn.textContent = 'Copied!';
+        btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = 'Copy command'; btn.classList.remove('done'); }, 1600);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(cmd).then(ok, function(){
+          var t = document.createElement('textarea');
+          t.value = cmd; document.body.appendChild(t); t.select();
+          try { document.execCommand('copy'); ok(); } catch(e){}
+          t.remove();
+        });
+      } else {
+        var t = document.createElement('textarea');
+        t.value = cmd; document.body.appendChild(t); t.select();
+        try { document.execCommand('copy'); ok(); } catch(e){}
+        t.remove();
+      }
+    });
+  })();
+</script>
+
+<script>
+  (function(){
+    var stage = document.querySelector('.stage');
+    if (!stage) return;
+    var back = stage.querySelector('.orbfx.back');
+    var front = stage.querySelector('.orbfx.front');
+    var bctx = back.getContext('2d');
+    var fctx = front.getContext('2d');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var W = 0, H = 0, DPR = 1, F = 900, TAU = 6.2832;
+    var orbs = [];
+    var rnd = function(a,b){ return a + Math.random()*(b-a); };
+
+    function rgb(hex){
+      var n = parseInt(hex.slice(1), 16);
+      return [(n>>16)&255, (n>>8)&255, n&255];
+    }
+    function rgba(hex, a){ var c = rgb(hex); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+    function mul(hex, f){
+      var c = rgb(hex);
+      var h = function(v){ v = Math.max(0, Math.min(255, Math.round(v))); return ('0' + v.toString(16)).slice(-2); };
+      return '#' + h(c[0]*f) + h(c[1]*f) + h(c[2]*f);
+    }
+
+    function makeOrbs(sw, sh){
+      var base = Math.min(sw * 0.44, sh * 1.15);
+      var k = Math.min(1, Math.max(0.55, sw / 720));
+      orbs = [
+        { tiltX:1.32, tiltZ:0.00, rad:base*0.60, speed:0.52, px:16*k, core:'#f3e8ff', mid:'#a855f7',
+          theta:rnd(0,TAU), phase:rnd(0,TAU), wob:0.12, wf:2.0, wp:rnd(0,TAU) },
+        { tiltX:1.20, tiltZ:2.27, rad:base*0.80, speed:0.36, px:11*k, core:'#fae8ff', mid:'#e879f9',
+          theta:rnd(0,TAU), phase:rnd(0,TAU), wob:0.10, wf:2.6, wp:rnd(0,TAU) },
+        { tiltX:1.45, tiltZ:4.36, rad:base*0.46, speed:0.82, px:9*k,  core:'#ede9fe', mid:'#8b5cf6',
+          theta:rnd(0,TAU), phase:rnd(0,TAU), wob:0.14, wf:1.7, wp:rnd(0,TAU) }
+      ];
+    }
+
+    function project(o, theta){
+      var wob = 1 + o.wob * Math.sin(theta * o.wf + o.wp);
+      var r = o.rad * wob;
+      var x = r * Math.cos(theta), y = r * Math.sin(theta);
+      var cz = Math.cos(o.tiltZ), sz = Math.sin(o.tiltZ);
+      var x1 = x * cz - y * sz, y1 = x * sz + y * cz;
+      var cx = Math.cos(o.tiltX), sx = Math.sin(o.tiltX);
+      var y2 = y1 * cx, z2 = y1 * sx;
+      var sc = F / (F - z2);
+      return { x: W * 0.5 + x1 * sc, y: H * 0.5 + y2 * sc, z: z2, s: sc };
+    }
+
+    function halo(ctx, x, y, px, mid, alpha){
+      var R = px * 4.2;
+      var g = ctx.createRadialGradient(x, y, 0, x, y, R);
+      g.addColorStop(0, rgba(mid, 0.55 * alpha));
+      g.addColorStop(0.32, rgba(mid, 0.26 * alpha));
+      g.addColorStop(0.68, rgba(mid, 0.07 * alpha));
+      g.addColorStop(1, rgba(mid, 0));
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(x, y, R, 0, TAU); ctx.fill();
+    }
+
+    function sphere(ctx, x, y, px, core, mid, alpha){
+      var g = ctx.createRadialGradient(x - px*0.34, y - px*0.36, px*0.06, x, y, px);
+      g.addColorStop(0, 'rgba(255,255,255,' + (0.98 * alpha) + ')');
+      g.addColorStop(0.28, rgba(core, 0.96 * alpha));
+      g.addColorStop(0.66, rgba(mid, 0.94 * alpha));
+      g.addColorStop(0.92, rgba(mul(mid, 0.5), 0.95 * alpha));
+      g.addColorStop(1, rgba(mul(mid, 0.22), 0.95 * alpha));
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(x, y, px, 0, TAU); ctx.fill();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.beginPath(); ctx.arc(x, y, px*0.99, 0, TAU);
+      ctx.strokeStyle = rgba(core, 0.32 * alpha);
+      ctx.lineWidth = Math.max(0.8, px * 0.09);
+      ctx.stroke();
+    }
+
+    function drawRings(){
+      var steps = 100;
+      for (var k = 0; k < orbs.length; k++){
+        var o = orbs[k];
+        var prev = project(o, 0);
+        for (var i = 1; i <= steps; i++){
+          var th = (i / steps) * TAU;
+          var p = project(o, th);
+          var d = Math.abs(((th - o.theta) % TAU + TAU + TAU/2) % TAU - TAU/2);
+          var near = Math.exp(-(d*d) / (0.55*0.55));
+          var ctx = ((p.z + prev.z) * 0.5 > 0) ? fctx : bctx;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(p.x, p.y);
+          ctx.strokeStyle = rgba('#c084fc', 0.05 + 0.42 * near);
+          ctx.lineWidth = 1 + near * 0.8;
+          ctx.stroke();
+          prev = p;
+        }
+      }
+    }
+
+    function draw(){
+      bctx.clearRect(0, 0, W, H);
+      fctx.clearRect(0, 0, W, H);
+      bctx.globalCompositeOperation = 'lighter';
+      fctx.globalCompositeOperation = 'lighter';
+      drawRings();
+      for (var k = 0; k < orbs.length; k++){
+        var o = orbs[k];
+        var TRAIL = 16;
+        for (var i = TRAIL; i >= 1; i--){
+          var t = i / TRAIL;
+          var tp = project(o, o.theta - i * 0.045);
+          halo(tp.z > 0 ? fctx : bctx, tp.x, tp.y, o.px * tp.s * (1 - 0.5*t), o.mid, 0.5 * Math.pow(1 - t, 2.0));
+        }
+        var hp = project(o, o.theta);
+        var ctx = hp.z > 0 ? fctx : bctx;
+        var px = o.px * hp.s;
+        halo(ctx, hp.x, hp.y, px, o.mid, 0.92);
+        sphere(ctx, hp.x, hp.y, px, o.core, o.mid, 0.78);
+      }
+    }
+
+    function resize(){
+      var r = stage.getBoundingClientRect();
+      var sw = Math.max(1, r.width), sh = Math.max(1, r.height);
+      var pad = Math.min(130, Math.max(40, sw * 0.14));
+      W = sw + pad * 2; H = sh + pad * 2;
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      [back, front].forEach(function(c){
+        c.style.left = (-pad) + 'px'; c.style.top = (-pad) + 'px';
+        c.style.width = W + 'px'; c.style.height = H + 'px';
+        c.width = Math.round(W * DPR); c.height = Math.round(H * DPR);
+      });
+      bctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      fctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      makeOrbs(sw, sh);
+      draw();
+    }
+
+    resize();
+    window.addEventListener('resize', resize, {passive:true});
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ resize(); });
+
+    if (!reduce){
+      var last = performance.now();
+      function frame(now){
+        var dt = Math.min((now - last) / 1000, 0.05);
+        last = now;
+        if (!document.hidden){
+          for (var k = 0; k < orbs.length; k++){
+            var o = orbs[k];
+            var pulse = 1 + 0.55*Math.sin(o.theta*1.6 + o.phase) + 0.30*Math.sin(o.theta*3.1 + o.phase*1.7);
+            o.theta += o.speed * pulse * dt;
+          }
+          draw();
+        }
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+  })();
+</script>
+</body>
+</html>
