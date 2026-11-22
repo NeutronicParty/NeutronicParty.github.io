@@ -81,7 +81,7 @@
   .pulse{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(125,211,252,.55);animation:pulse 2.4s infinite}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(125,211,252,.5)}70%{box-shadow:0 0 0 9px rgba(125,211,252,0)}100%{box-shadow:0 0 0 0 rgba(125,211,252,0)}}
   h1{font-size:clamp(40px,7.4vw,82px);line-height:.98;letter-spacing:-.04em;font-weight:850}
-  h1 .ch{display:inline-block;transform-origin:50% 60%;will-change:transform;backface-visibility:hidden;padding:.12em 0 .26em;margin:-.12em 0 -.26em}
+  h1 .ch{display:inline-block;transform-origin:50% 50%;will-change:transform;backface-visibility:hidden;padding:.12em 0 .26em;margin:-.12em 0 -.26em}
   h1 .grad .ch{background-image:linear-gradient(105deg,var(--cyan) 0%,#7dd3fc 55%,#1d4ed8 100%);background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent}
   .sub{color:var(--muted);font-size:clamp(16px,2.3vw,19px);max-width:56ch;margin:26px 0 0}
   .hero-cta{display:flex;gap:13px;margin-top:38px;flex-wrap:wrap}
@@ -283,7 +283,7 @@
   (function(){
     const h1=document.querySelector('h1.lens');
     if(!h1) return;
-    const hero=h1.closest('.hero')||h1.parentElement;
+    const zone=h1.closest('.hero-in')||h1;
     const chars=[];
 
     h1.querySelectorAll('.lens-line').forEach(line=>{
@@ -294,7 +294,7 @@
         s.className='ch';
         s.textContent=c===' '?'\u00A0':c;
         line.appendChild(s);
-        chars.push({el:s,cur:1,bx:0,by:0});
+        chars.push({el:s,bx:0,by:0});
       });
     });
 
@@ -310,11 +310,13 @@
     }
 
     function reset(){
-      chars.forEach(c=>{c.el.style.transform='none';c.cur=1;});
+      chars.forEach(c=>{c.el.style.transform='none';});
     }
 
+    let TH=64;
     function measure(){
       reset();
+      TH=parseFloat(getComputedStyle(h1).fontSize)||64;
       const hr=h1.getBoundingClientRect();
       chars.forEach(c=>{
         const r=c.el.getBoundingClientRect();
@@ -335,39 +337,40 @@
       return;
     }
 
-    const NEAR=0.74, FAR=1.10, SIGMA=74;
-    let px=0, py=0, active=false, raf=0;
+    let px=0,py=0,cx=0,cy=0,active=false,raf=0,press=0,pressT=0;
+    function start(){ if(!raf) raf=requestAnimationFrame(frame); }
 
     function frame(){
       const hr=h1.getBoundingClientRect();
-      let moving=false;
+      const sig=TH*0.28, rb=TH*0.72, sigb=TH*0.46;
+      cx+=(px-cx)*0.20;
+      cy+=(py-cy)*0.20;
+      press+=(pressT-press)*0.14;
+      let moving=Math.abs(pressT-press)>0.002;
       chars.forEach(c=>{
-        let target=1, dx=0, dy=0;
-        if(active){
-          dx=px-(hr.left+c.bx);
-          dy=py-(hr.top+c.by);
-          const d2=dx*dx+dy*dy;
-          target=FAR-(FAR-NEAR)*Math.exp(-d2/(2*SIGMA*SIGMA));
-        }
-        c.cur+=(target-c.cur)*0.16;
-        if(Math.abs(target-c.cur)>0.001) moving=true;
-        const pull=Math.max(0,1-c.cur);
-        const tx=active?dx*pull*0.22:0;
-        const ty=active?dy*pull*0.22:0;
-        c.el.style.transform='translate('+tx.toFixed(2)+'px,'+ty.toFixed(2)+'px) scale('+c.cur.toFixed(3)+')';
+        const bx=hr.left+c.bx, by=hr.top+c.by;
+        const dx=bx-cx, dy=by-cy;
+        const r=Math.sqrt(dx*dx+dy*dy);
+        const q1=r/sig, q2=(r-rb)/sigb;
+        const sc=Math.min(2,Math.max(.4,1-0.36*press*Math.exp(-(q1*q1))+0.12*press*Math.exp(-(q2*q2))));
+        const tx=(cx+dx*sc)-bx;
+        const ty=(cy+dy*sc)-by;
+        if(Math.abs(sc-1)>0.001) moving=true;
+        c.el.style.transform='translate('+tx.toFixed(2)+'px,'+ty.toFixed(2)+'px) scale('+sc.toFixed(3)+')';
       });
-      raf=(active||moving)?requestAnimationFrame(frame):0;
+      raf=(active||moving||Math.abs(px-cx)>0.1||Math.abs(py-cy)>0.1)?requestAnimationFrame(frame):0;
     }
 
-    function start(){ if(!raf) raf=requestAnimationFrame(frame); }
-
-    hero.addEventListener('pointermove',e=>{
-      px=e.clientX;py=e.clientY;active=true;start();
+    zone.addEventListener('pointermove',e=>{
+      if(!active){cx=e.clientX;cy=e.clientY;}
+      px=e.clientX;py=e.clientY;active=true;pressT=1;start();
     },{passive:true});
-    hero.addEventListener('pointerleave',()=>{active=false;start();});
+    zone.addEventListener('pointerleave',()=>{active=false;pressT=0;start();});
     window.addEventListener('resize',()=>{measure();if(!active)start();},{passive:true});
 
     measure();
+    const hr0=h1.getBoundingClientRect();
+    px=cx=hr0.left+hr0.width/2; py=cy=hr0.top+hr0.height/2;
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(measure);
   })();
 </script>
