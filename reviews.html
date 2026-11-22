@@ -59,7 +59,9 @@
   .refresh{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:10px 14px;font-size:13px;font-weight:650;cursor:pointer;font-family:inherit;transition:color .16s,border-color .16s}
   .refresh:hover{color:var(--ink);border-color:#2b3648}
 
-  .revgrid{display:flex;gap:18px;overflow-x:auto;overflow-y:hidden;padding:4px 2px 16px;
+  .reviewzone{position:relative;width:auto;margin-left:calc((100% - 100vw)/2);margin-right:calc((100% - 100vw)/2);
+    padding:16px 24px 24px;touch-action:pan-y}
+  .revgrid{display:flex;gap:18px;overflow-x:auto;overflow-y:hidden;padding:0 0 14px;
     scroll-snap-type:x mandatory;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
     scrollbar-width:thin;scrollbar-color:#2a3444 transparent}
   .revgrid::-webkit-scrollbar{height:8px}
@@ -67,9 +69,9 @@
   .revgrid::-webkit-scrollbar-button{display:none}
   .revgrid::-webkit-scrollbar-thumb{background:#2a3444;border-radius:999px}
   .revgrid::-webkit-scrollbar-thumb:hover{background:#3a4658}
-  .revgrid.dragging{scroll-snap-type:none;cursor:grabbing}
-  .revgrid.dragging *{cursor:grabbing;user-select:none}
-  @media(hover:hover){.revgrid{cursor:grab}}
+  .revgrid.dragging{scroll-snap-type:none}
+  .reviewzone.dragging,.reviewzone.dragging *{cursor:grabbing!important;user-select:none}
+  @media(hover:hover){.reviewzone{cursor:grab}}
   .review{border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;max-width:660px;
     background:radial-gradient(500px circle at 0% 0%,rgba(59,130,246,.10),transparent 62%),var(--panel);
     display:flex;flex-direction:column}
@@ -176,6 +178,7 @@
       </div>
     </div>
 
+    <div class="reviewzone" id="reviewZone">
     <div class="revgrid" id="reviewList">
       <div class="review">
         <div class="who">
@@ -189,6 +192,7 @@
         <q>Absolutely Epic Scripts And Software!</q>
         <div class="meta"><span>Founder</span><span class="score">5 / 5</span></div>
       </div>
+    </div>
     </div>
 
     <div class="revstatus" id="revStatus" hidden></div>
@@ -595,34 +599,39 @@
   }
 
   (function(){
+    var zone = document.getElementById('reviewZone');
     var strip = document.getElementById('reviewList');
     var down = false, moved = false, startX = 0, startLeft = 0, pid = null;
-    strip.addEventListener('pointerdown', function(e){
+    zone.addEventListener('pointerdown', function(e){
       if (e.pointerType === 'touch' || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      if (e.target.closest('a,button,input,textarea,select')) return;
       down = true; moved = false; startX = e.clientX; startLeft = strip.scrollLeft; pid = e.pointerId;
     });
-    strip.addEventListener('pointermove', function(e){
+    zone.addEventListener('pointermove', function(e){
       if (!down) return;
       var dx = e.clientX - startX;
       if (!moved && Math.abs(dx) > 6) {
         moved = true;
+        zone.classList.add('dragging');
         strip.classList.add('dragging');
-        try { strip.setPointerCapture(pid); } catch(err) {}
+        try { zone.setPointerCapture(pid); } catch(err) {}
       }
       if (moved) { e.preventDefault(); strip.scrollLeft = startLeft - dx; }
     });
     function end(){
       if (!down) return;
       down = false;
+      zone.classList.remove('dragging');
       strip.classList.remove('dragging');
-      if (pid !== null) { try { strip.releasePointerCapture(pid); } catch(err) {} pid = null; }
+      if (pid !== null) { try { zone.releasePointerCapture(pid); } catch(err) {} pid = null; }
       setTimeout(function(){ moved = false; }, 0);
     }
-    strip.addEventListener('pointerup', end);
-    strip.addEventListener('pointercancel', end);
-    strip.addEventListener('click', function(e){
+    zone.addEventListener('pointerup', end);
+    zone.addEventListener('pointercancel', end);
+    zone.addEventListener('click', function(e){
       if (moved) { e.preventDefault(); e.stopPropagation(); }
     }, true);
+    zone.addEventListener('dragstart', function(e){ e.preventDefault(); });
   })();
 
   document.getElementById('refreshBtn').addEventListener('click', function(){ loadReviews(true); });
