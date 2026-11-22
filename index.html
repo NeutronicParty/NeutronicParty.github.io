@@ -112,6 +112,16 @@
   .sn{font-size:clamp(30px,5vw,48px);font-weight:850;letter-spacing:-.035em;background:linear-gradient(120deg,#fff,#bfdbfe);-webkit-background-clip:text;background-clip:text;color:transparent}
   .sl{font-size:12.5px;color:var(--muted);margin-top:6px}
 
+  .team{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--panel)}
+  .member{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 26px;border-bottom:1px solid var(--line);transition:background .18s}
+  .member:last-child{border-bottom:none}
+  .member:hover{background:var(--panel-2)}
+  .who{display:flex;align-items:center;gap:15px}
+  .avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;color:#dbeafe;background:linear-gradient(135deg,#1d4ed8,#3b82f6);border:1px solid #2b4a7a;flex:none}
+  .mname{font-weight:700;font-size:15.5px;letter-spacing:-.01em}
+  .mrole{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  @media(max-width:520px){.mrole{display:none}}
+
   .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
   @media(max-width:760px){.steps{grid-template-columns:1fr}}
   .step{border-top:1px solid var(--line);padding-top:22px}
@@ -186,14 +196,16 @@
   </div>
 
 
-  <section class="sec wrap">
-    <div class="stats reveal">
-      <div class="sg">
-        <div><div class="sn">40+</div><div class="sl">projects shipped</div></div>
-        <div><div class="sn">&lt;1s</div><div class="sl">typical load time</div></div>
-        <div><div class="sn">6</div><div class="sl">disciplines, one team</div></div>
-        <div><div class="sn">0</div><div class="sl">unnecessary meetings</div></div>
-      </div>
+  <section class="sec wrap" id="team">
+    <div class="head reveal">
+      <p class="kick">Our Team</p>
+      <h2>The people behind Neutronic.</h2>
+    </div>
+    <div class="team reveal">
+      <div class="member"><div class="who"><span class="avatar">N</span><span class="mname">Neutronic</span></div><span class="mrole">Developer</span></div>
+      <div class="member"><div class="who"><span class="avatar">S</span><span class="mname">Silent</span></div><span class="mrole">Tester</span></div>
+      <div class="member"><div class="who"><span class="avatar">E</span><span class="mname">Eternal</span></div><span class="mrole">Partner</span></div>
+      <div class="member"><div class="who"><span class="avatar">O</span><span class="mname">Opencode</span></div><span class="mrole">Exploit Reporter</span></div>
     </div>
   </section>
 
