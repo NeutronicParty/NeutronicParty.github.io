@@ -43,43 +43,16 @@
     padding:70px 24px 40px;overflow:hidden;min-height:74vh}
   .hero::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:640px;height:640px;border-radius:50%;
     background:radial-gradient(circle,rgba(59,130,246,.20),rgba(29,78,216,.10) 45%,transparent 68%);filter:blur(30px);pointer-events:none}
-  .stage{position:relative;display:inline-block;padding:clamp(70px,14vmin,120px) clamp(24px,6vw,60px);
-    perspective:900px;perspective-origin:50% 50%;transform-style:preserve-3d}
-  .stage h1{position:relative;transform:translateZ(0);font-size:clamp(40px,8.4vw,88px);line-height:1.04;letter-spacing:-.045em;font-weight:880;
+  .stage{position:relative;display:inline-block;padding:clamp(70px,14vmin,120px) clamp(24px,6vw,60px)}
+  .stage h1{position:relative;z-index:2;font-size:clamp(40px,8.4vw,88px);line-height:1.04;letter-spacing:-.045em;font-weight:880;
     padding:0 .02em .14em;overflow:visible;
     background:linear-gradient(110deg,#fff 10%,#bfdbfe 45%,#60a5fa 75%,#3b82f6 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
     text-shadow:0 0 60px rgba(59,130,246,.25)}
-  .orbits{position:absolute;top:50%;left:50%;width:0;height:0;transform-style:preserve-3d}
-  .orbit{position:absolute;top:0;left:0;width:0;height:0;transform-style:preserve-3d;transform:rotateX(var(--tiltX,70deg)) rotateZ(var(--tiltZ,0deg))}
-  .ring3d{position:absolute;top:0;left:0;width:calc(var(--r,160px) * 2);height:calc(var(--r,160px) * 2);
-    margin:calc(var(--r,160px) * -1) 0 0 calc(var(--r,160px) * -1);border-radius:50%;opacity:.9;
-    background:conic-gradient(from 0deg,rgba(59,130,246,0) 0deg,rgba(96,165,250,.55) 36deg,rgba(59,130,246,.10) 130deg,rgba(59,130,246,0) 210deg,rgba(125,211,252,.35) 320deg,rgba(59,130,246,0) 360deg);
-    -webkit-mask:radial-gradient(closest-side,transparent calc(100% - 1.4px),#000 calc(100% - 1.4px));
-    mask:radial-gradient(closest-side,transparent calc(100% - 1.4px),#000 calc(100% - 1.4px));
-    animation:ringspin var(--ringdur,44s) linear infinite}
-  .orb{position:absolute;left:0;top:0;width:var(--s,12px);height:var(--s,12px);margin:calc(var(--s,12px) * -0.5) 0 0 calc(var(--s,12px) * -0.5);
-    border-radius:50%;will-change:transform;
-    background:radial-gradient(circle at 32% 26%,#ffffff 0 5%,#e2edff 13%,#7db8ff 37%,#2f6fe0 62%,#123a8a 83%,#071a3d 100%);
-    box-shadow:inset 0 -2px 4px rgba(3,10,26,.85),inset 0 1px 2px rgba(255,255,255,.6),
-      0 0 6px rgba(255,255,255,.9),0 0 16px rgba(96,165,250,.9),0 0 34px rgba(59,130,246,.5)}
-  .orb::before{content:"";position:absolute;left:50%;top:50%;width:260%;height:260%;transform:translate(-50%,-50%);
-    border-radius:50%;z-index:-1;pointer-events:none;
-    background:radial-gradient(circle,rgba(96,165,250,.5),rgba(59,130,246,.16) 42%,transparent 68%);filter:blur(3px)}
-  .orb::after{content:"";position:absolute;left:20%;top:13%;width:40%;height:34%;border-radius:50%;
-    background:radial-gradient(circle at 42% 42%,#fff,rgba(255,255,255,.55) 42%,transparent 72%)}
-  .orb.c2{background:radial-gradient(circle at 32% 26%,#ffffff 0 5%,#d9fbff 13%,#6fe4ff 37%,#1fa9d8 62%,#0b4c78 83%,#04182a 100%);
-    box-shadow:inset 0 -2px 4px rgba(2,14,24,.85),inset 0 1px 2px rgba(255,255,255,.6),
-      0 0 6px rgba(255,255,255,.9),0 0 16px rgba(125,211,252,.9),0 0 34px rgba(59,130,246,.45)}
-  .orb.c2::before{background:radial-gradient(circle,rgba(125,211,252,.5),rgba(59,130,246,.15) 42%,transparent 68%)}
-  .orb.c3{background:radial-gradient(circle at 32% 26%,#ffffff 0 5%,#e6e9ff 13%,#9aa8ff 37%,#5566e6 62%,#26308a 83%,#0b0f33 100%);
-    box-shadow:inset 0 -2px 4px rgba(6,6,26,.85),inset 0 1px 2px rgba(255,255,255,.6),
-      0 0 6px rgba(255,255,255,.9),0 0 16px rgba(147,197,253,.85),0 0 34px rgba(99,102,241,.45)}
-  .orb.c3::before{background:radial-gradient(circle,rgba(165,180,252,.5),rgba(99,102,241,.15) 42%,transparent 68%)}
-  @keyframes ringspin{to{transform:rotate(360deg)}}
+  .orbfx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+  .orbfx.front{z-index:3}
   .hero-sub{position:relative;z-index:2;color:var(--muted);font-size:clamp(15px,2.4vw,18px);max-width:46ch;margin:6px auto 0}
   .hero-cta{position:relative;z-index:2;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
   .hero-note{position:relative;z-index:2;margin-top:16px;font-size:12.5px;color:var(--dim)}
-  @media(prefers-reduced-motion:reduce){.ring3d{animation:none}}
 
   .sec{padding:64px 0;border-top:1px solid var(--line)}
   .sec:first-of-type{border-top:none}
@@ -140,21 +113,9 @@
 <main>
   <section class="hero">
     <div class="stage">
-      <div class="orbits">
-        <div class="orbit" style="--r:clamp(120px,24vmin,190px);--tiltX:72deg;--tiltZ:0deg;--ringdur:40s">
-          <div class="ring3d"></div>
-          <span class="orb c1" style="--s:14px"></span>
-        </div>
-        <div class="orbit" style="--r:clamp(150px,30vmin,230px);--tiltX:58deg;--tiltZ:130deg;--ringdur:58s">
-          <div class="ring3d"></div>
-          <span class="orb c2" style="--s:10px"></span>
-        </div>
-        <div class="orbit" style="--r:clamp(95px,19vmin,150px);--tiltX:84deg;--tiltZ:250deg;--ringdur:30s">
-          <div class="ring3d"></div>
-          <span class="orb c3" style="--s:8px"></span>
-        </div>
-      </div>
+      <canvas class="orbfx back" aria-hidden="true"></canvas>
       <h1>Neutronic Engine</h1>
+      <canvas class="orbfx front" aria-hidden="true"></canvas>
     </div>
     <p class="hero-sub">One loader. Every page. Free, keyed, and built to stay out of your way.</p>
     <div class="hero-cta">
@@ -264,54 +225,133 @@
 
 <script>
   (function(){
-    var orbits = [].slice.call(document.querySelectorAll('.orbits .orbit'));
-    if (!orbits.length) return;
+    var stage = document.querySelector('.stage');
+    if (!stage) return;
+    var back = stage.querySelector('.orbfx.back');
+    var front = stage.querySelector('.orbfx.front');
+    var bctx = back.getContext('2d');
+    var fctx = front.getContext('2d');
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var W = 0, H = 0, DPR = 1, F = 900;
+    var orbs = [];
     var rnd = function(a,b){ return a + Math.random()*(b-a); };
-    var nodes = orbits.map(function(o){
-      return {
-        orb: o.querySelector('.orb'),
-        ring: o.querySelector('.ring3d'),
-        r: 160,
-        theta: rnd(0, Math.PI*2),
-        speed: rnd(0.32, 0.62),
-        w1: rnd(1.4, 2.4), p1: rnd(0, Math.PI*2),
-        w2: rnd(2.6, 4.4), p2: rnd(0, Math.PI*2),
-        p3: rnd(0, Math.PI*2),
-        amp1: rnd(0.10, 0.20), amp2: rnd(0.04, 0.11),
-        zamp: rnd(0.04, 0.12)
-      };
-    });
-    function measure(){
-      nodes.forEach(function(n){ n.r = (n.ring && n.ring.offsetWidth ? n.ring.offsetWidth : 320) / 2; });
+
+    function rgba(hex, a){
+      var n = parseInt(hex.slice(1), 16);
+      return 'rgba(' + ((n>>16)&255) + ',' + ((n>>8)&255) + ',' + (n&255) + ',' + a + ')';
     }
-    function place(n, theta){
-      var wob = 1 + n.amp1*Math.sin(theta*2 + n.p1) + n.amp2*Math.sin(theta*3 + n.p2);
-      var r = n.r * wob;
-      var x = r * Math.cos(theta);
-      var y = r * Math.sin(theta);
-      var z = n.r * n.zamp * Math.sin(theta*2 + n.p3);
-      n.orb.style.transform = 'translate3d(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px,' + z.toFixed(2) + 'px)';
+
+    function makeOrbs(){
+      var base = Math.min(W * 0.52, H * 1.15);
+      orbs = [
+        { tiltX:1.22, tiltZ:0.00, rad:base*0.60, speed:0.52, px:14, core:'#eaf2ff', mid:'#3b82f6',
+          theta:rnd(0,6.283), phase:rnd(0,6.283), wob:0.12, wf:2.0, wp:rnd(0,6.283) },
+        { tiltX:1.02, tiltZ:2.27, rad:base*0.80, speed:0.36, px:10, core:'#d4fbff', mid:'#22d3ee',
+          theta:rnd(0,6.283), phase:rnd(0,6.283), wob:0.10, wf:2.6, wp:rnd(0,6.283) },
+        { tiltX:1.46, tiltZ:4.36, rad:base*0.44, speed:0.82, px:8,  core:'#e6e9ff', mid:'#6366f1',
+          theta:rnd(0,6.283), phase:rnd(0,6.283), wob:0.14, wf:1.7, wp:rnd(0,6.283) }
+      ];
     }
-    measure();
-    nodes.forEach(function(n){ place(n, n.theta); });
-    if (reduce) return;
-    var last = performance.now();
-    function tick(now){
-      var dt = Math.min((now - last) / 1000, 0.05);
-      last = now;
-      if (!document.hidden){
-        for (var i = 0; i < nodes.length; i++){
-          var n = nodes[i];
-          var pulse = 1 + 0.55*Math.sin(n.theta*n.w1 + n.p1) + 0.30*Math.sin(n.theta*n.w2 + n.p2);
-          n.theta += n.speed * pulse * dt;
-          place(n, n.theta);
+
+    function project(o, theta){
+      var wob = 1 + o.wob * Math.sin(theta * o.wf + o.wp);
+      var r = o.rad * wob;
+      var x = r * Math.cos(theta), y = r * Math.sin(theta);
+      var cz = Math.cos(o.tiltZ), sz = Math.sin(o.tiltZ);
+      var x1 = x * cz - y * sz, y1 = x * sz + y * cz;
+      var cx = Math.cos(o.tiltX), sx = Math.sin(o.tiltX);
+      var y2 = y1 * cx, z2 = y1 * sx;
+      var sc = F / (F - z2);
+      return { x: W * 0.5 + x1 * sc, y: H * 0.5 + y2 * sc, z: z2, s: sc };
+    }
+
+    function glow(ctx, x, y, px, core, mid, alpha, solid){
+      var R = px * 4.6;
+      var g = ctx.createRadialGradient(x, y, 0, x, y, R);
+      g.addColorStop(0, 'rgba(255,255,255,' + (0.95*alpha) + ')');
+      g.addColorStop(0.16, rgba(core, 0.9*alpha));
+      g.addColorStop(0.42, rgba(mid, 0.4*alpha));
+      g.addColorStop(1, rgba(mid, 0));
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(x, y, R, 0, 6.2832); ctx.fill();
+      if (solid){
+        ctx.fillStyle = 'rgba(255,255,255,' + (0.95*alpha) + ')';
+        ctx.beginPath(); ctx.arc(x, y, Math.max(0.6, px*0.42), 0, 6.2832); ctx.fill();
+      }
+    }
+
+    function drawRings(){
+      var steps = 96;
+      for (var k = 0; k < orbs.length; k++){
+        var o = orbs[k];
+        var prev = project(o, 0);
+        for (var i = 1; i <= steps; i++){
+          var p = project(o, (i / steps) * 6.2832);
+          var ctx = ((p.z + prev.z) * 0.5 > 0) ? fctx : bctx;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(p.x, p.y);
+          ctx.strokeStyle = 'rgba(96,165,250,0.07)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          prev = p;
         }
       }
-      requestAnimationFrame(tick);
     }
-    requestAnimationFrame(tick);
-    window.addEventListener('resize', measure, {passive:true});
+
+    function draw(){
+      bctx.clearRect(0, 0, W, H);
+      fctx.clearRect(0, 0, W, H);
+      bctx.globalCompositeOperation = 'lighter';
+      fctx.globalCompositeOperation = 'lighter';
+      drawRings();
+      for (var k = 0; k < orbs.length; k++){
+        var o = orbs[k];
+        var TRAIL = 13;
+        for (var i = TRAIL; i >= 1; i--){
+          var t = i / TRAIL;
+          var tp = project(o, o.theta - i * 0.05);
+          glow(tp.z > 0 ? fctx : bctx, tp.x, tp.y, o.px * tp.s * (1 - 0.55*t), o.core, o.mid, 0.4 * Math.pow(1 - t, 2.2), false);
+        }
+        var hp = project(o, o.theta);
+        glow(hp.z > 0 ? fctx : bctx, hp.x, hp.y, o.px * hp.s, o.core, o.mid, 1, true);
+      }
+    }
+
+    function resize(){
+      var r = stage.getBoundingClientRect();
+      W = Math.max(1, r.width);
+      H = Math.max(1, r.height);
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      back.width = Math.round(W * DPR); back.height = Math.round(H * DPR);
+      front.width = Math.round(W * DPR); front.height = Math.round(H * DPR);
+      bctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      fctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      makeOrbs();
+      draw();
+    }
+
+    resize();
+    window.addEventListener('resize', resize, {passive:true});
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ resize(); });
+
+    if (!reduce){
+      var last = performance.now();
+      function frame(now){
+        var dt = Math.min((now - last) / 1000, 0.05);
+        last = now;
+        if (!document.hidden){
+          for (var k = 0; k < orbs.length; k++){
+            var o = orbs[k];
+            var pulse = 1 + 0.55*Math.sin(o.theta*1.6 + o.phase) + 0.30*Math.sin(o.theta*3.1 + o.phase*1.7);
+            o.theta += o.speed * pulse * dt;
+          }
+          draw();
+        }
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
   })();
 </script>
 </body>
