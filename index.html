@@ -58,7 +58,9 @@
   .btn-l .dot-i{width:7px;height:7px;border-radius:50%;background:#0a1005;animation:pulse 2.4s infinite}
   @media(max-width:780px){.nl{display:none}}
 
-  .hero{position:relative;padding:104px 0 96px;overflow:hidden}
+  .hero{position:relative;padding:88px 0 80px;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(28px,5vw,56px);align-items:center;position:relative;z-index:1}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:34px}.hero-in{order:-1}}
   .orb{
     position:absolute;top:-160px;right:-140px;width:620px;height:620px;border-radius:50%;
     background:radial-gradient(circle at 40% 40%,rgba(59,130,246,.28),rgba(29,78,216,.16) 45%,transparent 68%);
@@ -68,7 +70,7 @@
     background:radial-gradient(circle at 50% 50%,rgba(125,211,252,.16),rgba(59,130,246,.10) 50%,transparent 70%);
     animation-duration:24s}
   @keyframes drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-40px,50px,0) scale(1.08)}}
-  .hero-in{position:relative;z-index:1;max-width:820px}
+  .hero-in{position:relative;z-index:1;max-width:none}
   .eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);background:rgba(13,17,23,.7);border-radius:999px;padding:6px 14px;font-size:12.5px;color:var(--muted);margin-bottom:28px}
   .pulse{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(125,211,252,.55);animation:pulse 2.4s infinite}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(125,211,252,.5)}70%{box-shadow:0 0 0 9px rgba(125,211,252,0)}100%{box-shadow:0 0 0 0 rgba(125,211,252,0)}}
@@ -139,18 +141,17 @@
   .band p{color:var(--muted);margin:16px auto 30px;max-width:46ch;font-size:15.5px}
   .band .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 
-  .engine{display:grid;grid-template-columns:1.5fr 1fr;gap:32px;align-items:center;border:1px solid var(--line);border-radius:22px;padding:40px;
-    background:radial-gradient(600px circle at 100% 0%,rgba(125,211,252,.10),transparent 60%),var(--panel)}
-  @media(max-width:780px){.engine{grid-template-columns:1fr;gap:26px}}
-  .engine h3{font-size:clamp(22px,3.2vw,30px);letter-spacing:-.025em;font-weight:820;margin-bottom:12px}
-  .engine>div>p:not(.kick){color:var(--muted);font-size:15px;max-width:52ch}
-  .engine ul{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:22px;font-size:13.5px;color:var(--muted)}
+  .engine{border:1px solid var(--line);border-radius:22px;padding:30px;
+    background:radial-gradient(520px circle at 0% 0%,rgba(125,211,252,.12),transparent 62%),var(--panel)}
+  .engine .kick{margin-bottom:10px}
+  .engine h3{font-size:clamp(20px,2.6vw,26px);letter-spacing:-.025em;font-weight:820;margin-bottom:10px}
+  .engine .engine-desc{color:var(--muted);font-size:14.5px}
+  .engine ul{list-style:none;display:flex;flex-direction:column;gap:9px;margin-top:18px;font-size:13px;color:var(--muted)}
   .engine li{display:flex;gap:10px;align-items:flex-start;line-height:1.4}
   .engine li b{color:var(--ink);font-weight:650}
   .tick{color:var(--lime);font-weight:800}
-  .engine-side{display:flex;flex-direction:column;gap:12px}
-  .engine-side .btn{justify-content:center;padding:15px 20px;font-size:14.5px}
-  .engine-side .meta{font-size:11.5px;color:var(--dim);text-align:center;line-height:1.4}
+  .engine-side{margin-top:22px}
+  .engine-side .btn{width:100%;justify-content:center;padding:14px 20px;font-size:14.5px}
 
   footer{border-top:1px solid var(--line);margin-top:96px;padding:40px 0}
   .fr{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
@@ -185,11 +186,23 @@
   <section class="hero">
     <div class="orb"></div>
     <div class="orb b"></div>
-    <div class="wrap hero-in">
-      <h1>Tools and apps that<br>could <span class="g">change your life.</span></h1>
-      <p class="sub">We design and ship the fast, strange, and precise end of the web — sites, systems, sound, and the things that live in between. Small team. Short timelines. No filler.</p>
-      <div class="hero-cta">
-        <a class="btn btn-l" href="nengine.html"><span class="dot-i"></span> Check it out →</a>
+    <div class="wrap hero-grid">
+      <div class="engine reveal">
+        <p class="kick">NEngine</p>
+        <h3>One script. Every page.</h3>
+        <p class="engine-desc">NEngine is a Tampermonkey userscript that loads the Neutronic Engine into any page you visit. Install it once — it stays current on its own.</p>
+        <ul>
+          <li><span class="tick">✓</span><span><b>v1.04</b> — self-updating loader</span></li>
+          <li><span class="tick">✓</span><span>Works with <b>Tampermonkey</b> or <b>Violentmonkey</b></span></li>
+          <li><span class="tick">✓</span><span>Runs at <b>document-start</b></span></li>
+        </ul>
+        <div class="engine-side">
+          <a class="btn btn-l" href="nengine.html"><span class="dot-i"></span> Check it out →</a>
+        </div>
+      </div>
+      <div class="hero-in">
+        <h1>Tools and apps that<br>could <span class="g">change your life.</span></h1>
+        <p class="sub">We design and ship the fast, strange, and precise end of the web — sites, systems, sound, and the things that live in between. Small team. Short timelines. No filler.</p>
       </div>
     </div>
   </section>
@@ -214,25 +227,6 @@
     </div>
   </section>
 
-
-  <section class="sec wrap" id="nengine">
-    <div class="engine reveal">
-      <div>
-        <p class="kick">NEngine</p>
-        <h3>One script. Every page.</h3>
-        <p>NEngine is a Tampermonkey userscript that loads the Neutronic Engine into any page you visit. Install it once — the loader pulls the latest engine straight from source, so it stays current on its own.</p>
-        <ul>
-          <li><span class="tick">✓</span><span><b>v1.04</b> — self-updating loader</span></li>
-          <li><span class="tick">✓</span><span>Works with <b>Tampermonkey</b> or <b>Violentmonkey</b></span></li>
-          <li><span class="tick">✓</span><span>Runs at <b>document-start</b> and injects into page context</span></li>
-        </ul>
-      </div>
-      <div class="engine-side">
-        <a class="btn btn-l" href="nengine.html"><span class="dot-i"></span> Check it out →</a>
-        <span class="meta">Opens your userscript manager's install prompt</span>
-      </div>
-    </div>
-  </section>
 
   <section class="sec wrap" id="contact">
     <div class="band reveal">
