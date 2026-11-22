@@ -317,7 +317,7 @@
 
   (function(){
     if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const MAX=9;
+    const MAX=4;
     document.querySelectorAll('.hero .engine').forEach(box=>{
       box.addEventListener('pointermove',e=>{
         if(e.pointerType==='touch') return;

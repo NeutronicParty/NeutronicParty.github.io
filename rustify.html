@@ -59,6 +59,32 @@
   .hero-cta{position:relative;z-index:4;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
   .hero-note{position:relative;z-index:4;margin-top:16px;font-size:12.5px;color:var(--dim)}
 
+  .previewbtn{position:relative;z-index:4;margin-top:10px;display:inline-flex;align-items:center;gap:9px;
+    border:1px solid #4c2a7a;background:rgba(17,22,30,.66);color:#e9d5ff;border-radius:999px;padding:10px 20px;
+    font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px);
+    transition:transform .16s,border-color .16s,background .16s}
+  .previewbtn:hover{transform:translateY(-2px);border-color:#7c3aed;background:rgba(126,34,206,.22)}
+  .previewbtn:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+  .previewbtn .pv-ico{font-size:10px;color:#e879f9;line-height:1}
+
+  .shot[hidden]{display:none}
+  .shot{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:24px}
+  .shot-back{position:absolute;inset:0;background:rgba(5,2,10,.66);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);animation:shotfade .22s ease-out}
+  @keyframes shotfade{from{opacity:0}to{opacity:1}}
+  .shot-card{position:relative;margin:0;border-radius:16px;overflow:hidden;border:1px solid #4c2a7a;
+    max-width:min(1100px,94vw);max-height:88vh;
+    background:#0b0613;transform-style:preserve-3d;will-change:transform;
+    box-shadow:0 50px 110px -30px rgba(0,0,0,.9),0 0 90px -20px rgba(168,85,247,.45);
+    transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+  .shot-card.tilting{transition:transform .09s linear}
+  .shot-card img{display:block;width:100%;height:auto;max-height:88vh;object-fit:contain;user-select:none;-webkit-user-drag:none}
+  .shot-x{position:absolute;top:10px;right:12px;width:34px;height:34px;display:grid;place-items:center;
+    border:1px solid rgba(255,255,255,.16);border-radius:50%;background:rgba(10,6,18,.7);color:#f3e8ff;
+    font-family:inherit;font-size:20px;line-height:1;cursor:pointer;backdrop-filter:blur(6px)}
+  .shot-x:hover{background:rgba(126,34,206,.5)}
+  .shot-x:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  @media(prefers-reduced-motion:reduce){.shot-card{transition:none}}
+
   .sec{padding:64px 0;border-top:1px solid var(--line)}
   .sec:first-of-type{border-top:none}
   .kick{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;display:flex;align-items:center;gap:10px}
@@ -135,6 +161,7 @@
     <div class="stage">
       <canvas class="orbfx back" aria-hidden="true"></canvas>
       <h1>Rustify</h1>
+      <button class="previewbtn" id="previewBtn" type="button"><span class="pv-ico">&#9654;</span> Preview</button>
       <canvas class="orbfx front" aria-hidden="true"></canvas>
     </div>
     <p class="hero-sub">A native YouTube Music client written in Rust. No browser, no Electron, no Spotify client — just GTK, yt-dlp, and one small binary.</p>
@@ -251,7 +278,15 @@ echo "Rustify and all its data removed."</code>
       </div>
     </div>
   </section>
-</main>
+  </main>
+
+<div class="shot" id="shotModal" hidden>
+  <div class="shot-back" data-shotclose></div>
+  <figure class="shot-card" id="shotCard" role="dialog" aria-modal="true" aria-label="Rustify interface preview">
+    <img src="rustifyui.png" alt="Rustify app interface">
+    <button class="shot-x" id="shotClose" type="button" aria-label="Close preview">&times;</button>
+  </figure>
+</div>
 
 <footer>
   <div class="wrap">
@@ -460,6 +495,55 @@ echo "Rustify and all its data removed."</code>
       }
       requestAnimationFrame(frame);
     }
+  })();
+</script>
+
+<script>
+  (function(){
+    var btn=document.getElementById('previewBtn');
+    var modal=document.getElementById('shotModal');
+    var card=document.getElementById('shotCard');
+    var closeBtn=document.getElementById('shotClose');
+    if(!btn||!modal||!card) return;
+    var lastFocus=null;
+    var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function open(){
+      lastFocus=document.activeElement;
+      modal.hidden=false;
+      document.body.style.overflow='hidden';
+      closeBtn.focus();
+    }
+    function close(){
+      modal.hidden=true;
+      document.body.style.overflow='';
+      card.classList.remove('tilting');
+      card.style.transform='';
+      if(lastFocus&&lastFocus.focus) lastFocus.focus();
+    }
+
+    btn.addEventListener('click',open);
+    closeBtn.addEventListener('click',close);
+    modal.addEventListener('click',function(e){
+      if(e.target&&e.target.hasAttribute('data-shotclose')) close();
+    });
+    document.addEventListener('keydown',function(e){
+      if(e.key==='Escape'&&!modal.hidden) close();
+    });
+
+    var MAX=6;
+    card.addEventListener('pointermove',function(e){
+      if(reduce||e.pointerType==='touch') return;
+      var r=card.getBoundingClientRect();
+      var nx=((e.clientX-r.left)/r.width)*2-1;
+      var ny=((e.clientY-r.top)/r.height)*2-1;
+      card.classList.add('tilting');
+      card.style.transform='perspective(1100px) rotateX('+(-ny*MAX).toFixed(2)+'deg) rotateY('+(nx*MAX).toFixed(2)+'deg)';
+    },{passive:true});
+    card.addEventListener('pointerleave',function(){
+      card.classList.remove('tilting');
+      card.style.transform='';
+    });
   })();
 </script>
 </body>
