@@ -855,12 +855,53 @@
     requestAnimationFrame(frame);
   }
 
+  function seed(){
+    for (var i = 0; i < 3; i++){
+      var left = Math.random() < 0.5;
+      var ang = (left ? 30 : 150) * Math.PI / 180 + (Math.random() - 0.5) * 0.2;
+      var speed = 470 + Math.random() * 420;
+      meteors.push({
+        x: W * (0.1 + Math.random() * 0.8),
+        y: H * (0.05 + Math.random() * 0.35),
+        vx: Math.cos(ang) * speed,
+        vy: Math.sin(ang) * speed,
+        age: 0.45, life: 1.6 + Math.random() * 0.9,
+        len: 150 + Math.random() * 180,
+        w: 1.7 + Math.random() * 1.6
+      });
+    }
+  }
+
+  function drawStatic(){
+    meteors = [];
+    var defs = [[0.16, 0.24, 1], [0.66, 0.18, -1], [0.36, 0.58, 1], [0.8, 0.44, -1], [0.52, 0.33, 1]];
+    for (var i = 0; i < defs.length; i++){
+      var d = defs[i];
+      var ang = (d[2] > 0 ? 30 : 150) * Math.PI / 180;
+      var speed = 600;
+      meteors.push({
+        x: W * d[0], y: H * d[1],
+        vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed,
+        age: 1, life: 2,
+        len: 170 + Math.random() * 120,
+        w: 1.9 + Math.random() * 0.8
+      });
+    }
+    draw(0);
+  }
+
   resize();
   addEventListener('resize', resize, {passive:true});
   if ('IntersectionObserver' in window){
     new IntersectionObserver(function(es){ visible = es[0].isIntersecting; }, {threshold: 0}).observe(cv);
   }
-  if (!reduce) requestAnimationFrame(frame);
+  if (reduce){
+    drawStatic();
+    addEventListener('resize', drawStatic, {passive:true});
+  } else {
+    seed();
+    requestAnimationFrame(frame);
+  }
 })();
 </script>
 </body>
