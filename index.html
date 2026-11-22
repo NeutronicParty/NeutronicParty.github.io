@@ -34,8 +34,11 @@
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
     background:var(--void);color:var(--ink);line-height:1.55;
     -webkit-font-smoothing:antialiased;overflow-x:hidden;
+    -webkit-user-select:none;user-select:none;
   }
   ::selection{background:var(--cyan);color:#04070a}
+  input,textarea,select,code,pre,kbd,.keyval,#freeKey,.selectable,.selectable *{-webkit-user-select:text;user-select:text}
+  img{-webkit-user-drag:none;user-select:none}
   a{color:inherit;text-decoration:none}
   .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
   .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
@@ -59,7 +62,7 @@
   .btn-g:hover{border-color:#2c3646}
   .btn-l{background:linear-gradient(120deg,var(--lime),#93c5fd);color:#0a1005;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(125,211,252,.75)}
   .btn-l .dot-i{width:7px;height:7px;border-radius:50%;background:#0a1005;animation:pulse 2.4s infinite}
-  @media(max-width:780px){.nl{display:none}}
+  @media(max-width:780px){.nl{display:none}nav{display:flex;justify-content:space-between}}
 
   .hero{position:relative;padding:88px 0 80px;overflow:hidden}
   .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:clamp(24px,4vw,48px);align-items:center;position:relative;z-index:1}
@@ -78,7 +81,8 @@
   .pulse{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(125,211,252,.55);animation:pulse 2.4s infinite}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(125,211,252,.5)}70%{box-shadow:0 0 0 9px rgba(125,211,252,0)}100%{box-shadow:0 0 0 0 rgba(125,211,252,0)}}
   h1{font-size:clamp(40px,7.4vw,82px);line-height:.98;letter-spacing:-.04em;font-weight:850}
-  h1 .g{background:linear-gradient(105deg,var(--cyan) 0%,#7dd3fc 55%,#1d4ed8 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  h1 .ch{display:inline-block;transform-origin:50% 60%;will-change:transform;backface-visibility:hidden}
+  h1 .grad .ch{background-image:linear-gradient(105deg,var(--cyan) 0%,#7dd3fc 55%,#1d4ed8 100%);background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent}
   .sub{color:var(--muted);font-size:clamp(16px,2.3vw,19px);max-width:56ch;margin:26px 0 0}
   .hero-cta{display:flex;gap:13px;margin-top:38px;flex-wrap:wrap}
   .hero-meta{margin-top:34px;display:flex;gap:26px;flex-wrap:wrap;font-size:12.5px;color:var(--dim)}
@@ -167,7 +171,7 @@
 
   .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
   .reveal.in{opacity:1;transform:none}
-  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.orb,.mq-track{animation:none}}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.orb,.mq-track{animation:none}h1 .ch{transform:none!important}}
 
   header .wrap{max-width:none}
 </style>
@@ -208,7 +212,7 @@
         </div>
       </div>
       <div class="hero-in">
-        <h1>Neutronic<br><span class="g">Partyhouse</span></h1>
+        <h1 class="lens" aria-label="Neutronic Partyhouse"><span class="lens-line">Neutronic</span><br><span class="grad lens-line">Partyhouse</span></h1>
       </div>
     </div>
   </section>
@@ -275,6 +279,97 @@
       card.style.setProperty('--my',(e.clientY-r.top)+'px');
     });
   });
+
+  (function(){
+    const h1=document.querySelector('h1.lens');
+    if(!h1) return;
+    const hero=h1.closest('.hero')||h1.parentElement;
+    const chars=[];
+
+    h1.querySelectorAll('.lens-line').forEach(line=>{
+      const txt=line.textContent;
+      line.textContent='';
+      [...txt].forEach(c=>{
+        const s=document.createElement('span');
+        s.className='ch';
+        s.textContent=c===' '?'\u00A0':c;
+        line.appendChild(s);
+        chars.push({el:s,cur:1,bx:0,by:0});
+      });
+    });
+
+    function paintGradient(){
+      const grad=h1.querySelector('.grad');
+      if(!grad) return;
+      const lr=grad.getBoundingClientRect();
+      grad.querySelectorAll('.ch').forEach(ch=>{
+        const cr=ch.getBoundingClientRect();
+        ch.style.backgroundSize=lr.width+'px 100%';
+        ch.style.backgroundPosition=(-(cr.left-lr.left))+'px 0';
+      });
+    }
+
+    function reset(){
+      chars.forEach(c=>{c.el.style.transform='none';c.cur=1;});
+    }
+
+    function measure(){
+      reset();
+      const hr=h1.getBoundingClientRect();
+      chars.forEach(c=>{
+        const r=c.el.getBoundingClientRect();
+        c.bx=r.left-hr.left+r.width/2;
+        c.by=r.top-hr.top+r.height/2;
+      });
+      paintGradient();
+      chars.forEach(c=>{c.el.style.transform='';});
+    }
+
+    paintGradient();
+
+    const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fine=matchMedia('(pointer: fine)').matches||navigator.maxTouchPoints===0;
+    if(reduce||!fine){
+      window.addEventListener('resize',paintGradient,{passive:true});
+      if(document.fonts&&document.fonts.ready) document.fonts.ready.then(paintGradient);
+      return;
+    }
+
+    const NEAR=0.74, FAR=1.10, SIGMA=74;
+    let px=0, py=0, active=false, raf=0;
+
+    function frame(){
+      const hr=h1.getBoundingClientRect();
+      let moving=false;
+      chars.forEach(c=>{
+        let target=1, dx=0, dy=0;
+        if(active){
+          dx=px-(hr.left+c.bx);
+          dy=py-(hr.top+c.by);
+          const d2=dx*dx+dy*dy;
+          target=FAR-(FAR-NEAR)*Math.exp(-d2/(2*SIGMA*SIGMA));
+        }
+        c.cur+=(target-c.cur)*0.16;
+        if(Math.abs(target-c.cur)>0.001) moving=true;
+        const pull=Math.max(0,1-c.cur);
+        const tx=active?dx*pull*0.22:0;
+        const ty=active?dy*pull*0.22:0;
+        c.el.style.transform='translate('+tx.toFixed(2)+'px,'+ty.toFixed(2)+'px) scale('+c.cur.toFixed(3)+')';
+      });
+      raf=(active||moving)?requestAnimationFrame(frame):0;
+    }
+
+    function start(){ if(!raf) raf=requestAnimationFrame(frame); }
+
+    hero.addEventListener('pointermove',e=>{
+      px=e.clientX;py=e.clientY;active=true;start();
+    },{passive:true});
+    hero.addEventListener('pointerleave',()=>{active=false;start();});
+    window.addEventListener('resize',()=>{measure();if(!active)start();},{passive:true});
+
+    measure();
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(measure);
+  })();
 </script>
 </body>
 </html>
