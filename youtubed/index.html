@@ -67,10 +67,7 @@
     background:linear-gradient(180deg,rgba(17,22,30,.92),rgba(13,17,23,.96));overflow:hidden;
     box-shadow:0 40px 90px -40px rgba(0,0,0,.9),0 0 70px -34px rgba(239,68,68,.45);
     animation:drop .7s .16s cubic-bezier(.2,.7,.2,1) both}
-  .app-bar{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line);background:rgba(10,14,20,.7)}
-  .app-bar i{width:11px;height:11px;border-radius:50%;display:block;background:#3b4252}
-  .app-bar span{margin-left:8px;font-size:11.5px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase}
-  .app-body{padding:22px}
+  .app-body{padding:26px}
 
   .linkrow{display:flex;gap:10px;flex-wrap:wrap}
   .linkrow input{flex:1;min-width:220px;background:rgba(7,9,12,.8);border:1px solid var(--line);border-radius:12px;
@@ -82,11 +79,12 @@
   .hint kbd{font-family:inherit;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:11.5px}
 
   .cmds{margin-top:20px;border-top:1px solid var(--line);padding-top:18px}
-  .cmd{border:1px solid var(--line);border-radius:12px;background:var(--panel-2);padding:12px 14px;margin-top:12px}
+  .cmd{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:12px;
+    background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012))}
   .cmd-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
   .cmd-head b{font-size:13.5px;display:flex;align-items:center;gap:7px}
-  .cmd code{display:block;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:8px;
-    padding:10px 12px;font-size:12.5px;line-height:1.55;color:var(--sky);word-break:break-all;
+  .cmd code{display:block;background:rgba(239,68,68,.06);border:1px solid #3a2222;border-radius:8px;
+    padding:10px 12px;font-size:12.5px;line-height:1.55;color:#ffd9d9;word-break:break-all;
     -webkit-user-select:text;user-select:text}
   .cmd .cpy{padding:6px 13px;font-size:12px;flex:none}
 
@@ -152,7 +150,6 @@
     <p class="sub">Paste a link, copy the yt-dlp command for audio or video, run it on your own machine. Nothing is uploaded and nothing depends on a server.</p>
 
     <section class="app" aria-label="Command builder">
-      <div class="app-bar" aria-hidden="true"><i></i><i></i><i></i><span>guest@partyhouse — youtubed</span></div>
       <div class="app-body">
         <form class="linkrow" id="linkForm" autocomplete="off">
           <input id="url" type="url" inputmode="url" placeholder="https://…" aria-label="Video link" spellcheck="false" required>

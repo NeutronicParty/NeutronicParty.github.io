@@ -48,6 +48,32 @@
   nav .logo{justify-self:start}
   nav .nl{justify-self:center}
   nav > .btn{justify-self:end}
+  .nav-actions{justify-self:end;display:flex;align-items:center;gap:10px}
+  .sb-btn{width:40px;height:40px;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--panel);
+    cursor:pointer;overflow:hidden;flex:none;transition:transform .16s,border-color .16s}
+  .sb-btn:hover{transform:translateY(-2px);border-color:#2c3646}
+  .sb-btn:disabled{cursor:default;transform:none;border-color:var(--line)}
+  .sb-btn img{width:100%;height:100%;object-fit:cover;object-position:50% 28%;display:block}
+  .sb-inline,.sb-glyph{width:1em;height:1em;object-fit:cover;object-position:50% 28%;border-radius:3px;
+    vertical-align:-.14em;display:inline-block}
+  .sb-glyph{margin-left:.15em}
+  .sb-replaced{object-fit:cover!important;object-position:50% 28%!important}
+
+  .curtain{position:fixed;inset:0;z-index:200;pointer-events:none;overflow:hidden}
+  .curtain .panel{position:absolute;top:0;bottom:0;width:50.5%;
+    background:
+      repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 10px,rgba(255,255,255,.045) 10px 26px),
+      linear-gradient(90deg,#5b0f0f,#b91c1c 46%,#7f1d1d);
+    box-shadow:inset 0 0 90px rgba(0,0,0,.7);
+    transform:translateX(-102%);transition:transform .4s cubic-bezier(.7,0,.3,1)}
+  .curtain .panel.l{left:0}
+  .curtain .panel.r{right:0;transform:translateX(102%)}
+  .curtain .panel::after{content:"";position:absolute;top:0;bottom:0;width:4px;
+    background:linear-gradient(180deg,#fbbf24,#b45309);opacity:.45}
+  .curtain .panel.l::after{right:0}
+  .curtain .panel.r::after{left:0}
+  .curtain.closed .panel.l,.curtain.closed .panel.r{transform:translateX(0)}
+  @media(prefers-reduced-motion:reduce){.curtain{display:none}}
   .logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;letter-spacing:-.02em}
   .mark{
     width:34px;height:34px;border-radius:9px;object-fit:contain;
@@ -96,6 +122,10 @@
   h1{font-size:clamp(40px,7.4vw,82px);line-height:.98;letter-spacing:-.04em;font-weight:850}
   h1 .ch{display:inline-block;transform-origin:50% 50%;will-change:transform;backface-visibility:hidden;padding:.12em 0 .26em;margin:-.12em 0 -.26em}
   h1 .grad .ch{background-image:linear-gradient(105deg,var(--cyan) 0%,#7dd3fc 55%,#1d4ed8 100%);background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent}
+  h1.lens{position:relative;z-index:1}
+  h1.lens::before{content:"";position:absolute;left:50%;top:52%;width:min(720px,90vw);height:min(300px,52vh);
+    transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:-1;filter:blur(28px);
+    background:radial-gradient(ellipse at center,rgba(59,130,246,.17),rgba(29,78,216,.07) 46%,transparent 72%)}
   .sub{color:var(--muted);font-size:clamp(16px,2.3vw,19px);max-width:56ch;margin:26px 0 0}
   .hero-cta{display:flex;gap:13px;margin-top:38px;flex-wrap:wrap}
   .hero-meta{margin-top:34px;display:flex;gap:26px;flex-wrap:wrap;font-size:12.5px;color:var(--dim)}
@@ -224,6 +254,8 @@
 </head>
 <body>
 
+<div class="curtain" id="curtain" aria-hidden="true"><span class="panel l"></span><span class="panel r"></span></div>
+
 <header>
   <div class="wrap">
     <nav>
@@ -234,7 +266,12 @@
         <a href="help.html">Help</a>
         <a href="#contact">Contact</a>
       </div>
-      <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+      <div class="nav-actions">
+        <button class="sb-btn" id="sbBtn" type="button" aria-label="SpongeBob mode" title="SpongeBob mode">
+          <img src="spongebob.png" alt="">
+        </button>
+        <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+      </div>
     </nav>
   </div>
 </header>
@@ -389,7 +426,23 @@
       btn.textContent=showing?'Back to NEngine':'More software';
       btn.setAttribute('aria-pressed', showing?'true':'false');
     }
-    btn.addEventListener('click', function(){ showing=!showing; render(); });
+    var curtain=document.getElementById('curtain');
+    var animating=false;
+    function swap(){ showing=!showing; render(); }
+    btn.addEventListener('click', function(){
+      if(animating) return;
+      if(!curtain||matchMedia('(prefers-reduced-motion: reduce)').matches){ swap(); return; }
+      animating=true;
+      btn.disabled=true;
+      curtain.classList.add('closed');
+      setTimeout(function(){
+        swap();
+        setTimeout(function(){
+          curtain.classList.remove('closed');
+          setTimeout(function(){ animating=false; btn.disabled=false; }, 460);
+        }, 1000);
+      }, 400);
+    });
   })();
 
   (function(){
@@ -607,3 +660,96 @@
       .catch(function(){ if (!cached) paint(0, 0); });
   })();
 </script>
+
+<script>
+(function(){
+  'use strict';
+  var SB = 'spongebob.png';
+  var btn = document.getElementById('sbBtn');
+  if (!btn) return;
+  var done = false;
+
+  function isSB(el){
+    return el && el.tagName === 'IMG' && /(^|\/)spongebob\.png(\?|$)/.test(el.getAttribute('src') || '');
+  }
+  function sbImg(className){
+    var im = document.createElement('img');
+    im.src = SB;
+    im.alt = '';
+    im.className = className || 'sb-inline';
+    return im;
+  }
+  function replaceImages(){
+    var list = document.querySelectorAll('img');
+    for (var i = 0; i < list.length; i++){
+      var el = list[i];
+      if (el.closest('#sbBtn') || isSB(el)) continue;
+      el.removeAttribute('srcset');
+      el.removeAttribute('sizes');
+      el.src = SB;
+      el.alt = 'SpongeBob';
+      el.classList.add('sb-replaced');
+    }
+    var svgs = document.querySelectorAll('svg');
+    for (var j = 0; j < svgs.length; j++){
+      if (svgs[j].closest('#sbBtn')) continue;
+      var rep = sbImg('sb-inline');
+      rep.style.width = '1.2em';
+      rep.style.height = '1.2em';
+      svgs[j].parentNode.replaceChild(rep, svgs[j]);
+    }
+  }
+  function replaceIcons(){
+    var icons = document.querySelectorAll('.tick, .dot-i, .rs');
+    for (var i = 0; i < icons.length; i++){
+      var el = icons[i];
+      if (el.getAttribute('data-sb')) continue;
+      el.setAttribute('data-sb', '1');
+      el.textContent = '';
+      el.appendChild(sbImg('sb-inline'));
+    }
+    var avatars = document.querySelectorAll('.avatar');
+    for (var k = 0; k < avatars.length; k++){
+      var av = avatars[k];
+      if (av.tagName === 'IMG' || av.getAttribute('data-sb')) continue;
+      av.setAttribute('data-sb', '1');
+      av.textContent = '';
+      av.appendChild(sbImg('sb-inline'));
+      av.style.overflow = 'hidden';
+    }
+  }
+  function replaceArrows(){
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: function(n){
+        if (!n.nodeValue || n.nodeValue.indexOf('\u2192') === -1) return NodeFilter.FILTER_REJECT;
+        var p = n.parentNode;
+        if (!p || !p.closest || p.closest('#sbBtn, script, style')) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (var i = 0; i < nodes.length; i++){
+      var n = nodes[i], parts = n.nodeValue.split('\u2192'), frag = document.createDocumentFragment();
+      for (var k = 0; k < parts.length; k++){
+        if (k) frag.appendChild(sbImg('sb-glyph'));
+        if (parts[k]) frag.appendChild(document.createTextNode(parts[k]));
+      }
+      n.parentNode.replaceChild(frag, n);
+    }
+  }
+  function all(){ replaceImages(); replaceIcons(); replaceArrows(); }
+
+  btn.addEventListener('click', function(){
+    if (done) return;
+    done = true;
+    btn.disabled = true;
+    btn.setAttribute('aria-disabled', 'true');
+    all();
+    var mo = new MutationObserver(function(){ all(); });
+    mo.observe(document.body, {childList: true, subtree: true});
+  });
+})();
+</script>
+</body>
+</html>
