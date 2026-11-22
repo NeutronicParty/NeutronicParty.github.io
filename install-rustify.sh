@@ -43,4 +43,51 @@ cd "$TMPDIR_RUSTIFY/rustify-src" || die "Extracted source folder missing."
 say "Starting the installer. It will ask for your sudo password for system packages."
 say "It installs GTK/WebKit runtime pieces, yt-dlp, Rustify, a desktop entry, and launches it."
 echo
-exec bash Installer
+
+if ! bash Installer; then
+    die "The installer did not finish. Scroll up for the first error."
+fi
+
+if { exec 3<>/dev/tty; } 2>/dev/null; then
+    printf ':: Create a desktop shortcut? [y/N] ' >&3
+    answer=""
+    read -r answer <&3 || answer=""
+    case "$answer" in
+        y|Y|yes|YES|Yes)
+            DESKTOP_DIR=""
+            if command -v xdg-user-dir >/dev/null 2>&1; then
+                DESKTOP_DIR="$(xdg-user-dir DESKTOP 2>/dev/null || true)"
+            fi
+            case "$DESKTOP_DIR" in
+                ""|"$HOME") DESKTOP_DIR="$HOME/Desktop" ;;
+            esac
+            mkdir -p "$DESKTOP_DIR"
+            cat > "$DESKTOP_DIR/rustify.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=Rustify
+GenericName=Music Player
+Comment=Native YouTube Music client
+Exec="$HOME/.local/bin/rustify"
+TryExec=$HOME/.local/bin/rustify
+Icon=rustify
+Terminal=false
+Categories=AudioVideo;Audio;Player;
+StartupNotify=true
+StartupWMClass=rustify
+EOF
+            chmod +x "$DESKTOP_DIR/rustify.desktop"
+            if command -v gio >/dev/null 2>&1; then
+                gio set "$DESKTOP_DIR/rustify.desktop" metadata::trusted true >/dev/null 2>&1 || true
+            fi
+            printf ':: Desktop shortcut created at %s\n' "$DESKTOP_DIR/rustify.desktop" >&3
+            exec 3>&-
+            ;;
+        *)
+            printf ':: No desktop shortcut created.\n' >&3
+            exec 3>&-
+            ;;
+    esac
+else
+    say "No terminal attached; skipping the desktop shortcut prompt."
+fi
