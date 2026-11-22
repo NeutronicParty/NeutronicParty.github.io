@@ -339,8 +339,8 @@
         var hp = project(o, o.theta);
         var ctx = hp.z > 0 ? fctx : bctx;
         var px = o.px * hp.s;
-        halo(ctx, hp.x, hp.y, px, o.mid, 1);
-        sphere(ctx, hp.x, hp.y, px, o.core, o.mid, 1);
+        halo(ctx, hp.x, hp.y, px, o.mid, 0.92);
+        sphere(ctx, hp.x, hp.y, px, o.core, o.mid, 0.78);
       }
     }
 
