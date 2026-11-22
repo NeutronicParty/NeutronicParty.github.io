@@ -98,6 +98,7 @@
   @media(max-width:780px){.nl{display:none}nav{display:flex;justify-content:space-between}}
 
   .hero{position:relative;padding:88px 0 80px;overflow:hidden}
+  #heroStars{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block}
   .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:clamp(24px,4vw,48px);align-items:center;position:relative;z-index:1}
   @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:34px}.hero-in{order:-1}.engine{justify-self:center;max-width:420px;margin-left:0}}
   .orb{
@@ -280,6 +281,7 @@
 
 <main>
   <section class="hero">
+    <canvas id="heroStars" aria-hidden="true"></canvas>
     <div class="orb"></div>
     <div class="orb b"></div>
     <div class="wrap hero-grid">
@@ -751,6 +753,107 @@
     var mo = new MutationObserver(function(){ all(); });
     mo.observe(document.body, {childList: true, subtree: true});
   });
+})();
+</script>
+<script>
+(function(){
+  'use strict';
+  var cv = document.getElementById('heroStars');
+  if (!cv) return;
+  var ctx = cv.getContext('2d');
+  if (!ctx) return;
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W = 0, H = 0, dpr = 1;
+  var meteors = [];
+  var last = 0, nextSpawn = 0, visible = true;
+
+  function resize(){
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    var r = cv.getBoundingClientRect();
+    W = Math.max(1, Math.round(r.width));
+    H = Math.max(1, Math.round(r.height));
+    cv.width = Math.round(W * dpr);
+    cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function spawn(){
+    var left = Math.random() < 0.55;
+    var ang = (left ? 30 : 150) * Math.PI / 180 + (Math.random() - 0.5) * 0.22;
+    var speed = 380 + Math.random() * 360;
+    var sx = left ? (Math.random() * W * 0.75 - W * 0.15) : (W * 1.15 - Math.random() * W * 0.75);
+    var sy = -30 - Math.random() * H * 0.3;
+    meteors.push({
+      x: sx, y: sy,
+      vx: Math.cos(ang) * speed,
+      vy: Math.sin(ang) * speed,
+      age: 0,
+      life: 0.8 + Math.random() * 0.9,
+      len: 80 + Math.random() * 130,
+      w: 1 + Math.random() * 1.3
+    });
+  }
+
+  function draw(dt){
+    ctx.clearRect(0, 0, W, H);
+    for (var i = meteors.length - 1; i >= 0; i--){
+      var m = meteors[i];
+      m.age += dt;
+      m.x += m.vx * dt;
+      m.y += m.vy * dt;
+      var p = m.age / m.life;
+      if (p >= 1 || m.x < -220 || m.x > W + 220 || m.y > H + 220){
+        meteors.splice(i, 1);
+        continue;
+      }
+      var fade = Math.sin(p * Math.PI);
+      var sp = Math.hypot(m.vx, m.vy) || 1;
+      var tx = m.x - (m.vx / sp) * m.len;
+      var ty = m.y - (m.vy / sp) * m.len;
+      var g = ctx.createLinearGradient(m.x, m.y, tx, ty);
+      g.addColorStop(0, 'rgba(235,247,255,' + (0.95 * fade) + ')');
+      g.addColorStop(0.35, 'rgba(147,197,253,' + (0.42 * fade) + ')');
+      g.addColorStop(1, 'rgba(59,130,246,0)');
+      ctx.strokeStyle = g;
+      ctx.lineWidth = m.w;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(m.x, m.y);
+      ctx.lineTo(tx, ty);
+      ctx.stroke();
+
+      var hg = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.w * 6);
+      hg.addColorStop(0, 'rgba(255,255,255,' + (0.85 * fade) + ')');
+      hg.addColorStop(0.4, 'rgba(147,197,253,' + (0.30 * fade) + ')');
+      hg.addColorStop(1, 'rgba(59,130,246,0)');
+      ctx.fillStyle = hg;
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, m.w * 6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function frame(t){
+    if (!last) last = t;
+    var dt = Math.min((t - last) / 1000, 0.05);
+    last = t;
+    if (visible){
+      if (t > nextSpawn){
+        spawn();
+        if (Math.random() < 0.35) spawn();
+        nextSpawn = t + 850 + Math.random() * 2300;
+      }
+      draw(dt);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  resize();
+  addEventListener('resize', resize, {passive:true});
+  if ('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){ visible = es[0].isIntersecting; }, {threshold: 0}).observe(cv);
+  }
+  if (!reduce) requestAnimationFrame(frame);
 })();
 </script>
 </body>
