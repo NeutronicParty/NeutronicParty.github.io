@@ -59,11 +59,21 @@
   .refresh{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:10px 14px;font-size:13px;font-weight:650;cursor:pointer;font-family:inherit;transition:color .16s,border-color .16s}
   .refresh:hover{color:var(--ink);border-color:#2b3648}
 
-  .revgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+  .revgrid{display:flex;gap:18px;overflow-x:auto;overflow-y:hidden;padding:4px 2px 16px;
+    scroll-snap-type:x mandatory;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;scrollbar-color:#2a3444 transparent}
+  .revgrid::-webkit-scrollbar{height:8px}
+  .revgrid::-webkit-scrollbar-track{background:transparent}
+  .revgrid::-webkit-scrollbar-button{display:none}
+  .revgrid::-webkit-scrollbar-thumb{background:#2a3444;border-radius:999px}
+  .revgrid::-webkit-scrollbar-thumb:hover{background:#3a4658}
+  .revgrid.dragging{scroll-snap-type:none;cursor:grabbing}
+  .revgrid.dragging *{cursor:grabbing;user-select:none}
+  @media(hover:hover){.revgrid{cursor:grab}}
   .review{border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;max-width:660px;
     background:radial-gradient(500px circle at 0% 0%,rgba(59,130,246,.10),transparent 62%),var(--panel);
     display:flex;flex-direction:column}
-  .revgrid .review{max-width:none}
+  .revgrid .review{max-width:82vw;flex:0 0 380px;scroll-snap-align:start}
   .review .who{display:flex;align-items:center;gap:14px;margin-bottom:14px}
   .review .avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;border:1px solid var(--line);box-shadow:0 0 22px -6px rgba(59,130,246,.65);flex:none}
   .review .avatar.initial{display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#04070a;background:linear-gradient(135deg,var(--cyan),#93c5fd);border:0;box-shadow:none}
@@ -122,7 +132,8 @@
     .revtools{width:100%}
     .revtools .btn-p{flex:1;justify-content:center}
     .dialog{padding:22px}
-    .revgrid{grid-template-columns:1fr}
+    .revgrid{gap:14px}
+    .revgrid .review{flex-basis:84vw}
   }
 </style>
 </head>
@@ -582,6 +593,37 @@
       })
       .then(function(){ loading = false; });
   }
+
+  (function(){
+    var strip = document.getElementById('reviewList');
+    var down = false, moved = false, startX = 0, startLeft = 0, pid = null;
+    strip.addEventListener('pointerdown', function(e){
+      if (e.pointerType === 'touch' || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      down = true; moved = false; startX = e.clientX; startLeft = strip.scrollLeft; pid = e.pointerId;
+    });
+    strip.addEventListener('pointermove', function(e){
+      if (!down) return;
+      var dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 6) {
+        moved = true;
+        strip.classList.add('dragging');
+        try { strip.setPointerCapture(pid); } catch(err) {}
+      }
+      if (moved) { e.preventDefault(); strip.scrollLeft = startLeft - dx; }
+    });
+    function end(){
+      if (!down) return;
+      down = false;
+      strip.classList.remove('dragging');
+      if (pid !== null) { try { strip.releasePointerCapture(pid); } catch(err) {} pid = null; }
+      setTimeout(function(){ moved = false; }, 0);
+    }
+    strip.addEventListener('pointerup', end);
+    strip.addEventListener('pointercancel', end);
+    strip.addEventListener('click', function(e){
+      if (moved) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+  })();
 
   document.getElementById('refreshBtn').addEventListener('click', function(){ loadReviews(true); });
   loadReviews(false);
