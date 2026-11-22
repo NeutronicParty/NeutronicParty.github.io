@@ -40,9 +40,11 @@
   .pagehead p{color:var(--muted);font-size:16.5px;margin-top:18px;max-width:54ch}
 
   .body{padding:52px 0 40px}
-  .video-wrap{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#000;box-shadow:0 30px 70px -40px rgba(0,0,0,.9)}
-  video{width:100%;display:block;background:#000}
-  .caption{margin-top:16px;font-size:13.5px;color:var(--dim)}
+  .tutorial{border:1px solid var(--line);border-radius:var(--radius);padding:32px 34px;line-height:1.8;
+    background:radial-gradient(500px circle at 0% 0%,rgba(59,130,246,.08),transparent 60%),var(--panel)}
+  .tutorial p{font-size:15.5px;color:#c3cbd6}
+  .tutorial a{color:var(--cyan);text-decoration:underline;text-underline-offset:2px}
+  .tutorial a:hover{color:#bfdbfe}
 
   .cta-row{margin-top:44px;display:flex;gap:12px;flex-wrap:wrap}
   .btn-l{background:linear-gradient(120deg,var(--lime),#bfdbfe);color:#0a1005;padding:13px 22px;box-shadow:0 10px 30px -12px rgba(125,211,252,.75)}
@@ -77,17 +79,14 @@
     <div class="wrap">
       <p class="kick">Help</p>
       <h1>How do I install neutronic engine?</h1>
-      <p>Watch the walkthrough below — it takes you from the install button to a running engine.</p>
+      <p>Follow the steps below to get Neutronic Engine running.</p>
     </div>
   </section>
 
   <div class="wrap body">
-    <div class="video-wrap">
-      <video controls playsinline preload="metadata" src="tutorial.mp4">
-        Your browser can't play this video. <a href="tutorial.mp4">Download it instead.</a>
-      </video>
+    <div class="tutorial">
+      <p>To install Neutronic Engine, go to <a href="https://www.tampermonkey.net" target="_blank" rel="noopener">tampermonkey.net</a> and get the tampermonkey extension. After that in your browser go to your manage extensions section, if you do not know how to do this please search it up. Though usually you just click the jigsaw/extensions button in the top right of your browsers topbar and click manage extensions. Then if tampermonkey is in your extensions click on the details button, then toggle ON the "allow userscripts" toggle. This is required for the script to work.</p>
     </div>
-    <p class="caption">tutorial.mp4 — Neutronic Engine installation</p>
 
     <div class="cta-row">
       <a class="btn btn-l" href="nengine.user.js">Install NEngine</a>
