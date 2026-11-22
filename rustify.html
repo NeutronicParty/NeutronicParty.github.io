@@ -84,6 +84,7 @@
   .copybtn:hover{transform:translateY(-1px)}
   .copybtn.done{background:linear-gradient(120deg,#86efac,#bbf7d0)}
   .cmdnote{margin-top:14px;font-size:13px;color:var(--dim)}
+  .cmdnote a{color:var(--cyan);text-decoration:underline;text-underline-offset:2px}
   .subhead{font-size:19px;font-weight:750;letter-spacing:-.01em;margin:38px 0 8px}
   @media(max-width:560px){
     .cmdbox{flex-direction:column;align-items:stretch}
@@ -169,7 +170,7 @@
         <code id="installCmd">curl -fsSL https://strangergithun.github.io/install-rustify.sh | bash</code>
         <button class="copybtn" id="copyCmd" type="button" aria-label="Copy the install command">Copy command</button>
       </div>
-      <p class="cmdnote">Paste it into a terminal and press Enter. It will ask for your sudo password for the system packages.</p>
+      <p class="cmdnote">Paste it into a terminal and press Enter. It will ask for your sudo password for the system packages. Want to read it first? <a href="downloads/rustify-src.tar.gz">Download the full source archive</a> (4.9 MB) — same files the command installs from.</p>
       <ol class="steps">
         <li><b>Open a terminal</b> on your Linux desktop.</li>
         <li><b>Paste the command</b> above and press Enter.</li>
