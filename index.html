@@ -80,6 +80,7 @@
   .hero-in{position:relative;z-index:1;max-width:none;text-align:center}
   .eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);background:rgba(13,17,23,.7);border-radius:999px;padding:6px 14px;font-size:12.5px;color:var(--muted);margin-bottom:28px}
   .rating{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:rgba(13,17,23,.72);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:650;color:var(--muted);margin-bottom:24px;transition:border-color .16s,transform .16s;white-space:nowrap}
+  .rating-label{display:block;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:9px}
   .rating:hover{border-color:#2c3646;transform:translateY(-1px)}
   .rating .rs{color:#fbbf24;font-size:15px;line-height:1;text-shadow:0 0 14px rgba(251,191,36,.45)}
   .rating b{color:var(--ink);font-weight:800}
@@ -224,10 +225,11 @@
         </div>
       </div>
       <div class="hero-in">
+        <span class="rating-label">Rating</span>
         <a class="rating" href="reviews.html" id="siteRating" aria-label="Average site rating">
           <span class="rs" aria-hidden="true">&#9733;</span>
           <span><b id="ratingScore">5</b> stars total</span>
-          <span class="rc" id="ratingCount">(1)</span>
+          <span class="rc" id="ratingCount">(1 review)</span>
         </a>
         <h1 class="lens" aria-label="Neutronic Partyhouse"><span class="lens-line">Neutronic</span><br><span class="grad lens-line">Partyhouse</span></h1>
       </div>
@@ -441,7 +443,7 @@
       var avg = (sum + 5) / total;
       var txt = avg.toFixed(1).replace(/\.0$/, '');
       scoreEl.textContent = txt;
-      countEl.textContent = '(' + total + ')';
+      countEl.textContent = '(' + total + (total === 1 ? ' review' : ' reviews') + ')';
       box.setAttribute('aria-label', 'Rated ' + txt + ' out of 5 stars from ' + total + ' reviews');
       box.title = txt + ' out of 5 from ' + total + ' reviews';
     }
