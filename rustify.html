@@ -180,22 +180,25 @@
       </ol>
 
       <h3 class="subhead">Uninstall command, if necessary</h3>
-      <p>Removes the app, the launcher, the icon, the desktop shortcut, the data folder, and the config. Nothing else on the machine is touched.</p>
+      <p>Removes the app, the launcher, the icon, the desktop shortcut, and <b>all Rustify data</b> — settings, playlists, cached audio, lyrics, downloaded files, and your YouTube Music login. Nothing else on the machine is touched.</p>
       <div class="cmdbox">
-        <code id="uninstallCmd">SHARE=~/.local/share
-rm -f ~/.local/bin/rustify ~/.local/bin/rustify.svg ~/.local/bin/yt-dlp
+        <code id="uninstallCmd">BIN=${XDG_BIN_HOME:-$HOME/.local/bin}
+SHARE=${XDG_DATA_HOME:-$HOME/.local/share}
+CONF=${XDG_CONFIG_HOME:-$HOME/.config}
+CACHE=${XDG_CACHE_HOME:-$HOME/.cache}
+rm -f $BIN/rustify $BIN/rustify.svg $BIN/yt-dlp
 rm -f $SHARE/applications/rustify.desktop
 rm -f $SHARE/icons/hicolor/scalable/apps/rustify.svg
-DESK=$(xdg-user-dir DESKTOP 2>/dev/null || echo ~/Desktop)
-[ "$DESK" = "$HOME" ] && DESK=~/Desktop
+DESK=$(xdg-user-dir DESKTOP 2>/dev/null || echo $HOME/Desktop)
+[ "$DESK" = "$HOME" ] && DESK=$HOME/Desktop
 rm -f "$DESK/rustify.desktop"
-rm -rf $SHARE/rustify ~/.config/rustify
+rm -rf $SHARE/rustify $CONF/rustify $CACHE/rustify
 update-desktop-database $SHARE/applications 2>/dev/null
 gtk-update-icon-cache -f -t $SHARE/icons/hicolor 2>/dev/null
-echo "Rustify removed."</code>
+echo "Rustify and all its data removed."</code>
         <button class="copybtn" id="copyUninstall" type="button" aria-label="Copy the uninstall command">Copy command</button>
       </div>
-      <p class="cmdnote">If Rustify is running, close it first. Your downloaded files in the imports folder are removed with the data folder — copy anything you want to keep out of <code>~/.local/share/rustify/imports</code> first.</p>
+      <p class="cmdnote">If Rustify is running, close it first. This deletes your YouTube Music login and is not reversible — copy anything you want to keep out of the imports folder first.</p>
     </div>
   </section>
 
