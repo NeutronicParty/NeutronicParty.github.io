@@ -494,9 +494,17 @@
 
     var who = document.createElement('div');
     who.className = 'who';
-    var av = document.createElement('div');
-    av.className = 'avatar initial';
-    av.textContent = r.name.charAt(0).toUpperCase();
+    var av;
+    if (/^trapbob$/i.test(r.name.trim())) {
+      av = document.createElement('img');
+      av.className = 'avatar';
+      av.src = 'spongebob.png';
+      av.alt = r.name + ' profile picture';
+    } else {
+      av = document.createElement('div');
+      av.className = 'avatar initial';
+      av.textContent = r.name.charAt(0).toUpperCase();
+    }
     var box = document.createElement('div');
     var nm = document.createElement('div');
     nm.className = 'name';
