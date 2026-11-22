@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>??? — Neutronic</title>
+<style>
+  :root{
+    --void:#07090c;--panel:#0d1117;--panel-2:#11161e;--line:#1c2330;
+    --ink:#eef2f7;--muted:#8b96a6;--dim:#5b6675;
+    --cyan:#3b82f6;--lime:#7dd3fc;--violet:#1d4ed8;--gold:#fbbf24;
+    --radius:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--void);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    overflow-x:hidden;min-height:100vh;-webkit-user-select:none;user-select:none}
+  ::selection{background:var(--cyan);color:#04070a}
+  a{color:inherit;text-decoration:none}
+  code,.mono,input{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+  #bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+  .glow{position:fixed;top:-260px;left:50%;transform:translateX(-50%);width:760px;height:760px;border-radius:50%;
+    background:radial-gradient(circle,rgba(59,130,246,.18),rgba(29,78,216,.08) 48%,transparent 70%);
+    filter:blur(40px);pointer-events:none;z-index:0}
+
+  main{position:relative;z-index:2;max-width:820px;margin:0 auto;padding:9vh 24px 64px;text-align:center}
+  .kick{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);
+    display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px}
+  .kick::before,.kick::after{content:"";width:26px;height:1px;background:var(--cyan);display:inline-block;opacity:.7}
+
+  h1{font-size:clamp(34px,7vw,66px);line-height:1.02;letter-spacing:-.045em;font-weight:870;
+    animation:drop .7s cubic-bezier(.2,.7,.2,1) both}
+  h1 .grad{background-image:linear-gradient(105deg,var(--cyan) 0%,#7dd3fc 52%,#c084fc 100%);
+    background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent}
+  @keyframes drop{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  .sub{color:var(--muted);font-size:clamp(14.5px,2.3vw,16.5px);margin:16px auto 0;max-width:46ch;
+    animation:drop .7s .08s cubic-bezier(.2,.7,.2,1) both}
+
+  .term{margin:38px auto 0;max-width:680px;text-align:left;border:1px solid var(--line);border-radius:var(--radius);
+    background:linear-gradient(180deg,rgba(17,22,30,.92),rgba(13,17,23,.96));overflow:hidden;
+    box-shadow:0 40px 90px -40px rgba(0,0,0,.9),0 0 70px -34px rgba(59,130,246,.55);
+    animation:drop .7s .16s cubic-bezier(.2,.7,.2,1) both}
+  .term-bar{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line);background:rgba(10,14,20,.7)}
+  .term-bar i{width:11px;height:11px;border-radius:50%;display:block;background:#2a3444}
+  .term-bar i:nth-child(1){background:#3b4252}
+  .term-bar i:nth-child(2){background:#3b4252}
+  .term-bar i:nth-child(3){background:#3b4252}
+  .term-bar span{margin-left:8px;font-size:11.5px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase}
+  .term-out{height:300px;overflow-y:auto;padding:16px 18px;font-size:13.5px;line-height:1.75;scrollbar-width:thin;scrollbar-color:#2a3444 transparent}
+  .term-out::-webkit-scrollbar{width:8px}
+  .term-out::-webkit-scrollbar-thumb{background:#2a3444;border-radius:999px}
+  .line{white-space:pre-wrap;overflow-wrap:anywhere}
+  .line .u{color:#93c5fd}
+  .line.sys{color:var(--muted)}
+  .line.dim{color:var(--dim)}
+  .line.ok{color:#86efac}
+  .line.warn{color:var(--gold)}
+  .line.err{color:#fca5a5}
+  .line.rainbow{background-image:linear-gradient(90deg,#f87171,#fbbf24,#86efac,#7dd3fc,#c084fc);
+    background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
+  .term-form{display:flex;align-items:center;gap:10px;padding:13px 18px;border-top:1px solid var(--line);background:rgba(10,14,20,.65)}
+  .term-form .prompt{color:var(--cyan);font-size:13.5px;white-space:nowrap}
+  .term-form input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--ink);font-size:13.5px;caret-color:var(--cyan)}
+  .term-form input::placeholder{color:#39465a}
+
+  .hint{margin-top:18px;font-size:12.5px;color:var(--dim)}
+  .hint code{color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+  .back{display:inline-flex;align-items:center;gap:8px;margin-top:34px;font-size:13.5px;color:var(--muted);
+    border:1px solid var(--line);border-radius:999px;padding:10px 18px;transition:color .16s,border-color .16s,transform .16s}
+  .back:hover{color:var(--ink);border-color:#2c3646;transform:translateY(-2px)}
+
+  #confetti{position:fixed;inset:0;width:100%;height:100%;z-index:5;pointer-events:none;display:none}
+  body.party #confetti{display:block}
+  body.party{animation:hue 6s linear infinite}
+  body.party .glow{background:radial-gradient(circle,rgba(192,132,252,.25),rgba(59,130,246,.14) 48%,transparent 70%)}
+  @keyframes hue{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}
+
+  #matrix{position:fixed;inset:0;width:100%;height:100%;z-index:60;pointer-events:none;opacity:0;
+    transition:opacity .8s ease;background:rgba(3,8,6,.86)}
+
+  @media(prefers-reduced-motion:reduce){
+    h1,.sub,.term{animation:none}
+    body.party{animation:none}
+  }
+  @media(max-width:560px){
+    main{padding-top:7vh}
+    .term-out{height:250px;font-size:13px}
+    .term-form .prompt{font-size:12.5px}
+  }
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="glow" aria-hidden="true"></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<canvas id="matrix" aria-hidden="true"></canvas>
+
+<main>
+  <p class="kick">Access granted</p>
+  <h1>You found the <span class="grad">partyhouse</span>.</h1>
+  <p class="sub">There was no link here. No menu item. No sitemap entry. Just you, the source, and a terminal that probably shouldn't exist.</p>
+
+  <section class="term" aria-label="Secret terminal">
+    <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>guest@partyhouse — tty1</span></div>
+    <div class="term-out" id="out" aria-live="polite"></div>
+    <form class="term-form" id="termForm" autocomplete="off">
+      <span class="prompt" aria-hidden="true">guest@partyhouse:~$</span>
+      <input id="cmd" type="text" placeholder="type help and press enter" aria-label="Terminal command" spellcheck="false" autocapitalize="off">
+    </form>
+  </section>
+
+  <p class="hint">Start with <code>help</code>. Or break something. Either works.</p>
+  <a class="back" href="../index.html">&larr; back to the site</a>
+</main>
+
+<script>
+(function(){
+  'use strict';
+
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var out = document.getElementById('out');
+  var form = document.getElementById('termForm');
+  var input = document.getElementById('cmd');
+  var history = [], hIndex = -1;
+
+  function line(text, cls){
+    var el = document.createElement('div');
+    el.className = 'line' + (cls ? ' ' + cls : '');
+    el.textContent = text;
+    out.appendChild(el);
+    out.scrollTop = out.scrollHeight;
+    return el;
+  }
+  function echo(cmd){
+    var el = document.createElement('div');
+    el.className = 'line';
+    var u = document.createElement('span');
+    u.className = 'u';
+    u.textContent = 'guest@partyhouse:~$ ';
+    el.appendChild(u);
+    el.appendChild(document.createTextNode(cmd));
+    out.appendChild(el);
+    out.scrollTop = out.scrollHeight;
+  }
+  function clearOut(){ out.textContent = ''; }
+
+  /* ---- audio: tiny synth, no files ---- */
+  var actx = null;
+  function beep(freq, dur, type, when, gain){
+    try {
+      if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      var t0 = actx.currentTime + (when || 0);
+      var osc = actx.createOscillator();
+      var g = actx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, t0);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(gain || 0.05, t0 + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(g); g.connect(actx.destination);
+      osc.start(t0); osc.stop(t0 + dur + 0.03);
+    } catch(err) {}
+  }
+  function riff(){
+    var notes = [392, 523.25, 659.25, 783.99, 659.25, 1046.5];
+    notes.forEach(function(f, i){ beep(f, 0.16, 'triangle', i * 0.11, 0.045); });
+  }
+
+  /* ---- background: drifting stars + mouse parallax ---- */
+  (function(){
+    var cv = document.getElementById('bg');
+    var ctx = cv.getContext('2d');
+    var stars = [], W = 0, H = 0, mx = 0, my = 0, tx = 0, ty = 0;
+    function resize(){
+      W = cv.width = innerWidth * Math.min(devicePixelRatio || 1, 2);
+      H = cv.height = innerHeight * Math.min(devicePixelRatio || 1, 2);
+      cv.style.width = innerWidth + 'px';
+      cv.style.height = innerHeight + 'px';
+      var n = Math.min(160, Math.round(innerWidth / 9));
+      stars = [];
+      for (var i = 0; i < n; i++){
+        stars.push({
+          x: Math.random() * W, y: Math.random() * H,
+          r: (Math.random() * 1.4 + 0.4) * (devicePixelRatio || 1),
+          a: Math.random() * 0.5 + 0.15,
+          s: Math.random() * 0.22 + 0.04,
+          z: Math.random() * 0.8 + 0.2
+        });
+      }
+    }
+    function frame(){
+      ctx.clearRect(0, 0, W, H);
+      mx += (tx - mx) * 0.05;
+      my += (ty - my) * 0.05;
+      for (var i = 0; i < stars.length; i++){
+        var s = stars[i];
+        s.y += s.s * (devicePixelRatio || 1);
+        if (s.y > H + 4) { s.y = -4; s.x = Math.random() * W; }
+        var px = s.x + mx * s.z * 18;
+        var py = s.y + my * s.z * 18;
+        ctx.beginPath();
+        ctx.arc(px, py, s.r, 0, 6.2832);
+        ctx.fillStyle = 'rgba(147,197,253,' + s.a + ')';
+        ctx.fill();
+      }
+      if (!reduce) requestAnimationFrame(frame);
+    }
+    addEventListener('resize', function(){ resize(); if (reduce) frame(); }, {passive:true});
+    addEventListener('pointermove', function(e){
+      tx = (e.clientX / innerWidth - 0.5) * 2;
+      ty = (e.clientY / innerHeight - 0.5) * 2;
+    }, {passive:true});
+    resize(); frame();
+  })();
+
+  /* ---- confetti ---- */
+  var confetti = (function(){
+    var cv = document.getElementById('confetti');
+    var ctx = cv.getContext('2d');
+    var parts = [], raf = 0, running = false;
+    var colors = ['#3b82f6', '#7dd3fc', '#c084fc', '#fbbf24', '#86efac', '#f87171'];
+    function size(){
+      cv.width = innerWidth; cv.height = innerHeight;
+    }
+    function spawn(n){
+      for (var i = 0; i < n; i++){
+        parts.push({
+          x: Math.random() * innerWidth,
+          y: -20 - Math.random() * innerHeight * 0.4,
+          vx: (Math.random() - 0.5) * 2.4,
+          vy: Math.random() * 2.6 + 1.6,
+          w: Math.random() * 7 + 4,
+          h: Math.random() * 10 + 5,
+          rot: Math.random() * 6.28,
+          vr: (Math.random() - 0.5) * 0.22,
+          c: colors[(Math.random() * colors.length) | 0],
+          sway: Math.random() * 6.28
+        });
+      }
+    }
+    function frame(){
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      for (var i = parts.length - 1; i >= 0; i--){
+        var p = parts[i];
+        p.sway += 0.04;
+        p.x += p.vx + Math.sin(p.sway) * 0.6;
+        p.y += p.vy;
+        p.rot += p.vr;
+        if (p.y > cv.height + 24) { parts.splice(i, 1); continue; }
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.c;
+        ctx.globalAlpha = 0.9;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+      if (running || parts.length) raf = requestAnimationFrame(frame);
+      else raf = 0;
+    }
+    function start(){
+      if (reduce) return;
+      size(); running = true; spawn(140);
+      if (!raf) raf = requestAnimationFrame(frame);
+    }
+    function stop(){ running = false; }
+    addEventListener('resize', function(){ if (running) size(); }, {passive:true});
+    return {start: start, stop: stop};
+  })();
+
+  /* ---- matrix rain ---- */
+  var matrix = (function(){
+    var cv = document.getElementById('matrix');
+    var ctx = cv.getContext('2d');
+    var cols = [], raf = 0, until = 0, active = false;
+    var glyphs = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEF';
+    function size(){
+      cv.width = innerWidth; cv.height = innerHeight;
+      var n = Math.ceil(innerWidth / 16);
+      cols = [];
+      for (var i = 0; i < n; i++) cols.push(Math.random() * -40);
+    }
+    function frame(){
+      ctx.fillStyle = 'rgba(3,8,6,0.12)';
+      ctx.fillRect(0, 0, cv.width, cv.height);
+      ctx.font = '15px ui-monospace, monospace';
+      for (var i = 0; i < cols.length; i++){
+        var ch = glyphs[(Math.random() * glyphs.length) | 0];
+        var x = i * 16 + 4, y = cols[i] * 16;
+        ctx.fillStyle = Math.random() > 0.96 ? '#d9f99d' : 'rgba(134,239,172,0.82)';
+        ctx.fillText(ch, x, y);
+        if (y > cv.height && Math.random() > 0.975) cols[i] = 0;
+        cols[i] += 0.72;
+      }
+      if (Date.now() < until) raf = requestAnimationFrame(frame);
+      else finish();
+    }
+    function finish(){
+      active = false;
+      cv.style.opacity = '0';
+      setTimeout(function(){
+        cancelAnimationFrame(raf); raf = 0;
+        ctx.clearRect(0, 0, cv.width, cv.height);
+      }, 850);
+    }
+    function start(ms){
+      if (reduce) return false;
+      active = true;
+      size();
+      cv.style.opacity = '1';
+      ctx.fillStyle = 'rgba(3,8,6,1)';
+      ctx.fillRect(0, 0, cv.width, cv.height);
+      until = Date.now() + (ms || 9000);
+      if (!raf) raf = requestAnimationFrame(frame);
+      return true;
+    }
+    addEventListener('resize', function(){ if (active) size(); }, {passive:true});
+    return {start: start};
+  })();
+
+  /* ---- commands ---- */
+  var partyOn = false;
+  function setParty(on){
+    partyOn = on;
+    document.body.classList.toggle('party', on);
+    if (on) { confetti.start(); riff(); }
+    else confetti.stop();
+  }
+
+  function hackSequence(){
+    var steps = [
+      'initialising exploit framework ... ok',
+      'scanning localhost for vulnerabilities ... 3 found',
+      'bypassing firewall ... ok',
+      'escalating privileges ... ok',
+      'downloading the mainframe ... 12%',
+      'downloading the mainframe ... 47%',
+      'downloading the mainframe ... 83%',
+      'downloading the mainframe ... 100%',
+      'uploading backdoor ... ok',
+      'covering tracks ... ok'
+    ];
+    var i = 0;
+    line('starting totally legitimate hack ...', 'sys');
+    var t = setInterval(function(){
+      if (i >= steps.length){
+        clearInterval(t);
+        line('hack complete. nothing happened. you are still on a static page.', 'warn');
+        line('try `party` instead. it does more.', 'dim');
+        beep(220, 0.12, 'sawtooth', 0, 0.04);
+        return;
+      }
+      line('  ' + steps[i], i === steps.length - 1 ? 'ok' : 'dim');
+      beep(140 + i * 18, 0.06, 'square', 0, 0.022);
+      i++;
+    }, 380);
+  }
+
+  var coffee = [
+    '      ( (',
+    '       ) )',
+    '    ........',
+    '    |      |]',
+    '    \\      /',
+    '     `----\''
+  ].join('\n');
+
+  function help(){
+    var rows = [
+      ['help', 'this list'],
+      ['whoami', 'who exactly do you think you are'],
+      ['ls', 'list the room'],
+      ['cat <file>', 'read something'],
+      ['secret', 'asks nicely for the secret'],
+      ['party', 'toggles party mode'],
+      ['matrix', 'there is no spoon'],
+      ['hack', 'extremely illegal, definitely real'],
+      ['coffee', 'brews a cup'],
+      ['sudo', 'nice try'],
+      ['clear', 'wipes the screen'],
+      ['exit', 'there is no exit']
+    ];
+    line('available commands:', 'sys');
+    rows.forEach(function(r){
+      line('  ' + r[0] + '  —  ' + r[1], 'dim');
+    });
+    line('', 'dim');
+    line('psst: some things are not on this list.', 'dim');
+  }
+
+  function run(raw){
+    var cmd = raw.trim();
+    if (!cmd) return;
+    echo(cmd);
+    history.push(cmd); hIndex = history.length;
+    var lower = cmd.toLowerCase();
+    var parts = lower.split(/\s+/);
+    var base = parts[0];
+    var arg = parts.slice(1).join(' ');
+
+    switch (base){
+      case 'help':
+        help(); break;
+
+      case 'whoami':
+        line('guest. but the partyhouse remembers faces.', 'ok'); break;
+
+      case 'ls':
+        line('party.sh   secrets.txt   README.md   .hidden', 'dim');
+        line('(one of these is more interesting than the others)', 'dim'); break;
+
+      case 'cat':
+        if (arg === 'secrets.txt' || arg === 'secret.txt'){
+          line('the best easter eggs are the friends we made along the way.', 'ok');
+          line('also: you are probably the only person who will ever read this.', 'dim');
+        } else if (arg === 'party.sh'){
+          line('while true; do have_fun; done', 'dim');
+        } else if (arg === 'readme.md' || arg === 'readme'){
+          line('there is no readme. there is only the partyhouse.', 'dim');
+        } else if (arg === '.hidden'){
+          line('you found me. now try `party`.', 'ok');
+        } else if (arg === ''){
+          line('cat: missing file. try `ls`.', 'err');
+        } else {
+          line('cat: ' + arg + ': no such file. try `ls`.', 'err');
+        }
+        break;
+
+      case 'secret':
+        line('the password is the friends you made along the way.', 'ok');
+        line('...and maybe try typing `6767`.', 'dim');
+        beep(659.25, 0.12, 'sine', 0, 0.04);
+        beep(987.77, 0.18, 'sine', 0.12, 0.04);
+        break;
+
+      case 'party':
+      case 'disco':
+        setParty(!partyOn);
+        line(partyOn ? 'PARTY MODE ENGAGED. type `party` again to stop.' : 'party mode off. the room feels colder.', partyOn ? 'rainbow' : 'dim');
+        break;
+
+      case 'matrix':
+        if (matrix.start(9000)) line('wake up, guest...', 'ok');
+        else line('motion is off in your system settings. respect.', 'warn');
+        break;
+
+      case 'hack':
+        hackSequence(); break;
+
+      case 'sudo':
+        line('guest is not in the sudoers file.', 'err');
+        line('this incident has been reported to absolutely nobody.', 'dim');
+        break;
+
+      case 'coffee':
+        line(coffee, 'warn'); break;
+
+      case '6767':
+        line('ofx was here.', 'rainbow');
+        line('the corner is stamped. the bench is warm.', 'dim');
+        beep(523.25, 0.1, 'triangle', 0, 0.04);
+        beep(783.99, 0.1, 'triangle', 0.1, 0.04);
+        beep(1046.5, 0.22, 'triangle', 0.2, 0.04);
+        break;
+
+      case 'konami':
+        line('↑ ↑ ↓ ↓ ← → ← → B A', 'ok');
+        line('try actually pressing it.', 'dim'); break;
+
+      case 'uname':
+        line('partyhouse 1.0 (linux, probably)', 'dim'); break;
+
+      case 'date':
+        line(new Date().toString(), 'dim'); break;
+
+      case 'rm':
+        if (arg.indexOf('-rf') === 0){
+          line('nice try. this terminal is a figment of your imagination.', 'warn');
+        } else {
+          line('rm: permission denied. the partyhouse is read-only.', 'err');
+        }
+        break;
+
+      case 'exit':
+      case 'quit':
+        line('there is no exit. only the partyhouse.', 'dim'); break;
+
+      case 'hello':
+      case 'hi':
+      case 'hey':
+        line('hey. you found the door.', 'ok'); break;
+
+      case 'clear':
+        clearOut(); return;
+
+      case 'echo':
+        line(cmd.slice(5) || '', 'dim'); break;
+
+      default:
+        line(base + ': command not found. try `help`.', 'err');
+        beep(160, 0.07, 'square', 0, 0.025);
+    }
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var v = input.value;
+    input.value = '';
+    run(v);
+  });
+
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowUp'){
+      e.preventDefault();
+      if (hIndex > 0) { hIndex--; input.value = history[hIndex]; }
+    } else if (e.key === 'ArrowDown'){
+      e.preventDefault();
+      if (hIndex < history.length - 1) { hIndex++; input.value = history[hIndex]; }
+      else { hIndex = history.length; input.value = ''; }
+    }
+  });
+
+  document.addEventListener('click', function(e){
+    if (e.target.closest('a')) return;
+    if (document.activeElement !== input) input.focus({preventScroll:true});
+  });
+
+  /* ---- konami ---- */
+  (function(){
+    var seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    var at = 0;
+    addEventListener('keydown', function(e){
+      var k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      if (k === seq[at]) {
+        at++;
+        if (at === seq.length){
+          at = 0;
+          setParty(true);
+          line('cheat code accepted. welcome to the party.', 'rainbow');
+          beep(523.25, 0.1, 'triangle', 0, 0.05);
+          beep(659.25, 0.1, 'triangle', 0.1, 0.05);
+          beep(783.99, 0.1, 'triangle', 0.2, 0.05);
+          beep(1046.5, 0.24, 'triangle', 0.3, 0.05);
+        }
+      } else {
+        at = (k === seq[0]) ? 1 : 0;
+      }
+    });
+  })();
+
+  /* ---- boot ---- */
+  var boot = [
+    ['Neutronic secret terminal v0.1', 'sys'],
+    ['link established. no witnesses.', 'dim'],
+    ['type `help` to see what this thing does.', 'dim']
+  ];
+  boot.forEach(function(b, i){
+    setTimeout(function(){ line(b[0], b[1]); }, 260 + i * 420);
+  });
+  setTimeout(function(){ input.focus({preventScroll:true}); }, 900);
+})();
+</script>
+</body>
+</html>
