@@ -48,6 +48,8 @@
   .btn-p{background:linear-gradient(120deg,var(--cyan),#67e8f9);color:#04070a;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(34,211,238,.8)}
   .btn-g{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:11px 20px}
   .btn-g:hover{border-color:#2c3646}
+  .btn-l{background:linear-gradient(120deg,var(--lime),#d9f99d);color:#0a1005;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(163,230,53,.75)}
+  .btn-l .dot-i{width:7px;height:7px;border-radius:50%;background:#0a1005;animation:pulse 2.4s infinite}
   @media(max-width:780px){.nl{display:none}}
 
   .hero{position:relative;padding:104px 0 96px;overflow:hidden}
@@ -120,6 +122,19 @@
   .band p{color:var(--muted);margin:16px auto 30px;max-width:46ch;font-size:15.5px}
   .band .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 
+  .engine{display:grid;grid-template-columns:1.5fr 1fr;gap:32px;align-items:center;border:1px solid var(--line);border-radius:22px;padding:40px;
+    background:radial-gradient(600px circle at 100% 0%,rgba(163,230,53,.10),transparent 60%),var(--panel)}
+  @media(max-width:780px){.engine{grid-template-columns:1fr;gap:26px}}
+  .engine h3{font-size:clamp(22px,3.2vw,30px);letter-spacing:-.025em;font-weight:820;margin-bottom:12px}
+  .engine>div>p:not(.kick){color:var(--muted);font-size:15px;max-width:52ch}
+  .engine ul{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:22px;font-size:13.5px;color:var(--muted)}
+  .engine li{display:flex;gap:10px;align-items:flex-start;line-height:1.4}
+  .engine li b{color:var(--ink);font-weight:650}
+  .tick{color:var(--lime);font-weight:800}
+  .engine-side{display:flex;flex-direction:column;gap:12px}
+  .engine-side .btn{justify-content:center;padding:15px 20px;font-size:14.5px}
+  .engine-side .meta{font-size:11.5px;color:var(--dim);text-align:center;line-height:1.4}
+
   footer{border-top:1px solid var(--line);margin-top:96px;padding:40px 0}
   .fr{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
   .fl{display:flex;gap:24px;font-size:13.5px;color:var(--muted);flex-wrap:wrap}
@@ -139,6 +154,7 @@
       <a class="logo" href="#"><span class="mark">N</span> Neutronic</a>
       <div class="nl">
         <a href="#work">What we do</a>
+        <a href="#nengine">NEngine</a>
         <a href="#process">Process</a>
         <a href="#contact">Contact</a>
       </div>
@@ -156,6 +172,7 @@
       <h1>Built at the speed<br>of a <span class="g">reaction.</span></h1>
       <p class="sub">We design and ship the fast, strange, and precise end of the web — sites, systems, sound, and the things that live in between. Small team. Short timelines. No filler.</p>
       <div class="hero-cta">
+        <a class="btn btn-l" href="nengine.user.js"><span class="dot-i"></span> Install NEngine</a>
         <a class="btn btn-p" href="#contact">Start a project →</a>
         <a class="btn btn-g" href="#work">See what we build</a>
       </div>
@@ -252,6 +269,25 @@
         <div class="n mono">03 / SHIP</div>
         <h3>We hand it over running</h3>
         <p>Deployed, documented, and yours. No lock-in, no retainer you didn't ask for.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec wrap" id="nengine">
+    <div class="engine reveal">
+      <div>
+        <p class="kick">NEngine</p>
+        <h3>One script. Every page.</h3>
+        <p>NEngine is a Tampermonkey userscript that loads the Neutronic Engine into any page you visit. Install it once — the loader pulls the latest engine straight from source, so it stays current on its own.</p>
+        <ul>
+          <li><span class="tick">✓</span><span><b>v1.04</b> — self-updating loader</span></li>
+          <li><span class="tick">✓</span><span>Works with <b>Tampermonkey</b> or <b>Violentmonkey</b></span></li>
+          <li><span class="tick">✓</span><span>Runs at <b>document-start</b> and injects into page context</span></li>
+        </ul>
+      </div>
+      <div class="engine-side">
+        <a class="btn btn-l" href="nengine.user.js"><span class="dot-i"></span> Install NEngine</a>
+        <span class="meta">Opens your userscript manager's install prompt</span>
       </div>
     </div>
   </section>
