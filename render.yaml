@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: youtubed
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: MAX_JOBS
+        value: "2"

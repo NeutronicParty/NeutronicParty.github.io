@@ -205,9 +205,9 @@
         </div>
 
         <div class="setup" id="setup">
-          <b>Backend offline.</b> The downloader runs on yt-dlp, so it needs its local server:
-          <code>python3 youtubed/server.py</code>
-          then open <a href="http://localhost:8099/youtubed/">http://localhost:8099/youtubed/</a>.
+          <b>Downloader offline.</b> The service that fetches files isn't answering right now.
+          <span id="localHint" hidden>Running it yourself? <code>python3 youtubed/server.py</code>
+          then open <a href="http://localhost:8099/youtubed/">http://localhost:8099/youtubed/</a>.</span>
           Hosting the API somewhere else? Put its URL in settings.
         </div>
 
@@ -280,6 +280,7 @@
   </div>
 </footer>
 
+<script src="config.js"></script>
 <script>
 (function(){
   'use strict';
@@ -294,11 +295,12 @@
   var err = $('err'), apiInput = $('apiBase'), saveApi = $('saveApi');
 
   var API_KEY = 'youtubed_api';
-  var current = null, timer = 0, busy = false;
+  var current = null, timer = 0, healthTimer = 0, busy = false;
 
   function apiBase(){
     var v = '';
     try { v = localStorage.getItem(API_KEY) || ''; } catch(e){}
+    if (!v && typeof window.YOUTUBED_API === 'string') v = window.YOUTUBED_API;
     return v.replace(/\/+$/, '');
   }
   function setNet(kind, text){
@@ -328,16 +330,25 @@
     }).finally(function(){ clearTimeout(t); });
   }
 
-  function checkHealth(){
-    setNet('', 'checking backend…');
-    return api('/api/health', {}, 4000).then(function(d){
+  function checkHealth(attempt){
+    attempt = attempt || 0;
+    clearTimeout(healthTimer);
+    if (!attempt) setNet('', 'checking backend…');
+    return api('/api/health', {}, 5000).then(function(d){
       if (!d.ok) throw new Error('yt-dlp missing on the backend');
       setNet('on', 'backend online · yt-dlp ' + (d.version || '?'));
       setup.classList.remove('show');
       return true;
     }).catch(function(){
-      setNet('off', 'backend offline — downloads need the local server');
-      setup.classList.add('show');
+      var local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+      var canWake = local || apiBase() !== '';
+      if (canWake && attempt < 6){
+        if (!attempt){ setNet('off', 'backend offline — waking it up…'); setup.classList.add('show'); }
+        healthTimer = setTimeout(function(){ checkHealth(attempt + 1); }, 4000);
+      } else {
+        setNet('off', 'backend offline — the download service is not answering');
+        setup.classList.add('show');
+      }
       return false;
     });
   }
@@ -515,6 +526,9 @@
     }, {passive:true});
     resize(); frame();
   })();
+
+  var localHint = $('localHint');
+  if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) localHint.hidden = false;
 
   setBusy(false);
   checkHealth();

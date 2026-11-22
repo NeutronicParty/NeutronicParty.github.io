@@ -35,10 +35,13 @@ WORK = os.path.join(tempfile.gettempdir(), "youtubed")
 YTDLP = shutil.which("yt-dlp") or os.path.expanduser("~/.local/bin/yt-dlp")
 
 MAX_BODY = 8192
-MAX_JOBS = 2
+MAX_JOBS = int(os.environ.get("MAX_JOBS", "2"))
 JOB_TTL = 2 * 60 * 60
 MAX_RUNTIME = 45 * 60
 STALL_LIMIT = 240
+
+RATE_WINDOW = 600.0
+RATE_LIMITS = {"info": 30, "start": 4}
 
 jobs = {}
 jobs_lock = threading.Lock()
@@ -52,6 +55,29 @@ guard_lock = threading.Lock()
 RELOAD_WINDOW = 3.0
 RELOAD_LIMIT = 3
 BLOCK_SECONDS = 10.0
+
+rate_hits = {}
+rate_lock = threading.Lock()
+
+
+def client_ip(handler):
+    xff = handler.headers.get("X-Forwarded-For") or ""
+    if xff:
+        return xff.split(",")[0].strip()
+    return handler.client_address[0]
+
+
+def allow(ip, kind):
+    now = time.time()
+    limit = RATE_LIMITS[kind]
+    with rate_lock:
+        hits = [t for t in rate_hits.get((ip, kind), []) if now - t < RATE_WINDOW]
+        if len(hits) >= limit:
+            rate_hits[(ip, kind)] = hits
+            return False
+        hits.append(now)
+        rate_hits[(ip, kind)] = hits
+    return True
 
 
 def clean(text, limit=400):
@@ -223,6 +249,10 @@ def sweeper():
                 reload_hits.pop(ip, None)
             for ip in [k for k, v in blocked_until.items() if v <= now]:
                 blocked_until.pop(ip, None)
+        with rate_lock:
+            for key in [k for k, v in rate_hits.items()
+                        if not v or now - v[-1] > RATE_WINDOW]:
+                rate_hits.pop(key, None)
 
 
 def valid_url(url):
@@ -309,8 +339,11 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         path = urlparse(self.path).path
+        ip = client_ip(self)
         try:
             if path == "/api/info":
+                if not allow(ip, "info"):
+                    return self.json(429, {"error": "too many requests — wait a few minutes"})
                 body = self.read_json()
                 url = (body.get("url") or "").strip()
                 if not valid_url(url):
@@ -318,6 +351,8 @@ class Handler(SimpleHTTPRequestHandler):
                 return self.json(200, extract_info(url))
 
             if path == "/api/start":
+                if not allow(ip, "start"):
+                    return self.json(429, {"error": "download limit reached — wait a few minutes"})
                 body = self.read_json()
                 url = (body.get("url") or "").strip()
                 mode = body.get("mode")
@@ -402,8 +437,8 @@ class Handler(SimpleHTTPRequestHandler):
 
 def main():
     ap = argparse.ArgumentParser(description="YouTubeD backend + static server")
-    ap.add_argument("--port", type=int, default=8099)
-    ap.add_argument("--host", default="127.0.0.1")
+    ap.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8099")))
+    ap.add_argument("--host", default=os.environ.get("HOST", "127.0.0.1"))
     args = ap.parse_args()
 
     if not os.path.isfile(YTDLP) and not shutil.which(YTDLP):
