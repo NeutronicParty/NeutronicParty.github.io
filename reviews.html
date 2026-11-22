@@ -35,9 +35,10 @@
   .nl{display:flex;gap:30px;font-size:14px;color:var(--muted)}
   .nl a:hover{color:var(--ink)}
   .nl a.active{color:var(--ink)}
-  .btn{display:inline-flex;align-items:center;gap:9px;border-radius:999px;font-weight:650;font-size:14px;transition:transform .16s,opacity .16s}
+  .btn{display:inline-flex;align-items:center;gap:9px;border-radius:999px;font-weight:650;font-size:14px;transition:transform .16s,opacity .16s;cursor:pointer;font-family:inherit}
   .btn:hover{transform:translateY(-2px)}
-  .btn-p{background:linear-gradient(120deg,var(--cyan),#60a5fa);color:#04070a;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(59,130,246,.8)}
+  .btn-p{background:linear-gradient(120deg,var(--cyan),#60a5fa);color:#04070a;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(59,130,246,.8);border:0}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);padding:11px 18px}
   @media(max-width:780px){.nl{display:none}nav{display:flex;justify-content:space-between}}
 
   .pagehead{padding:72px 0 44px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
@@ -48,31 +49,65 @@
   h1{font-size:clamp(34px,6vw,58px);letter-spacing:-.04em;line-height:1.02;font-weight:850}
   .pagehead p{color:var(--muted);font-size:16.5px;margin-top:18px;max-width:54ch}
 
-  .body{padding:56px 0 40px}
-  .block{margin-bottom:44px}
-  .block h2{font-size:clamp(20px,3vw,26px);letter-spacing:-.02em;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:12px}
-  .block h2 .num{font-size:12px;letter-spacing:.14em;color:var(--cyan);font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-  .block p{color:#c3cbd6;font-size:15.5px;margin-bottom:14px}
-  .block p:last-child{margin-bottom:0}
-  .block strong{color:var(--ink);font-weight:650}
+  .body{padding-top:48px;padding-bottom:40px}
 
-  .list{list-style:none;display:flex;flex-direction:column;gap:12px;margin:8px 0 4px}
-  .list li{display:flex;gap:12px;align-items:flex-start;color:#c3cbd6;font-size:15px}
-  .list .tick{color:var(--lime);font-weight:800;flex:none;margin-top:2px}
-  .list b{color:var(--ink);font-weight:650}
+  .revbar{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:24px}
+  .revbar h2{font-size:clamp(20px,3vw,26px);letter-spacing:-.02em;font-weight:800;display:flex;align-items:center;gap:10px}
+  .revcount{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--cyan);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--panel)}
+  .revsub{color:var(--muted);font-size:14.5px;margin-top:6px}
+  .revtools{display:flex;align-items:center;gap:10px}
+  .refresh{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:10px 14px;font-size:13px;font-weight:650;cursor:pointer;font-family:inherit;transition:color .16s,border-color .16s}
+  .refresh:hover{color:var(--ink);border-color:#2b3648}
 
-  .callout{border:1px solid var(--line);border-radius:var(--radius);padding:26px 28px;background:
-    radial-gradient(500px circle at 0% 0%,rgba(59,130,246,.08),transparent 60%),var(--panel)}
-  .callout h2{margin-bottom:14px}
+  .revgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+  .review{border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;max-width:660px;
+    background:radial-gradient(500px circle at 0% 0%,rgba(59,130,246,.10),transparent 62%),var(--panel);
+    display:flex;flex-direction:column}
+  .revgrid .review{max-width:none}
+  .review .who{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .review .avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;border:1px solid var(--line);box-shadow:0 0 22px -6px rgba(59,130,246,.65);flex:none}
+  .review .avatar.initial{display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#04070a;background:linear-gradient(135deg,var(--cyan),#93c5fd);border:0;box-shadow:none}
+  .review .name{font-weight:800;font-size:17px;letter-spacing:-.01em;overflow-wrap:anywhere}
+  .review .role{font-size:12.5px;color:var(--dim)}
+  .review .stars{color:#fbbf24;font-size:18px;letter-spacing:3px;margin-bottom:12px;line-height:1}
+  .review .stars .off{color:#2a3444}
+  .review q{quotes:none;display:block;font-size:clamp(16px,2.2vw,19px);line-height:1.5;font-weight:650;letter-spacing:-.01em;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere;flex:1}
+  .review q::before,.review q::after{content:""}
+  .review .meta{margin-top:16px;font-size:12.5px;color:var(--dim);display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .review .meta .score{color:#fbbf24;letter-spacing:1px;font-weight:700}
+  .revstatus{margin-top:22px;color:var(--muted);font-size:14px;text-align:center}
+  .revstatus.err{color:#fca5a5}
 
-  .warn{border:1px solid #1e3a5f;border-radius:var(--radius);padding:30px 30px;background:linear-gradient(180deg,#0c1524,#0a1018)}
-  .warn h2{color:#93c5fd}
-  .warn h2 .num{color:#60a5fa}
-  .warn p{color:#c7d2fe}
-  .warn p strong{color:#fff}
-
-  .cta-row{margin-top:44px;display:flex;gap:12px;flex-wrap:wrap}
-  .btn-l{background:linear-gradient(120deg,var(--lime),#93c5fd);color:#0a1005;padding:13px 22px;box-shadow:0 10px 30px -12px rgba(125,211,252,.75)}
+  .modal[hidden]{display:none}
+  .modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+  .modal-back{position:absolute;inset:0;background:rgba(4,6,10,.74);backdrop-filter:blur(6px)}
+  .dialog{position:relative;width:min(520px,100%);max-height:92vh;overflow:auto;background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:0 40px 90px -30px rgba(0,0,0,.9)}
+  .dialog h2{font-size:22px;letter-spacing:-.02em;font-weight:800}
+  .dialog-sub{color:var(--muted);font-size:14px;margin-top:6px;margin-bottom:20px}
+  .dialog label{display:block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:14px}
+  .dialog input[type=text],.dialog textarea{width:100%;margin-top:8px;background:#0a0e14;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:12px 14px;font:inherit;font-size:15px;letter-spacing:normal;text-transform:none;font-weight:400}
+  .dialog textarea{resize:vertical;min-height:120px}
+  .dialog input:focus,.dialog textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(59,130,246,.18)}
+  .dialog input.bad,.dialog textarea.bad{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.16)}
+  .starsfield{border:0;margin:0 0 16px}
+  .starsfield legend{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+  .starpick{display:flex;gap:6px}
+  .starpick button{background:none;border:0;cursor:pointer;font-size:30px;line-height:1;color:#2a3444;padding:2px;transition:transform .12s,color .12s;font-family:inherit}
+  .starpick button:hover{transform:scale(1.12)}
+  .starpick button.on{color:#fbbf24;text-shadow:0 0 18px rgba(251,191,36,.5)}
+  .starpick button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+  .formerr{margin:4px 0 14px;font-size:13.5px;color:#fca5a5;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:10px 12px}
+  .dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap}
+  .dialog .x{position:absolute;top:12px;right:12px;background:none;border:0;color:var(--muted);font-size:26px;line-height:1;cursor:pointer;padding:4px 9px;border-radius:8px;font-family:inherit}
+  .dialog .x:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+  .after{font-size:14px;color:#c3cbd6;line-height:1.6}
+  .after .big{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px}
+  .after p{margin-bottom:12px}
+  .after a{color:var(--cyan);text-decoration:underline;text-underline-offset:2px}
+  .after .dialog-actions{margin-top:18px}
+  .note{font-size:12px;color:var(--dim);margin-top:14px;line-height:1.5}
+  .note a{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
 
   footer{border-top:1px solid var(--line);margin-top:64px;padding:40px 0}
   .fr{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
@@ -82,16 +117,13 @@
 
   header .wrap{max-width:none}
 
-  .review{border:1px solid var(--line);border-radius:var(--radius);padding:28px 30px;max-width:660px;
-    background:radial-gradient(500px circle at 0% 0%,rgba(59,130,246,.10),transparent 62%),var(--panel)}
-  .review .who{display:flex;align-items:center;gap:14px;margin-bottom:16px}
-  .review .avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;border:1px solid var(--line);box-shadow:0 0 22px -6px rgba(59,130,246,.65)}
-  .review .name{font-weight:800;font-size:17px;letter-spacing:-.01em}
-  .review .role{font-size:12.5px;color:var(--dim)}
-  .review .stars{color:#fbbf24;font-size:18px;letter-spacing:3px;margin-bottom:14px;line-height:1}
-  .review q{quotes:none;display:block;font-size:clamp(19px,2.6vw,23px);line-height:1.4;font-weight:700;letter-spacing:-.015em;color:var(--ink)}
-  .review q::before,.review q::after{content:""}
-  .review .meta{margin-top:16px;font-size:12.5px;color:var(--dim)}
+  @media(max-width:560px){
+    .revbar{align-items:flex-start}
+    .revtools{width:100%}
+    .revtools .btn-p{flex:1;justify-content:center}
+    .dialog{padding:22px}
+    .revgrid{grid-template-columns:1fr}
+  }
 </style>
 </head>
 <body>
@@ -117,25 +149,90 @@
     <div class="wrap">
       <p class="kick">Reviews</p>
       <h1>What people say.</h1>
-      <p>Real words from the people who use what we build.</p>
+      <p>Real words from the people who use what we build. Add yours below.</p>
     </div>
   </section>
 
   <div class="wrap body">
-    <div class="review">
-      <div class="who">
-        <img class="avatar" src="team-neutronic.webp" alt="Neutronic profile picture">
-        <div>
-          <div class="name">Neutronic</div>
-          <div class="role">Developer</div>
-        </div>
+    <div class="revbar">
+      <div>
+        <h2>All reviews <span class="revcount" id="revCount">1</span></h2>
+        <p class="revsub">Every review is public and visible to everyone who visits this page.</p>
       </div>
-      <div class="stars" role="img" aria-label="Rated 5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-      <q>Absolutely Epic Scripts And Software!</q>
-      <div class="meta">Rated 5 / 5</div>
+      <div class="revtools">
+        <button class="refresh" id="refreshBtn" type="button">Refresh</button>
+        <button class="btn btn-p" id="addReviewBtn" type="button">+ Add review</button>
+      </div>
     </div>
+
+    <div class="revgrid" id="reviewList">
+      <div class="review">
+        <div class="who">
+          <img class="avatar" src="team-neutronic.webp" alt="Neutronic profile picture">
+          <div>
+            <div class="name">Neutronic</div>
+            <div class="role">Developer</div>
+          </div>
+        </div>
+        <div class="stars" role="img" aria-label="Rated 5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <q>Absolutely Epic Scripts And Software!</q>
+        <div class="meta"><span>Founder</span><span class="score">5 / 5</span></div>
+      </div>
+    </div>
+
+    <div class="revstatus" id="revStatus" hidden></div>
   </div>
 </main>
+
+<div class="modal" id="reviewModal" hidden>
+  <div class="modal-back" data-close></div>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="x" type="button" data-close aria-label="Close">&times;</button>
+    <h2 id="modalTitle">Add a review</h2>
+    <p class="dialog-sub">Name, stars, and your honest words. Public for everyone to read.</p>
+
+    <form id="reviewForm" novalidate>
+      <label for="rName">Your name
+        <input id="rName" type="text" maxlength="40" autocomplete="nickname" placeholder="What should we call you?">
+      </label>
+
+      <fieldset class="starsfield">
+        <legend>How many stars out of 5?</legend>
+        <div class="starpick" id="starPick" role="radiogroup" aria-label="Rating out of 5">
+          <button type="button" data-v="1" role="radio" aria-checked="false" aria-label="1 star">&#9733;</button>
+          <button type="button" data-v="2" role="radio" aria-checked="false" aria-label="2 stars">&#9733;</button>
+          <button type="button" data-v="3" role="radio" aria-checked="false" aria-label="3 stars">&#9733;</button>
+          <button type="button" data-v="4" role="radio" aria-checked="false" aria-label="4 stars">&#9733;</button>
+          <button type="button" data-v="5" role="radio" aria-checked="true" aria-label="5 stars">&#9733;</button>
+        </div>
+      </fieldset>
+
+      <label for="rText">Your review
+        <textarea id="rText" maxlength="600" rows="5" placeholder="What did you use, and how was it?"></textarea>
+      </label>
+
+      <input class="hp" id="rWebsite" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <div class="formerr" id="formErr" role="alert" hidden></div>
+
+      <div class="dialog-actions">
+        <button type="button" class="btn ghost" data-close>Cancel</button>
+        <button type="submit" class="btn btn-p" id="submitReview">Post review</button>
+      </div>
+      <p class="note">Reviews are stored as public GitHub issues so everyone can see them. <a href="https://github.com/Strangergithun/Strangergithun.github.io/issues?q=label%3Areview" target="_blank" rel="noopener">View them on GitHub</a>.</p>
+    </form>
+
+    <div class="after" id="afterSubmit" hidden>
+      <div class="big">One more step on GitHub</div>
+      <p>This site is static, so GitHub holds the reviews. Your review just opened as a prefilled issue in a new tab. Sign in if GitHub asks, press <b>Submit new issue</b>, then come back and hit refresh.</p>
+      <p><a id="afterLink" href="#" target="_blank" rel="noopener">Open the GitHub page again</a></p>
+      <div class="dialog-actions">
+        <button type="button" class="btn ghost" data-close>Close</button>
+        <button type="button" class="btn btn-p" id="afterRefresh">I posted it — refresh</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <footer>
   <div class="wrap">
@@ -151,6 +248,346 @@
     </div>
   </div>
 </footer>
+
+<script>
+(function(){
+  var OWNER = 'Strangergithun';
+  var REPO = 'Strangergithun.github.io';
+  var LABEL = 'review';
+  var TOKEN = '';
+  var API = 'https://api.github.com/repos/' + OWNER + '/' + REPO + '/issues';
+  var ISSUE_NEW = 'https://github.com/' + OWNER + '/' + REPO + '/issues/new';
+  var CACHE_KEY = 'neutronic_reviews_v1';
+  var CACHE_MS = 5 * 60 * 1000;
+  var COOLDOWN_MS = 30 * 1000;
+  var BANNED = ['nigg', 'faggot'];
+
+  var listEl = document.getElementById('reviewList');
+  var countEl = document.getElementById('revCount');
+  var statusEl = document.getElementById('revStatus');
+  var modal = document.getElementById('reviewModal');
+  var form = document.getElementById('reviewForm');
+  var afterEl = document.getElementById('afterSubmit');
+  var afterLink = document.getElementById('afterLink');
+  var errEl = document.getElementById('formErr');
+  var nameEl = document.getElementById('rName');
+  var textEl = document.getElementById('rText');
+  var hpEl = document.getElementById('rWebsite');
+  var submitBtn = document.getElementById('submitReview');
+  var starPick = document.getElementById('starPick');
+  var starBtns = Array.prototype.slice.call(starPick.querySelectorAll('button'));
+  var rating = 5;
+
+  function norm(s){
+    s = String(s == null ? '' : s).toLowerCase();
+    var map = {'1':'i','!':'i','|':'i','3':'e','4':'a','@':'a','0':'o','5':'s','$':'s','7':'t','+':'t','8':'b','9':'g'};
+    s = s.replace(/[1!|34@05$7+89]/g, function(c){ return map[c] || c; });
+    if (s.normalize) s = s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+    return s.replace(/[^a-z]/g, '');
+  }
+  function bad(s){
+    var n = norm(s);
+    for (var i = 0; i < BANNED.length; i++) {
+      if (n.indexOf(BANNED[i]) !== -1) return true;
+    }
+    return false;
+  }
+
+  function paint(v){
+    var r = v == null ? rating : v;
+    starBtns.forEach(function(b){
+      var n = +b.getAttribute('data-v');
+      b.classList.toggle('on', n <= r);
+      b.setAttribute('aria-checked', n === rating ? 'true' : 'false');
+    });
+  }
+  starBtns.forEach(function(b){
+    b.addEventListener('mouseenter', function(){ paint(+b.getAttribute('data-v')); });
+    b.addEventListener('click', function(){ rating = +b.getAttribute('data-v'); paint(rating); });
+  });
+  starPick.addEventListener('mouseleave', function(){ paint(rating); });
+  paint(rating);
+
+  function fail(msg, field){
+    errEl.textContent = msg;
+    errEl.hidden = false;
+    if (field) {
+      field.classList.add('bad');
+      field.focus();
+    }
+  }
+  function clearErrors(){
+    errEl.hidden = true;
+    nameEl.classList.remove('bad');
+    textEl.classList.remove('bad');
+  }
+
+  function openModal(){
+    clearErrors();
+    form.hidden = false;
+    afterEl.hidden = true;
+    nameEl.value = '';
+    textEl.value = '';
+    hpEl.value = '';
+    rating = 5;
+    paint(rating);
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    setTimeout(function(){ nameEl.focus(); }, 30);
+  }
+  function closeModal(){
+    modal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('addReviewBtn').addEventListener('click', openModal);
+  Array.prototype.forEach.call(document.querySelectorAll('[data-close]'), function(el){
+    el.addEventListener('click', closeModal);
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && !modal.hidden) closeModal();
+  });
+
+  function encodeReview(o){
+    var bytes = new TextEncoder().encode(JSON.stringify(o));
+    var bin = '';
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+  }
+  function decodeReview(b64){
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+
+  function makeBody(name, stars, text){
+    var payload = encodeReview({name: name, stars: stars, text: text});
+    return '**' + stars + ' / 5**\n\n' + text + '\n\n<!--review:' + payload + '-->';
+  }
+  function makeTitle(name, stars){
+    return 'Review: ' + name + ' (' + stars + '/5)';
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    clearErrors();
+
+    if (hpEl.value) { closeModal(); return; }
+
+    var name = nameEl.value.replace(/\s+/g, ' ').trim();
+    var text = textEl.value.trim();
+
+    if (!name) return fail('Enter your name.', nameEl);
+    if (name.length > 40) return fail('Keep the name under 40 characters.', nameEl);
+    if (!text) return fail('Write a review first.', textEl);
+    if (text.length > 600) return fail('Keep the review under 600 characters.', textEl);
+    if (bad(name) || bad(text) || bad(String(rating))) {
+      var field = bad(name) ? nameEl : textEl;
+      return fail('That language is not allowed here. Please rewrite it and try again.', field);
+    }
+
+    var last = 0;
+    try { last = +(localStorage.getItem('nr_last') || 0); } catch(err) {}
+    if (Date.now() - last < COOLDOWN_MS) {
+      return fail('You just posted — give it a moment before posting again.');
+    }
+
+    var title = makeTitle(name, rating);
+    var body = makeBody(name, rating, text);
+
+    if (TOKEN) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Posting…';
+      fetch(API, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + TOKEN,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({title: title, body: body, labels: [LABEL]})
+      }).then(function(r){
+        if (!r.ok) return r.json().then(function(j){ throw new Error(j.message || ('HTTP ' + r.status)); });
+        return r.json();
+      }).then(function(){
+        try { localStorage.setItem('nr_last', String(Date.now())); } catch(err) {}
+        closeModal();
+        loadReviews(true);
+      }).catch(function(err){
+        fail('Could not post the review: ' + err.message);
+      }).then(function(){
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Post review';
+      });
+      return;
+    }
+
+    var url = ISSUE_NEW + '?title=' + encodeURIComponent(title) +
+      '&body=' + encodeURIComponent(body) +
+      '&labels=' + encodeURIComponent(LABEL);
+    var win = window.open(url, '_blank', 'noopener');
+    try { localStorage.setItem('nr_last', String(Date.now())); } catch(err) {}
+    afterLink.href = url;
+    form.hidden = true;
+    afterEl.hidden = false;
+    if (!win) afterLink.focus();
+  });
+
+  document.getElementById('afterRefresh').addEventListener('click', function(){
+    closeModal();
+    loadReviews(true);
+  });
+
+  function fmtDate(ts){
+    try {
+      return new Date(ts).toLocaleDateString(undefined, {year: 'numeric', month: 'short', day: 'numeric'});
+    } catch(err) { return ''; }
+  }
+
+  function cleanReview(r){
+    var name = String(r.name || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
+    var text = String(r.text || '').replace(/\u0000/g, '').trim().slice(0, 600);
+    var stars = Math.max(1, Math.min(5, Math.round(+r.stars || 5)));
+    if (!name || !text) return null;
+    return {name: name, text: text, stars: stars, ts: r.ts};
+  }
+
+  function parseIssue(issue){
+    var body = issue.body || '';
+    var m = /<!--review:([A-Za-z0-9+/=]+)-->/.exec(body);
+    if (m) {
+      try {
+        var o = decodeReview(m[1]);
+        if (o && o.name && o.text) {
+          return cleanReview({name: o.name, text: o.text, stars: o.stars, ts: issue.created_at});
+        }
+      } catch(err) {}
+    }
+    var t = /^Review:\s*(.+?)\s*\((\d)\s*\/\s*5\)/.exec(issue.title || '');
+    if (t) {
+      var txt = body.split('<!--review:')[0].replace(/^\s*\*\*\d\s*\/\s*5\*\*\s*/, '').trim();
+      return cleanReview({name: t[1], text: txt, stars: +t[2], ts: issue.created_at});
+    }
+    return null;
+  }
+
+  function makeCard(r){
+    var card = document.createElement('div');
+    card.className = 'review';
+    card.setAttribute('data-user', '1');
+
+    var who = document.createElement('div');
+    who.className = 'who';
+    var av = document.createElement('div');
+    av.className = 'avatar initial';
+    av.textContent = r.name.charAt(0).toUpperCase();
+    var box = document.createElement('div');
+    var nm = document.createElement('div');
+    nm.className = 'name';
+    nm.textContent = r.name;
+    var role = document.createElement('div');
+    role.className = 'role';
+    role.textContent = 'Reviewer';
+    box.appendChild(nm);
+    box.appendChild(role);
+    who.appendChild(av);
+    who.appendChild(box);
+
+    var st = document.createElement('div');
+    st.className = 'stars';
+    st.setAttribute('role', 'img');
+    st.setAttribute('aria-label', 'Rated ' + r.stars + ' out of 5 stars');
+    var on = document.createElement('span');
+    on.textContent = new Array(r.stars + 1).join('\u2605');
+    var off = document.createElement('span');
+    off.className = 'off';
+    off.textContent = new Array(6 - r.stars).join('\u2606');
+    st.appendChild(on);
+    st.appendChild(off);
+
+    var q = document.createElement('q');
+    q.textContent = r.text;
+
+    var meta = document.createElement('div');
+    meta.className = 'meta';
+    var date = document.createElement('span');
+    date.textContent = fmtDate(r.ts);
+    var score = document.createElement('span');
+    score.className = 'score';
+    score.textContent = r.stars + ' / 5';
+    meta.appendChild(date);
+    meta.appendChild(score);
+
+    card.appendChild(who);
+    card.appendChild(st);
+    card.appendChild(q);
+    card.appendChild(meta);
+    return card;
+  }
+
+  function render(reviews){
+    Array.prototype.forEach.call(listEl.querySelectorAll('[data-user]'), function(el){ el.remove(); });
+    reviews.forEach(function(r){ listEl.appendChild(makeCard(r)); });
+    countEl.textContent = String(reviews.length + 1);
+    statusEl.hidden = true;
+    statusEl.className = 'revstatus';
+  }
+
+  var loading = false;
+  function loadReviews(force){
+    if (loading) return;
+    var cached = null;
+    try { cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null'); } catch(err) {}
+    if (!force && cached && Date.now() - cached.t < CACHE_MS) {
+      render(cached.items || []);
+      return;
+    }
+
+    loading = true;
+    statusEl.hidden = false;
+    statusEl.className = 'revstatus';
+    statusEl.textContent = 'Loading reviews…';
+
+    var url = API + '?state=open&labels=' + encodeURIComponent(LABEL) +
+      '&per_page=100&sort=created&direction=desc';
+
+    fetch(url, {headers: {'Accept': 'application/vnd.github+json'}})
+      .then(function(r){
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(items){
+        var out = [];
+        (items || []).forEach(function(issue){
+          if (issue.pull_request) return;
+          var r = parseIssue(issue);
+          if (!r) return;
+          if (bad(r.name) || bad(r.text)) return;
+          out.push(r);
+        });
+        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({t: Date.now(), items: out})); } catch(err) {}
+        render(out);
+      })
+      .catch(function(){
+        if (cached && cached.items) {
+          render(cached.items);
+          statusEl.hidden = false;
+          statusEl.className = 'revstatus err';
+          statusEl.textContent = 'Could not refresh right now — showing the last loaded reviews.';
+        } else {
+          statusEl.hidden = false;
+          statusEl.className = 'revstatus err';
+          statusEl.textContent = 'Could not load reviews right now. Try refresh in a moment.';
+        }
+      })
+      .then(function(){ loading = false; });
+  }
+
+  document.getElementById('refreshBtn').addEventListener('click', function(){ loadReviews(true); });
+  loadReviews(false);
+})();
+</script>
 
 </body>
 </html>
