@@ -48,11 +48,11 @@
     padding:0 .02em .14em;overflow:visible;
     background:linear-gradient(110deg,#fff 10%,#bfdbfe 45%,#60a5fa 75%,#3b82f6 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
     text-shadow:0 0 60px rgba(59,130,246,.25)}
-  .orbfx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+  .orbfx{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1}
   .orbfx.front{z-index:3}
-  .hero-sub{position:relative;z-index:2;color:var(--muted);font-size:clamp(15px,2.4vw,18px);max-width:46ch;margin:6px auto 0}
-  .hero-cta{position:relative;z-index:2;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
-  .hero-note{position:relative;z-index:2;margin-top:16px;font-size:12.5px;color:var(--dim)}
+  .hero-sub{position:relative;z-index:4;color:var(--muted);font-size:clamp(15px,2.4vw,18px);max-width:46ch;margin:6px auto 0}
+  .hero-cta{position:relative;z-index:4;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+  .hero-note{position:relative;z-index:4;margin-top:16px;font-size:12.5px;color:var(--dim)}
 
   .sec{padding:64px 0;border-top:1px solid var(--line)}
   .sec:first-of-type{border-top:none}
@@ -247,14 +247,14 @@
       return '#' + h(c[0]*f) + h(c[1]*f) + h(c[2]*f);
     }
 
-    function makeOrbs(){
-      var base = Math.min(W * 0.55, H * 1.25);
+    function makeOrbs(sw, sh){
+      var base = Math.min(sw * 0.44, sh * 1.15);
       orbs = [
-        { tiltX:1.22, tiltZ:0.00, rad:base*0.60, speed:0.52, px:16, core:'#dbeafe', mid:'#3b82f6',
+        { tiltX:1.32, tiltZ:0.00, rad:base*0.60, speed:0.52, px:16, core:'#dbeafe', mid:'#3b82f6',
           theta:rnd(0,TAU), phase:rnd(0,TAU), wob:0.12, wf:2.0, wp:rnd(0,TAU) },
-        { tiltX:1.02, tiltZ:2.27, rad:base*0.80, speed:0.36, px:11, core:'#cffafe', mid:'#22d3ee',
+        { tiltX:1.20, tiltZ:2.27, rad:base*0.80, speed:0.36, px:11, core:'#cffafe', mid:'#22d3ee',
           theta:rnd(0,TAU), phase:rnd(0,TAU), wob:0.10, wf:2.6, wp:rnd(0,TAU) },
-        { tiltX:1.46, tiltZ:4.36, rad:base*0.44, speed:0.82, px:9,  core:'#e0e7ff', mid:'#6366f1',
+        { tiltX:1.45, tiltZ:4.36, rad:base*0.46, speed:0.82, px:9,  core:'#e0e7ff', mid:'#6366f1',
           theta:rnd(0,TAU), phase:rnd(0,TAU), wob:0.14, wf:1.7, wp:rnd(0,TAU) }
       ];
     }
@@ -272,7 +272,7 @@
     }
 
     function halo(ctx, x, y, px, mid, alpha){
-      var R = px * 4.8;
+      var R = px * 4.2;
       var g = ctx.createRadialGradient(x, y, 0, x, y, R);
       g.addColorStop(0, rgba(mid, 0.55 * alpha));
       g.addColorStop(0.32, rgba(mid, 0.26 * alpha));
@@ -345,14 +345,18 @@
 
     function resize(){
       var r = stage.getBoundingClientRect();
-      W = Math.max(1, r.width);
-      H = Math.max(1, r.height);
+      var sw = Math.max(1, r.width), sh = Math.max(1, r.height);
+      var pad = Math.min(130, Math.max(40, sw * 0.14));
+      W = sw + pad * 2; H = sh + pad * 2;
       DPR = Math.min(window.devicePixelRatio || 1, 2);
-      back.width = Math.round(W * DPR); back.height = Math.round(H * DPR);
-      front.width = Math.round(W * DPR); front.height = Math.round(H * DPR);
+      [back, front].forEach(function(c){
+        c.style.left = (-pad) + 'px'; c.style.top = (-pad) + 'px';
+        c.style.width = W + 'px'; c.style.height = H + 'px';
+        c.width = Math.round(W * DPR); c.height = Math.round(H * DPR);
+      });
       bctx.setTransform(DPR, 0, 0, DPR, 0, 0);
       fctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      makeOrbs();
+      makeOrbs(sw, sh);
       draw();
     }
 
