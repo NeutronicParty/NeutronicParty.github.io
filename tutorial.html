@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Deep Tutorial — Neutronic</title>
+<meta name="description" content="A complete, step-by-step guide to installing Neutronic Engine with Tampermonkey on every major browser.">
+<style>
+  :root{
+    --void:#07090c;--panel:#0d1117;--panel-2:#11161e;--line:#1c2330;
+    --ink:#eef2f7;--muted:#8b96a6;--dim:#5b6675;
+    --cyan:#3b82f6;--lime:#7dd3fc;--violet:#1d4ed8;
+    --radius:16px;--max:900px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;background:var(--void);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--cyan);color:#04070a}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:#0a0f16;border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:#bfdbfe}
+  kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82em;background:#0a0f16;border:1px solid #2b3648;border-bottom-width:2px;border-radius:5px;padding:2px 7px;color:#eef2f7}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(7,9,12,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;letter-spacing:-.02em}
+  .mark{width:34px;height:34px;border-radius:9px;object-fit:contain;box-shadow:0 0 22px -4px rgba(59,130,246,.5)}
+  .nl{display:flex;gap:30px;font-size:14px;color:var(--muted)}
+  .nl a:hover{color:var(--ink)}
+  .nl a.active{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:9px;border-radius:999px;font-weight:650;font-size:14px;transition:transform .16s,opacity .16s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-p{background:linear-gradient(120deg,var(--cyan),#60a5fa);color:#04070a;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(59,130,246,.8)}
+  .btn-l{background:linear-gradient(120deg,var(--lime),#bfdbfe);color:#0a1005;padding:12px 22px;box-shadow:0 10px 30px -12px rgba(125,211,252,.75)}
+  @media(max-width:820px){.nl{display:none}}
+
+  .pagehead{padding:72px 0 44px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+  .glow{position:absolute;top:-200px;left:-100px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.16),rgba(29,78,216,.08) 50%,transparent 70%);filter:blur(30px);pointer-events:none}
+  .pagehead .wrap{position:relative;z-index:1}
+  .kick{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .kick::before{content:"";width:22px;height:1px;background:var(--cyan);display:inline-block}
+  h1{font-size:clamp(30px,5.4vw,50px);letter-spacing:-.035em;line-height:1.05;font-weight:850;max-width:20ch}
+  .pagehead p{color:var(--muted);font-size:16.5px;margin-top:18px;max-width:58ch}
+
+  .toc{border:1px solid var(--line);border-radius:var(--radius);padding:22px 26px;background:var(--panel);margin:40px 0 8px}
+  .toc h4{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:12px}
+  .toc ol{list-style:none;counter-reset:t;display:grid;grid-template-columns:1fr 1fr;gap:6px 26px}
+  @media(max-width:640px){.toc ol{grid-template-columns:1fr}}
+  .toc li{counter-increment:t;font-size:14px}
+  .toc li::before{content:counter(t,decimal-leading-zero) " ";color:var(--cyan);font-family:ui-monospace,monospace;font-size:11.5px}
+  .toc a{color:#c3cbd6}
+  .toc a:hover{color:var(--ink)}
+
+  .body{padding:44px 0 40px}
+  .block{margin-bottom:52px;scroll-margin-top:90px}
+  .block h2{font-size:clamp(20px,3vw,27px);letter-spacing:-.02em;font-weight:820;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+  .block h2 .num{font-size:12px;letter-spacing:.14em;color:var(--cyan);font-weight:700;font-family:ui-monospace,monospace;flex:none}
+  .block p{color:#c3cbd6;font-size:15.5px;margin-bottom:14px}
+  .block p:last-child{margin-bottom:0}
+  .block strong{color:var(--ink);font-weight:650}
+  .block ul,.block ol{color:#c3cbd6;font-size:15.5px;margin:0 0 14px 22px}
+  .block li{margin-bottom:8px}
+  .block li::marker{color:var(--cyan)}
+  .block h3{font-size:16px;font-weight:720;margin:24px 0 10px;color:var(--ink)}
+
+  .steps{list-style:none;counter-reset:s;margin:0 0 8px}
+  .steps li{counter-increment:s;position:relative;padding-left:44px;margin-bottom:20px;color:#c3cbd6;font-size:15.5px}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:0;width:29px;height:29px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;color:#dbeafe;background:linear-gradient(135deg,#1d4ed8,#3b82f6);border:1px solid #2b4a7a}
+  .steps li b{color:var(--ink);font-weight:650}
+
+  details{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:12px;overflow:hidden}
+  details[open]{border-color:#2b3648}
+  summary{cursor:pointer;padding:16px 20px;font-weight:650;font-size:15px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";color:var(--cyan);font-weight:800;font-size:18px;line-height:1}
+  details[open] summary::after{content:"–"}
+  details .inner{padding:0 20px 20px;color:#c3cbd6;font-size:14.8px}
+  details .inner p{margin-bottom:10px}
+  details .inner ul{margin-left:20px}
+
+  .callout{border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px;background:radial-gradient(500px circle at 0% 0%,rgba(59,130,246,.08),transparent 60%),var(--panel);margin-bottom:16px}
+  .callout p{margin-bottom:10px}
+  .callout p:last-child{margin-bottom:0}
+
+  table{width:100%;border-collapse:collapse;font-size:14.5px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--panel-2);color:var(--ink);font-weight:650;font-size:13px;letter-spacing:.02em}
+  tr:last-child td{border-bottom:none}
+  td{color:#c3cbd6}
+  td code{font-size:.85em}
+  @media(max-width:640px){table,thead,tbody,th,td,tr{display:block}th{display:none}td{border-bottom:1px solid var(--line)}td:first-child{font-weight:700;color:var(--ink);padding-bottom:2px;border-bottom:none}}
+
+  .cta-row{margin-top:48px;display:flex;gap:12px;flex-wrap:wrap}
+
+  footer{border-top:1px solid var(--line);margin-top:64px;padding:40px 0}
+  .fr{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
+  .fl{display:flex;gap:24px;font-size:13.5px;color:var(--muted);flex-wrap:wrap}
+  .fl a:hover{color:var(--ink)}
+  .copy{font-size:12.5px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="index.html"><img class="mark" src="logo.png" alt="Neutronic logo"> Neutronic</a>
+      <div class="nl">
+        <a href="info.html">Info</a>
+        <a class="active" href="help.html">Help</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
+      <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="pagehead">
+    <div class="glow"></div>
+    <div class="wrap">
+      <p class="kick">Help · Deep tutorial</p>
+      <h1>The complete install guide.</h1>
+      <p>Every step, every browser, every error explained. If the short version left you guessing, this is the one that answers everything.</p>
+    </div>
+  </section>
+
+  <div class="wrap">
+
+    <div class="toc">
+      <h4>On this page</h4>
+      <ol>
+        <li><a href="#what">What you're actually installing</a></li>
+        <li><a href="#need">What you need first</a></li>
+        <li><a href="#step1">Step 1 — Install Tampermonkey</a></li>
+        <li><a href="#step2">Step 2 — Allow user scripts</a></li>
+        <li><a href="#step3">Step 3 — Install NEngine</a></li>
+        <li><a href="#step4">Step 4 — Confirm it's running</a></li>
+        <li><a href="#trouble">Troubleshooting</a></li>
+        <li><a href="#manage">Updating &amp; removing</a></li>
+      </ol>
+    </div>
+
+    <div class="body">
+
+      <div class="block" id="what">
+        <h2><span class="num">01</span> What you're actually installing</h2>
+        <p>Three separate pieces fit together. Understanding them makes every error message make sense.</p>
+        <ul>
+          <li><strong>Tampermonkey</strong> — a browser extension that can run small pieces of code ("userscripts") on the pages you visit. It's the engine that lets any of this work.</li>
+          <li><strong>The Neutronic Loader</strong> — the userscript itself (<code>nengine.user.js</code>). It's tiny: it fetches the real engine and injects it into the page.</li>
+          <li><strong>Neutronic Engine</strong> — the actual code the loader downloads from GitHub every time a page loads. You never install this part manually; the loader keeps it current for you.</li>
+        </ul>
+        <p>So the install is really: <strong>get Tampermonkey → let it run userscripts → install the loader</strong>. The loader handles the rest forever.</p>
+      </div>
+
+      <div class="block" id="need">
+        <h2><span class="num">02</span> What you need first</h2>
+        <ul>
+          <li>A desktop browser — <strong>Chrome, Edge, Brave, Opera, Firefox, or Safari</strong>. Mobile browsers generally can't install extensions, so this is a desktop job.</li>
+          <li>Permission to install extensions (a personal computer, not a locked-down school or work machine).</li>
+          <li>About two minutes.</li>
+        </ul>
+        <div class="callout">
+          <p><strong>One thing to know up front:</strong> Chrome and other Chromium browsers (Edge, Brave, Opera) now require you to switch on an extra setting called <em>Allow User Scripts</em> before Tampermonkey is allowed to run anything. Firefox does not. Step 2 covers it.</p>
+        </div>
+      </div>
+
+      <div class="block" id="step1">
+        <h2><span class="num">03</span> Step 1 — Install Tampermonkey</h2>
+        <p>Go to <a href="https://www.tampermonkey.net" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:underline">tampermonkey.net</a> and click the download button for your browser. Or install it straight from your browser's own store:</p>
+
+        <details>
+          <summary>Chrome</summary>
+          <div class="inner">
+            <p>Open the Chrome Web Store, search <strong>Tampermonkey</strong>, and click <strong>Add to Chrome</strong> → <strong>Add extension</strong>.</p>
+            <p>Or use the official link on tampermonkey.net, which points at the same listing.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Edge</summary>
+          <div class="inner">
+            <p>Open the Microsoft Edge Add-ons store, search <strong>Tampermonkey</strong>, click <strong>Get</strong> → <strong>Add extension</strong>.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Brave</summary>
+          <div class="inner">
+            <p>Brave uses the Chrome Web Store. Open it, search <strong>Tampermonkey</strong>, click <strong>Add to Chrome</strong> → <strong>Add extension</strong>.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Opera</summary>
+          <div class="inner">
+            <p>Opera uses the Chrome Web Store too (Opera add-ons also lists it). Install from either, confirm <strong>Add extension</strong>.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Firefox</summary>
+          <div class="inner">
+            <p>Open Firefox Add-ons (addons.mozilla.org), search <strong>Tampermonkey</strong>, click <strong>Add to Firefox</strong> → <strong>Add</strong>.</p>
+            <p>Firefox will ask what permissions to grant — allow them so userscripts can run.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Safari (macOS)</summary>
+          <div class="inner">
+            <p>Safari support depends on your macOS version and requires enabling extensions in <strong>Safari → Settings → Extensions</strong>. If Tampermonkey isn't available for your version, use Chrome or Firefox instead — they're the most reliable for this.</p>
+          </div>
+        </details>
+
+        <p style="margin-top:18px">After it installs, Tampermonkey usually opens a welcome tab. You'll also see its icon (a small black-and-white square) in your toolbar. If you don't see the icon, click the <strong>puzzle-piece / extensions</strong> button in the top-right of the toolbar and pin Tampermonkey so it's always visible.</p>
+      </div>
+
+      <div class="block" id="step2">
+        <h2><span class="num">04</span> Step 2 — Allow user scripts</h2>
+        <p>This is the step almost everyone misses, and it's the reason a script can appear "installed" but do nothing.</p>
+
+        <h3>On Chrome, Edge, Brave, and Opera</h3>
+        <ol class="steps">
+          <li>Click the <b>puzzle-piece / extensions</b> icon in the top-right of the browser toolbar. (If you don't see it, open the browser menu → <b>Extensions</b> → <b>Manage extensions</b>.)</li>
+          <li>Find <b>Tampermonkey</b> in the list and click <b>Details</b>.</li>
+          <li>Scroll down to the <b>Allow User Scripts</b> toggle and switch it <b>ON</b>.</li>
+        </ol>
+        <p>That toggle is required. Without it, the browser blocks Tampermonkey from running any userscript, and NEngine will silently do nothing.</p>
+
+        <h3>On Firefox</h3>
+        <p>There's no separate toggle — once Tampermonkey is installed and permitted, it can run userscripts. Skip to Step 3.</p>
+
+        <div class="callout">
+          <p><strong>Why this exists:</strong> Chromium browsers added the toggle as a security measure so extensions can't run arbitrary code without you explicitly saying yes. Flipping it on is expected and safe — it only affects Tampermonkey, not every site.</p>
+        </div>
+      </div>
+
+      <div class="block" id="step3">
+        <h2><span class="num">05</span> Step 3 — Install NEngine</h2>
+        <ol class="steps">
+          <li>Click the <b>Install NEngine</b> button below (or on the Help page). It opens <code>nengine.user.js</code>.</li>
+          <li>Tampermonkey intercepts the file and shows its own <b>installation screen</b> with the script name <b>Neutronic Loader</b> and a version number.</li>
+          <li>Click <b>Install</b> (sometimes labelled <b>Reinstall</b> or <b>Update</b> if you've had it before).</li>
+          <li>That's it. There's no separate download, no folder, no setup. The loader is now active on every page.</li>
+        </ol>
+        <p>If clicking the button shows raw code instead of Tampermonkey's install screen, Tampermonkey isn't installed or isn't enabled — go back to Step 1.</p>
+        <p style="margin-top:20px"><a class="btn btn-l" href="nengine.user.js">Install NEngine</a></p>
+      </div>
+
+      <div class="block" id="step4">
+        <h2><span class="num">06</span> Step 4 — Confirm it's running</h2>
+        <p>The loader logs what it does, so you can check it in seconds.</p>
+        <ol class="steps">
+          <li>Open any website.</li>
+          <li>Press <kbd>F12</kbd> (or right-click → <b>Inspect</b>) to open developer tools, then click the <b>Console</b> tab.</li>
+          <li>Look for a blue line beginning with <code>[Neutronic Loader]</code>. A message like <code>script executed in page context (… bytes)</code> means it's working.</li>
+        </ol>
+        <p>You can also click the Tampermonkey icon → <b>Dashboard</b>, and confirm <b>Neutronic Loader</b> is listed and enabled (the toggle beside it is on).</p>
+        <div class="callout">
+          <p><strong>Don't panic if the console looks empty.</strong> Some sites clear the console or block scripts. Try a plain site first, and check the Tampermonkey Dashboard instead — if the script is listed and enabled, it's installed correctly.</p>
+        </div>
+      </div>
+
+      <div class="block" id="trouble">
+        <h2><span class="num">07</span> Troubleshooting</h2>
+        <p>Match the symptom, apply the fix.</p>
+        <table>
+          <thead><tr><th>Symptom</th><th>Cause &amp; fix</th></tr></thead>
+          <tbody>
+            <tr><td>Clicking Install shows raw code</td><td>Tampermonkey isn't installed or is disabled. Reinstall it (Step 1) and make sure the extension is switched on.</td></tr>
+            <tr><td>Script installs but nothing happens</td><td>The <b>Allow User Scripts</b> toggle is off. Chrome/Edge/Brave/Opera: extension <b>Details</b> → toggle <b>ON</b> (Step 2).</td></tr>
+            <tr><td>Console shows <code>HTTP 404</code></td><td>The loader couldn't reach the engine file on GitHub. Usually temporary, or the source moved — check the Discord if it persists.</td></tr>
+            <tr><td>Console shows <code>content-type</code> warning</td><td>The server returned an error page instead of the script. Reload the page; if it continues, report it in Discord.</td></tr>
+            <tr><td><code>page eval failed</code> / CSP warning</td><td>The site's Content-Security-Policy blocks injection. The loader tries three fallbacks automatically; on a few strict sites it still can't run. That's the site, not your install.</td></tr>
+            <tr><td>Works on some sites, not others</td><td>Normal. Sites with strict CSP or sandboxing can block userscripts. The install is fine.</td></tr>
+            <tr><td>Tampermonkey icon missing</td><td>It's unpinned. Click the puzzle-piece icon and pin it, or open the browser's extensions menu.</td></tr>
+            <tr><td>Nothing at all, no icon, no prompt</td><td>Extension didn't install (blocked by policy?). On a managed/school device extensions may be disabled entirely — use a personal machine.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="block" id="manage">
+        <h2><span class="num">08</span> Updating &amp; removing</h2>
+        <h3>Updating</h3>
+        <p>You don't need to do anything. The loader always fetches the newest engine from source with a cache-buster, so every page load runs the current version. When the loader itself changes version, re-run the install from Step 3 and Tampermonkey will offer <b>Update</b>.</p>
+
+        <h3>Removing NEngine</h3>
+        <ol class="steps">
+          <li>Click the Tampermonkey icon → <b>Dashboard</b>.</li>
+          <li>Find <b>Neutronic Loader</b> in the list.</li>
+          <li>Click the trash-can icon beside it (or open it and choose <b>Delete</b>).</li>
+        </ol>
+        <p>To remove Tampermonkey itself, go to your browser's <b>Manage extensions</b>, find Tampermonkey, and choose <b>Remove</b>.</p>
+
+        <div class="callout" style="margin-top:26px">
+          <p><strong>Privacy:</strong> what NEngine logs, what it doesn't, and how to opt out are all spelled out on the <a href="info.html" style="color:var(--cyan);text-decoration:underline">Info page</a>.</p>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <a class="btn btn-l" href="nengine.user.js">Install NEngine</a>
+        <a class="btn btn-p" href="help.html">Back to Help</a>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fr">
+      <a class="logo" href="index.html"><img class="mark" src="logo.png" alt="Neutronic logo"> Neutronic</a>
+      <div class="fl">
+        <a href="info.html">Info</a>
+        <a href="help.html">Help</a>
+        <a href="tutorial.html">Deep tutorial</a>
+        <a href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+      </div>
+      <span class="copy">© 2026 Neutronic</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
