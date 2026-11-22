@@ -232,6 +232,8 @@
   .engine li{display:flex;gap:10px;align-items:flex-start;line-height:1.4}
   .engine li b{color:var(--ink);font-weight:650}
   .tick{color:var(--lime);font-weight:800}
+  .tick.bullet{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none;margin-top:.5em;font-weight:400}
+  .tick.bullet[data-sb]{width:auto;height:auto;background:none;margin-top:0}
   .engine-side{margin-top:22px}
   .engine-side .btn{width:100%;justify-content:center;padding:14px 20px;font-size:14.5px}
 
@@ -286,9 +288,9 @@
         <h3>Goated userscript</h3>
         <p class="engine-desc">Never lose again, cheats for all kinda sites. Neutronic Engine da best tampermonkey script.</p>
         <ul>
-          <li><span class="tick">✓</span><span><b>v1.04</b> — self-updating loader</span></li>
-          <li><span class="tick">✓</span><span>Works with <b>Tampermonkey</b></span></li>
-          <li><span class="tick">✓</span><span>No task-keys</span></li>
+          <li><span class="tick bullet" aria-hidden="true"></span><span><b>v1.04</b> — self-updating loader</span></li>
+          <li><span class="tick bullet" aria-hidden="true"></span><span>Works with <b>Tampermonkey</b></span></li>
+          <li><span class="tick bullet" aria-hidden="true"></span><span>No task-keys</span></li>
         </ul>
         <div class="engine-side">
           <a class="btn btn-l" href="nengine.html"><span class="dot-i"></span> Check it out →</a>
@@ -309,9 +311,9 @@
         <h3>Spotify, but rusty</h3>
         <p class="engine-desc">A Spotify client written fully in rust, no skidding, just painful code.</p>
         <ul>
-          <li><span class="tick">✓</span><span><b>Native</b> — GTK3, not a web wrapper</span></li>
-          <li><span class="tick">✓</span><span><b>yt-dlp</b> search and streaming</span></li>
-          <li><span class="tick">✓</span><span>One terminal command to install</span></li>
+          <li><span class="tick bullet" aria-hidden="true"></span><span><b>Native</b> — GTK3, not a web wrapper</span></li>
+          <li><span class="tick bullet" aria-hidden="true"></span><span><b>yt-dlp</b> search and streaming</span></li>
+          <li><span class="tick bullet" aria-hidden="true"></span><span>One terminal command to install</span></li>
         </ul>
         <div class="engine-side">
           <a class="btn btn-r" href="rustify.html">Check it out →</a>
@@ -325,9 +327,9 @@
     <h3>Get the command.</h3>
     <p class="engine-desc">Paste a link and copy a ready-to-run yt-dlp command for audio or video. Run it yourself — nothing is uploaded and no server is involved.</p>
     <ul>
-      <li><span class="tick">✓</span><span><b>Video or audio</b> — best MP4, or MP3 at 320k</span></li>
-      <li><span class="tick">✓</span><span><b>Any site</b> — anything yt-dlp can read</span></li>
-      <li><span class="tick">✓</span><span><b>No server</b> — the command runs on your machine</span></li>
+      <li><span class="tick bullet" aria-hidden="true"></span><span><b>Video or audio</b> — best MP4, or MP3 at 320k</span></li>
+      <li><span class="tick bullet" aria-hidden="true"></span><span><b>Any site</b> — anything yt-dlp can read</span></li>
+      <li><span class="tick bullet" aria-hidden="true"></span><span><b>No server</b> — the command runs on your machine</span></li>
     </ul>
     <div class="engine-side">
       <a class="btn btn-y" href="youtubed/">Check it out →</a>
