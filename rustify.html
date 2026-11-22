@@ -176,16 +176,16 @@
         <li><b>Paste the command</b> above and press Enter.</li>
         <li><b>Enter your sudo password</b> when it asks — that is for GTK, WebKitGTK, ffmpeg, and the other system pieces.</li>
         <li><b>Wait.</b> The script downloads the source, installs dependencies, installs Rust 1.80+ via rustup if needed, builds Rustify when the prebuilt binary cannot run, and unpacks yt-dlp for fast startup.</li>
-        <li><b>Rustify launches</b> when it is done. After that, run <code>rustify</code> or open it from the app menu.</li>
+        <li><b>Rustify launches</b> when it is done. After that, run <code>rustify</code> (or <code>~/.local/bin/rustify</code>) or open it from the app menu.</li>
       </ol>
 
       <h3 class="subhead">Uninstall command, if necessary</h3>
       <p>Removes the app, the launcher, the icon, the data folder, and the config. Nothing else on the machine is touched.</p>
       <div class="cmdbox">
         <code id="uninstallCmd">SHARE=~/.local/share
-rm -f ~/.local/bin/{rustify,yt-dlp}
+rm -f ~/.local/bin/rustify ~/.local/bin/rustify.svg ~/.local/bin/yt-dlp
 rm -f $SHARE/applications/rustify.desktop
-rm -f $SHARE/icons/hicolor/128x128/apps/rustify.{png,svg}
+rm -f $SHARE/icons/hicolor/scalable/apps/rustify.svg
 rm -rf $SHARE/rustify ~/.config/rustify
 update-desktop-database $SHARE/applications 2>/dev/null
 gtk-update-icon-cache -f -t $SHARE/icons/hicolor 2>/dev/null
