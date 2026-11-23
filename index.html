@@ -49,11 +49,6 @@
   nav .nl{justify-self:center}
   nav > .btn{justify-self:end}
   .nav-actions{justify-self:end;display:flex;align-items:center;gap:10px}
-  .sb-btn{width:40px;height:40px;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--panel);
-    cursor:pointer;overflow:hidden;flex:none;transition:transform .16s,border-color .16s}
-  .sb-btn:hover{transform:translateY(-2px);border-color:#2c3646}
-  .sb-btn:disabled{cursor:default;transform:none;border-color:var(--line)}
-  .sb-btn img{width:100%;height:100%;object-fit:cover;object-position:50% 28%;display:block}
   .news-btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 15px;border-radius:999px;
     border:1px solid var(--line);background:var(--panel);color:var(--ink);font-family:inherit;font-size:13px;
     font-weight:700;letter-spacing:.01em;cursor:pointer;flex:none;transition:transform .16s,border-color .16s}
@@ -61,10 +56,6 @@
   .news-btn:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
   .news-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);flex:none;animation:pulse 2s infinite}
   @media(max-width:560px){.news-btn{padding:0 12px}}
-  .sb-inline,.sb-glyph{width:1em;height:1em;object-fit:cover;object-position:50% 28%;border-radius:3px;
-    vertical-align:-.14em;display:inline-block}
-  .sb-glyph{margin-left:.15em}
-  .sb-replaced{object-fit:cover!important;object-position:50% 28%!important}
 
   .curtain{position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;pointer-events:none;overflow:hidden}
   .curtain .panel{position:absolute;top:0;bottom:0;width:50.5%;
@@ -297,9 +288,6 @@
       <div class="nav-actions">
         <button class="news-btn" id="newsBtn" type="button" aria-haspopup="dialog" aria-controls="newsModal">
           <span class="news-dot" aria-hidden="true"></span>News
-        </button>
-        <button class="sb-btn" id="sbBtn" type="button" aria-label="SpongeBob mode" title="SpongeBob mode">
-          <img src="spongebob.png" alt="">
         </button>
         <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
       </div>
@@ -819,97 +807,6 @@
       })
       .catch(function(){ if (!cached) paint(0, 0); });
   })();
-</script>
-
-<script>
-(function(){
-  'use strict';
-  var SB = 'spongebob.png';
-  var btn = document.getElementById('sbBtn');
-  if (!btn) return;
-  var done = false;
-
-  function isSB(el){
-    return el && el.tagName === 'IMG' && /(^|\/)spongebob\.png(\?|$)/.test(el.getAttribute('src') || '');
-  }
-  function sbImg(className){
-    var im = document.createElement('img');
-    im.src = SB;
-    im.alt = '';
-    im.className = className || 'sb-inline';
-    return im;
-  }
-  function replaceImages(){
-    var list = document.querySelectorAll('img');
-    for (var i = 0; i < list.length; i++){
-      var el = list[i];
-      if (el.closest('#sbBtn') || isSB(el)) continue;
-      el.removeAttribute('srcset');
-      el.removeAttribute('sizes');
-      el.src = SB;
-      el.alt = 'SpongeBob';
-      el.classList.add('sb-replaced');
-    }
-    var svgs = document.querySelectorAll('svg');
-    for (var j = 0; j < svgs.length; j++){
-      if (svgs[j].closest('#sbBtn')) continue;
-      var rep = sbImg('sb-inline');
-      rep.style.width = '1.2em';
-      rep.style.height = '1.2em';
-      svgs[j].parentNode.replaceChild(rep, svgs[j]);
-    }
-  }
-  function replaceIcons(){
-    var icons = document.querySelectorAll('.tick, .dot-i, .rs');
-    for (var i = 0; i < icons.length; i++){
-      var el = icons[i];
-      if (el.getAttribute('data-sb')) continue;
-      el.setAttribute('data-sb', '1');
-      el.textContent = '';
-      el.appendChild(sbImg('sb-inline'));
-    }
-    var avatars = document.querySelectorAll('.avatar');
-    for (var k = 0; k < avatars.length; k++){
-      var av = avatars[k];
-      if (av.tagName === 'IMG' || av.getAttribute('data-sb')) continue;
-      av.setAttribute('data-sb', '1');
-      av.textContent = '';
-      av.appendChild(sbImg('sb-inline'));
-      av.style.overflow = 'hidden';
-    }
-  }
-  function replaceArrows(){
-    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-      acceptNode: function(n){
-        if (!n.nodeValue || n.nodeValue.indexOf('\u2192') === -1) return NodeFilter.FILTER_REJECT;
-        var p = n.parentNode;
-        if (!p || !p.closest || p.closest('#sbBtn, script, style')) return NodeFilter.FILTER_REJECT;
-        return NodeFilter.FILTER_ACCEPT;
-      }
-    });
-    var nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
-    for (var i = 0; i < nodes.length; i++){
-      var n = nodes[i], parts = n.nodeValue.split('\u2192'), frag = document.createDocumentFragment();
-      for (var k = 0; k < parts.length; k++){
-        if (k) frag.appendChild(sbImg('sb-glyph'));
-        if (parts[k]) frag.appendChild(document.createTextNode(parts[k]));
-      }
-      n.parentNode.replaceChild(frag, n);
-    }
-  }
-  function all(){ replaceImages(); replaceIcons(); replaceArrows(); }
-
-  btn.addEventListener('click', function(){
-    if (done) return;
-    done = true;
-    btn.disabled = true;
-    btn.setAttribute('aria-disabled', 'true');
-    all();
-    var mo = new MutationObserver(function(){ all(); });
-    mo.observe(document.body, {childList: true, subtree: true});
-  });
-})();
 </script>
 <script>
 (function(){
