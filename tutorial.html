@@ -19,7 +19,7 @@
   html{scroll-behavior:smooth}
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;background:var(--void);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-user-select:none;user-select:none}
   ::selection{background:var(--cyan);color:#04070a}
-  input,textarea,select,code,pre,kbd,.keyval,#freeKey,.selectable,.selectable *{-webkit-user-select:text;user-select:text}
+  input,textarea,select,code,pre,kbd,.selectable,.selectable *{-webkit-user-select:text;user-select:text}
   img{-webkit-user-drag:none;user-select:none}
   a{color:inherit;text-decoration:none}
   .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
@@ -266,15 +266,14 @@
 
       <div class="block" id="step4">
         <h2><span class="num">06</span> Step 4 — Confirm it's running</h2>
-        <p>The loader logs what it does, so you can check it in seconds.</p>
+        <p>The engine itself is silent — it does not log anything. To confirm the loader is installed and active:</p>
         <ol class="steps">
-          <li>Open any website.</li>
-          <li>Press <kbd>F12</kbd> (or right-click → <b>Inspect</b>) to open developer tools, then click the <b>Console</b> tab.</li>
-          <li>Look for a blue line beginning with <code>[Neutronic Loader]</code>. A message like <code>script executed in page context (… bytes)</code> means it's working.</li>
+          <li>Click the Tampermonkey icon → <b>Dashboard</b>.</li>
+          <li>Confirm <b>Neutronic Loader</b> is listed and enabled (the toggle beside it is on).</li>
+          <li>Open any website. The engine loads itself in the background with no prompts.</li>
         </ol>
-        <p>You can also click the Tampermonkey icon → <b>Dashboard</b>, and confirm <b>Neutronic Loader</b> is listed and enabled (the toggle beside it is on).</p>
         <div class="callout">
-          <p><strong>Don't panic if the console looks empty.</strong> Some sites clear the console or block scripts. Try a plain site first, and check the Tampermonkey Dashboard instead — if the script is listed and enabled, it's installed correctly.</p>
+          <p><strong>Some builds print a short startup line to the browser console.</strong> If yours does, <kbd>F12</kbd> → <b>Console</b> will show a blue <code>[Neutronic Loader]</code> entry. If it's silent, that's expected — check the Dashboard instead.</p>
         </div>
       </div>
 
@@ -286,9 +285,8 @@
           <tbody>
             <tr><td>Clicking Install shows raw code</td><td>Tampermonkey isn't installed or is disabled. Reinstall it (Step 1) and make sure the extension is switched on.</td></tr>
             <tr><td>Script installs but nothing happens</td><td>The <b>Allow User Scripts</b> toggle is off. Chrome/Edge/Brave/Opera: extension <b>Details</b> → toggle <b>ON</b> (Step 2).</td></tr>
-            <tr><td>Console shows <code>HTTP 404</code></td><td>The loader couldn't reach the engine file on GitHub. Usually temporary, or the source moved — check the Discord if it persists.</td></tr>
-            <tr><td>Console shows <code>content-type</code> warning</td><td>The server returned an error page instead of the script. Reload the page; if it continues, report it in Discord.</td></tr>
-            <tr><td><code>page eval failed</code> / CSP warning</td><td>The site's Content-Security-Policy blocks injection. The loader tries three fallbacks automatically; on a few strict sites it still can't run. That's the site, not your install.</td></tr>
+            <tr><td>Engine never loads on any site</td><td>The loader couldn't reach the engine file on GitHub. Usually temporary, or the source moved — check the Discord if it persists.</td></tr>
+            <tr><td>One site won't run it</td><td>The site's Content-Security-Policy or sandboxing blocks userscripts. The loader tries its fallbacks automatically; on a few strict sites it still can't run. That's the site, not your install.</td></tr>
             <tr><td>Works on some sites, not others</td><td>Normal. Sites with strict CSP or sandboxing can block userscripts. The install is fine.</td></tr>
             <tr><td>Tampermonkey icon missing</td><td>It's unpinned. Click the puzzle-piece icon and pin it, or open the browser's extensions menu.</td></tr>
             <tr><td>Nothing at all, no icon, no prompt</td><td>Extension didn't install (blocked by policy?). On a managed/school device extensions may be disabled entirely — use a personal machine.</td></tr>
@@ -310,7 +308,7 @@
         <p>To remove Tampermonkey itself, go to your browser's <b>Manage extensions</b>, find Tampermonkey, and choose <b>Remove</b>.</p>
 
         <div class="callout" style="margin-top:26px">
-          <p><strong>Privacy:</strong> what NEngine logs, what it doesn't, and how to opt out are all spelled out on the <a href="info.html" style="color:var(--cyan);text-decoration:underline">Info page</a>.</p>
+          <p><strong>Privacy:</strong> NEngine collects nothing — no IP, no time-zone, no UserAgent, no telemetry. The full policy is on the <a href="info.html" style="color:var(--cyan);text-decoration:underline">Info page</a>.</p>
         </div>
       </div>
 
