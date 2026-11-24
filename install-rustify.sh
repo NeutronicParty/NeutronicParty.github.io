@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASE="${RUSTIFY_BASE:-https://strangergithun.github.io}"
+BASE="${RUSTIFY_BASE:-https://neutronicparty.github.io}"
 ARCHIVE="$BASE/downloads/rustify-src.tar.gz"
 TMPDIR_RUSTIFY="$(mktemp -d "${TMPDIR:-/tmp}/rustify-install.XXXXXX")"
 
