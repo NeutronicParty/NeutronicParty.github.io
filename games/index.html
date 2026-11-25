@@ -46,6 +46,8 @@
 
 <script>
   var GAMES=[
+    {slug:"subway",href:"subway/",title:"Subway Surfers",desc:"The Ashuni Subway Surfers map site, loaded live right here.",tags:["arcade","endless","3d"],a:"rgba(250,204,21,.18)",c:"#facc15",
+     icon:'<rect x="7" y="3" width="10" height="14" rx="4"/><path d="M9 21v-3M15 21v-3M7 10h10"/><circle cx="9.5" cy="18.5" r="1.2"/><circle cx="14.5" cy="18.5" r="1.2"/>'},
     {slug:"snake",title:"Snake",desc:"Eat, grow, don't bite yourself. The one everybody knows.",tags:["arcade","classic"],a:"rgba(34,197,94,.18)",c:"#22c55e",
      icon:'<path d="M4 17h5a3 3 0 0 0 0-6H7a3 3 0 0 1 0-6h6"/><circle cx="17" cy="18" r="2"/><path d="M15 8h4"/>'},
     {slug:"tetris",title:"Blocks",desc:"Stack falling pieces, clear lines, chase the level.",tags:["puzzle","classic"],a:"rgba(59,130,246,.18)",c:"#60a5fa",
@@ -77,7 +79,7 @@
   }).join('');
 
   function card(g){
-    return '<a class="card" href="'+g.slug+'.html" style="--a:'+g.a+';--c:'+g.c+'">'+
+    return '<a class="card" href="'+(g.href||g.slug+'.html')+'" style="--a:'+g.a+';--c:'+g.c+'">'+
       '<span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+g.icon+'</svg></span>'+
       '<h3>'+g.title+'</h3><p>'+g.desc+'</p>'+
       '<span class="meta">'+g.tags.map(function(t){return '<span class="tag">'+t+'</span>'}).join('')+'</span>'+

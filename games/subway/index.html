@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subway Surfers — Neutronic Games</title>
+<link rel="icon" href="../../logo.png">
+<link rel="stylesheet" href="../style.css">
+<style>
+  html,body{height:100%;overflow:hidden}
+  .subway-wrap{display:flex;flex-direction:column;height:100vh}
+  .subway-wrap nav{border-bottom:1px solid var(--line);flex:none}
+  .vbar{display:flex;align-items:center;gap:10px;padding:8px 0;flex:none;flex-wrap:wrap}
+  .vbar .vt{font-weight:800;font-size:14px;letter-spacing:-.01em}
+  .vbar .vs{font-size:12px;color:var(--dim)}
+  .vbar .spacer{flex:1}
+  .vbar .gbtn{padding:7px 12px;font-size:12px}
+  .frame{flex:1;position:relative;background:#07090c}
+  .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#0d1117}
+  .splash{position:absolute;inset:0;display:grid;place-items:center;text-align:center;background:#07090c;z-index:3}
+  .splash.hide{display:none}
+  .spin{width:34px;height:34px;border-radius:50%;border:3px solid #1c2330;border-top-color:#22c55e;animation:sp 1s linear infinite;margin:0 auto 14px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .splash p{color:var(--muted);font-size:13px}
+  .splash h2{font-size:18px;margin-bottom:8px}
+  .splash .gbtn{margin-top:16px}
+</style>
+</head>
+<body>
+<div class="subway-wrap">
+  <div class="wrap" style="flex:none">
+    <nav style="height:60px">
+      <a class="logo" href="../"><img src="../../logo.png" alt="Neutronic logo"> Neutronic Games</a>
+      <a class="back" href="../">← All games</a>
+    </nav>
+    <div class="vbar">
+      <span class="vt">Subway Surfers</span>
+      <span class="vs">live view · ashuni.lol</span>
+      <span class="spacer"></span>
+      <button class="gbtn" id="reloadBtn" type="button">Reload</button>
+      <a class="gbtn" id="openBtn" href="https://ashuni.lol/" target="_blank" rel="noopener">Open original</a>
+    </div>
+  </div>
+  <div class="frame">
+    <iframe id="view" title="Ashuni Subway Surfers" allow="autoplay; fullscreen; gamepad; clipboard-write; encrypted-media"></iframe>
+    <div class="splash" id="splash">
+      <div>
+        <div class="spin" id="spin"></div>
+        <h2 id="splashTitle">Loading the maps</h2>
+        <p id="splashText">Pulling ashuni.lol through the viewer…</p>
+        <button class="gbtn primary" id="retryBtn" type="button" style="display:none">Try again</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var TARGET='https://ashuni.lol';
+  var PREFIX='/games/subway/';
+  var view=document.getElementById('view');
+  var splash=document.getElementById('splash');
+  var spin=document.getElementById('spin');
+  var splashTitle=document.getElementById('splashTitle');
+  var splashText=document.getElementById('splashText');
+  var retryBtn=document.getElementById('retryBtn');
+  var reloadBtn=document.getElementById('reloadBtn');
+
+  var SHIM='('+function(){
+    var P='/games/subway';
+    function fix(u){
+      if(typeof u!=='string')return u;
+      if(u.charAt(0)==='/'&&u.charAt(1)!=='/'&&u.indexOf(P+'/')!==0)return P+u;
+      return u;
+    }
+    function real(u){try{return new URL(u,'https://ashuni.lol/').href}catch(e){return u}}
+    var of=window.fetch;
+    if(of)window.fetch=function(input,init){
+      if(typeof input==='string')input=fix(input);
+      else if(input&&input.url){var u=fix(input.url);if(u!==input.url)input=new Request(u,input);}
+      return of.call(this,input,init);
+    };
+    var ox=XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open=function(m,u){arguments[1]=fix(u);return ox.apply(this,arguments)};
+    var oo=window.open;
+    window.open=function(u,n,f){return oo.call(window,u?real(u):u,n,f)};
+    try{if(navigator.serviceWorker)navigator.serviceWorker.register=function(){return Promise.reject(new Error('disabled'))}}catch(e){}
+    window.addEventListener('click',function(e){
+      var a=e.target&&e.target.closest?e.target.closest('a[href]'):null;
+      if(!a)return;
+      var h=a.getAttribute('href');
+      if(!h||h.charAt(0)==='#'||/^javascript:/i.test(h))return;
+      e.preventDefault();
+      var abs=real(h);
+      if(a.target==='_blank'){oo.call(window,abs,'_blank');return}
+      if(window.parent!==window)window.parent.postMessage({__ash:1,url:abs},'*');
+    },true);
+  }+')();';
+
+  function rewrite(html){
+    html=html.replace(/<meta[^>]*http-equiv=["']?Content-Security-Policy["']?[^>]*>/gi,'');
+    html=html.replace(/<base[^>]*>/gi,'');
+    html=html.replace(/(href|src|action)="\/(?!\/)/gi,'$1="');
+    html=html.replace(/url\(\//g,'url(');
+    var head='<base href="'+PREFIX+'"><script>'+SHIM+'<\/script>';
+    if(/<head[^>]*>/i.test(html))html=html.replace(/<head([^>]*)>/i,'<head$1>'+head);
+    else html=head+html;
+    return html;
+  }
+
+  function showError(msg){
+    spin.style.display='none';
+    splashTitle.textContent='Could not load it';
+    splashText.textContent=msg;
+    retryBtn.style.display='inline-block';
+    splash.classList.remove('hide');
+  }
+
+  function load(attempt){
+    attempt=attempt||0;
+    spin.style.display='';
+    retryBtn.style.display='none';
+    splashTitle.textContent='Loading the maps';
+    splashText.textContent='Pulling ashuni.lol through the viewer…';
+    splash.classList.remove('hide');
+    fetch(TARGET+'/',{cache:'no-store'}).then(function(r){
+      if(!r.ok)throw new Error('ashuni said '+r.status);
+      return r.text();
+    }).then(function(html){
+      view.srcdoc=rewrite(html);
+      setTimeout(function(){if(!splash.classList.contains('hide'))splashText.textContent='Waking up the game engine…';},2500);
+    }).catch(function(e){
+      if(attempt<2){setTimeout(function(){load(attempt+1)},1200);return;}
+      showError(e.message+'. The site may be rate-limiting. Hit retry or open the original.');
+    });
+  }
+
+  view.addEventListener('load',function(){
+    setTimeout(function(){splash.classList.add('hide')},600);
+  });
+
+  window.addEventListener('message',function(e){
+    var d=e.data;
+    if(!d||d.__ash!==1||typeof d.url!=='string')return;
+    if(d.url.indexOf(TARGET)!==0)return;
+    var path=d.url.slice(TARGET.length)||'/';
+    view.removeAttribute('srcdoc');
+    view.src=PREFIX.replace(/\/$/,'')+path;
+  });
+
+  retryBtn.addEventListener('click',function(){load(0)});
+  reloadBtn.addEventListener('click',function(){load(0)});
+
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js',{scope:'./'}).catch(function(){});
+  }
+  load(0);
+})();
+</script>
+</body>
+</html>
