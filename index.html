@@ -664,7 +664,10 @@
 
     function shade(hex,f){
       var n=parseInt(hex.slice(1),16);
-      return 'rgb('+Math.round(((n>>16)&255)*f)+','+Math.round(((n>>8)&255)*f)+','+Math.round((n&255)*f)+')';
+      var r=Math.min(255,Math.round(((n>>16)&255)*f));
+      var g=Math.min(255,Math.round(((n>>8)&255)*f));
+      var b=Math.min(255,Math.round((n&255)*f));
+      return 'rgb('+r+','+g+','+b+')';
     }
 
     function setFont(c){
@@ -724,10 +727,10 @@
 
       bctx.clearRect(0,0,W,H);
       rctx.clearRect(0,0,W,H);
-      drawText(bctx,L1,y1,0.80);
-      drawText(bctx,L2,y2,0.80);
-      drawText(rctx,L1,y1,1);
-      drawText(rctx,L2,y2,1);
+      drawText(bctx,L1,y1,1);
+      drawText(bctx,L2,y2,1);
+      drawText(rctx,L1,y1,1.22);
+      drawText(rctx,L2,y2,1.22);
 
       contentLeft=(W-contentW)/2;
       px=cx=W*0.5; py=cy=H*0.5; press=pressT=0;
