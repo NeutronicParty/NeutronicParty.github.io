@@ -43,7 +43,7 @@
   var scoreEl=document.getElementById('score'),bestEl=document.getElementById('best');
   var ov=document.getElementById('ov'),ovTitle=document.getElementById('ovTitle'),ovText=document.getElementById('ovText'),startBtn=document.getElementById('start');
 
-  var GRAV=0.42,FLAP=-7.1,PIPEW=62,GAP=158,SPEED=2.7;
+  var GRAV=0.32,FLAP=-5.9,PIPEW=62,GAP=172,SPEED=2.05;
   var bird,pipes,score,state,best,frame,groundOff;
 
   best=+(localStorage.getItem('ntr_flap_best')||0);bestEl.textContent=best;
