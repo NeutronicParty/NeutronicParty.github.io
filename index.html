@@ -121,6 +121,7 @@
   h1 .ch{display:inline-block;transform-origin:50% 50%;will-change:transform;backface-visibility:hidden;padding:.12em 0 .26em;margin:-.12em 0 -.26em}
   h1 .grad .ch{background-image:linear-gradient(105deg,var(--cyan) 0%,#7dd3fc 55%,#1d4ed8 100%);background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent}
   h1.lens{position:relative;z-index:1}
+  .wm-canvas{display:block;margin:0 auto}
   h1.lens::before{content:"";position:absolute;left:50%;top:52%;width:min(700px,92vw);height:min(320px,54vh);
     transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:-1;filter:blur(30px);
     background:radial-gradient(ellipse at center,rgba(96,165,250,.30),rgba(59,130,246,.13) 45%,transparent 72%)}
@@ -321,7 +322,7 @@
           <span><b id="ratingScore">5</b> stars total</span>
           <span class="rc" id="ratingCount">(1 review)</span>
         </a>
-        <h1 class="lens" aria-label="Neutronic Partyhouse"><span class="lens-line">Neutronic</span><br><span class="grad lens-line">Partyhouse</span></h1>
+        <h1 class="lens watermark" aria-label="Neutronic Partyhouse"><canvas class="wm-canvas" aria-hidden="true"></canvas></h1>
         <button class="morebtn" id="moreBtn" type="button" aria-pressed="false">More software</button>
       </div>
       <div class="engine right rust reveal">
@@ -641,96 +642,258 @@
   })();
 
   (function(){
-    const h1=document.querySelector('h1.lens');
+    var h1=document.querySelector('h1.watermark');
     if(!h1) return;
-    const zone=h1.closest('.hero-in')||h1;
-    const chars=[];
+    var canvas=h1.querySelector('.wm-canvas');
+    if(!canvas||!canvas.getContext) return;
+    var ctx=canvas.getContext('2d');
+    if(!ctx) return;
 
-    h1.querySelectorAll('.lens-line').forEach(line=>{
-      const txt=line.textContent;
-      line.textContent='';
-      [...txt].forEach(c=>{
-        const s=document.createElement('span');
-        s.className='ch';
-        s.textContent=c===' '?'\u00A0':c;
-        line.appendChild(s);
-        chars.push({el:s,bx:0,by:0});
-      });
-    });
+    var DPR=Math.min(window.devicePixelRatio||1,2);
+    var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var INK='#eef2f7', CYAN='#3b82f6', LIGHT='#7dd3fc', BLUE='#1d4ed8';
+    var L1='Neutronic', L2='Partyhouse';
 
-    function paintGradient(){
-      const grad=h1.querySelector('.grad');
-      if(!grad) return;
-      const lr=grad.getBoundingClientRect();
-      grad.querySelectorAll('.ch').forEach(ch=>{
-        const cr=ch.getBoundingClientRect();
-        ch.style.backgroundSize=lr.width+'px 100%';
-        ch.style.backgroundPosition=(-(cr.left-lr.left))+'px 0';
-      });
+    var base=document.createElement('canvas'), bctx=base.getContext('2d');
+    var bright=document.createElement('canvas'), rctx=bright.getContext('2d');
+    var temp=document.createElement('canvas'), tctx=temp.getContext('2d');
+    var frame=document.createElement('canvas'), fctx=frame.getContext('2d');
+
+    var W=0,H=0,fontDev='',lsDev=0,fontSizeDev=0,lineHeightDev=0,contentLeft=0,contentW=0;
+    var px=0,py=0,cx=0,cy=0,press=0,pressT=0,raf=0,startT=0;
+
+    function shade(hex,f){
+      var n=parseInt(hex.slice(1),16);
+      return 'rgb('+Math.round(((n>>16)&255)*f)+','+Math.round(((n>>8)&255)*f)+','+Math.round((n&255)*f)+')';
     }
 
-    function reset(){
-      chars.forEach(c=>{c.el.style.transform='none';});
+    function setFont(c){
+      c.font=fontDev;
+      if('letterSpacing' in c) c.letterSpacing=lsDev+'px';
+      c.textAlign='left';
+      c.textBaseline='middle';
     }
 
-    let TH=64;
-    function measure(){
-      reset();
-      TH=parseFloat(getComputedStyle(h1).fontSize)||64;
-      const hr=h1.getBoundingClientRect();
-      chars.forEach(c=>{
-        const r=c.el.getBoundingClientRect();
-        c.bx=r.left-hr.left+r.width/2;
-        c.by=r.top-hr.top+r.height/2;
-      });
-      paintGradient();
-      chars.forEach(c=>{c.el.style.transform='';});
+    function drawText(c,text,y,f){
+      setFont(c);
+      var w=c.measureText(text).width;
+      var x=(W-w)/2;
+      if(text===L2){
+        var g=c.createLinearGradient(x,0,x+w,0);
+        g.addColorStop(0,shade(CYAN,f));
+        g.addColorStop(0.55,shade(LIGHT,f));
+        g.addColorStop(1,shade(BLUE,f));
+        c.fillStyle=g;
+      } else {
+        c.fillStyle=shade(INK,f);
+      }
+      c.fillText(text,x,y);
+      return w;
     }
 
-    paintGradient();
+    function build(){
+      var cs=getComputedStyle(h1);
+      var fontSize=parseFloat(cs.fontSize)||64;
+      var weight=cs.fontWeight||'850';
+      var family=cs.fontFamily||'sans-serif';
+      var ls=cs.letterSpacing==='normal'?0:(parseFloat(cs.letterSpacing)||0);
+      var lh=parseFloat(cs.lineHeight);
+      if(!isFinite(lh)||lh<=0) lh=fontSize*0.98;
 
-    const fine=matchMedia('(pointer: fine)').matches||navigator.maxTouchPoints===0;
-    if(!fine){
-      window.addEventListener('resize',paintGradient,{passive:true});
-      if(document.fonts&&document.fonts.ready) document.fonts.ready.then(paintGradient);
-      return;
+      fontSizeDev=fontSize*DPR;
+      lineHeightDev=lh*DPR;
+      lsDev=ls*DPR;
+      fontDev=weight+' '+fontSizeDev+'px '+family;
+
+      setFont(bctx);
+      var w1=bctx.measureText(L1).width;
+      var w2=bctx.measureText(L2).width;
+      contentW=Math.max(w1,w2);
+      var pad=Math.round(fontSizeDev*0.30);
+      W=Math.ceil(contentW+pad*2);
+      H=Math.ceil(lineHeightDev*2+pad*2);
+
+      base.width=bright.width=temp.width=frame.width=W;
+      base.height=bright.height=temp.height=frame.height=H;
+      canvas.width=W; canvas.height=H;
+      canvas.style.width=(W/DPR)+'px';
+      canvas.style.height=(H/DPR)+'px';
+
+      var y1=pad+lineHeightDev*0.5;
+      var y2=pad+lineHeightDev*1.5;
+
+      bctx.clearRect(0,0,W,H);
+      rctx.clearRect(0,0,W,H);
+      drawText(bctx,L1,y1,0.80);
+      drawText(bctx,L2,y2,0.80);
+      drawText(rctx,L1,y1,1);
+      drawText(rctx,L2,y2,1);
+
+      contentLeft=(W-contentW)/2;
+      px=cx=W*0.5; py=cy=H*0.5; press=pressT=0;
     }
 
-    let px=0,py=0,cx=0,cy=0,active=false,raf=0,press=0,pressT=0;
-    function start(){ if(!raf) raf=requestAnimationFrame(frame); }
+    function renderFrame(c,phase,ox,oy){
+      c.setTransform(1,0,0,1,0,0);
+      c.globalCompositeOperation='source-over';
+      c.globalAlpha=1;
+      c.clearRect(0,0,W,H);
+      c.drawImage(base,ox,oy);
+      if(phase>-5){
+        tctx.setTransform(1,0,0,1,0,0);
+        tctx.globalCompositeOperation='source-over';
+        tctx.globalAlpha=1;
+        tctx.clearRect(0,0,W,H);
+        tctx.drawImage(bright,0,0);
+        tctx.globalCompositeOperation='destination-in';
+        var bandC=contentLeft+phase*contentW;
+        var sg=0.17*contentW;
+        var g=tctx.createLinearGradient(0,0,W,0);
+        for(var d=-2.5;d<=2.5;d+=0.5){
+          var pos=(bandC+d*sg)/W;
+          if(pos<0) pos=0; else if(pos>1) pos=1;
+          g.addColorStop(pos,'rgba(255,255,255,'+(0.95*Math.exp(-(d*d))).toFixed(4)+')');
+        }
+        tctx.fillStyle=g;
+        tctx.fillRect(0,0,W,H);
+        tctx.globalCompositeOperation='source-over';
+        c.drawImage(temp,ox,oy);
+      }
+    }
 
-    function frame(){
-      const hr=h1.getBoundingClientRect();
-      const sig=TH*0.28, rb=TH*0.72, sigb=TH*0.46;
+    var LUTN=1024, lut=new Float32Array(LUTN+1), lutMax=1;
+
+    function buildLUT(){
+      var th=fontSizeDev;
+      var sigma=0.28*th, rb=0.72*th, sigb=0.46*th;
+      var dent=0.42*press, bulge=0.14*press;
+      for(var i=0;i<=LUTN;i++){
+        var r=i/LUTN*lutMax;
+        var q1=r/sigma, q2=(r-rb)/sigb;
+        var s=1 - dent*Math.exp(-(q1*q1)) + bulge*Math.exp(-(q2*q2));
+        if(s<0.35) s=0.35; else if(s>2) s=2;
+        lut[i]=r/s;
+      }
+    }
+
+    function warp(){
+      var th=fontSizeDev;
+      var R=th*2.2;
+      var x0=Math.max(0,Math.floor(cx-R)), y0=Math.max(0,Math.floor(cy-R));
+      var x1=Math.min(W,Math.ceil(cx+R)), y1=Math.min(H,Math.ceil(cy+R));
+      var bw=x1-x0, bh=y1-y0;
+      if(bw<2||bh<2) return;
+      lutMax=Math.sqrt(bw*bw+bh*bh);
+      buildLUT();
+      var img=fctx.getImageData(x0,y0,bw,bh);
+      var src=img.data;
+      var out=ctx.createImageData(bw,bh);
+      var dst=out.data;
+      var lcx=cx-x0, lcy=cy-y0;
+      var idxScale=LUTN/lutMax;
+      for(var y=0;y<bh;y++){
+        var dy=y+0.5-lcy;
+        var o=y*bw*4;
+        for(var x=0;x<bw;x++){
+          var dx=x+0.5-lcx;
+          var r=Math.sqrt(dx*dx+dy*dy);
+          var sx,sy;
+          if(r<0.001){ sx=lcx; sy=lcy; }
+          else {
+            var u=lut[Math.min(LUTN,(r*idxScale)|0)];
+            var f=u/r;
+            sx=lcx+dx*f; sy=lcy+dy*f;
+          }
+          if(sx<0) sx=0; else if(sx>bw-1) sx=bw-1;
+          if(sy<0) sy=0; else if(sy>bh-1) sy=bh-1;
+          var ix=sx|0, iy=sy|0;
+          var fx=sx-ix, fy=sy-iy;
+          var ix1=ix+1<bw?ix+1:ix;
+          var iy1=iy+1<bh?iy+1:iy;
+          var i00=(iy*bw+ix)*4, i10=(iy*bw+ix1)*4, i01=(iy1*bw+ix)*4, i11=(iy1*bw+ix1)*4;
+          var w00=(1-fx)*(1-fy), w10=fx*(1-fy), w01=(1-fx)*fy, w11=fx*fy;
+          dst[o]  =src[i00]*w00+src[i10]*w10+src[i01]*w01+src[i11]*w11;
+          dst[o+1]=src[i00+1]*w00+src[i10+1]*w10+src[i01+1]*w01+src[i11+1]*w11;
+          dst[o+2]=src[i00+2]*w00+src[i10+2]*w10+src[i01+2]*w01+src[i11+2]*w11;
+          dst[o+3]=src[i00+3]*w00+src[i10+3]*w10+src[i01+3]*w01+src[i11+3]*w11;
+          o+=4;
+        }
+      }
+      ctx.putImageData(out,x0,y0);
+    }
+
+    function tick(){
+      var t=performance.now();
       cx+=(px-cx)*0.20;
       cy+=(py-cy)*0.20;
       press+=(pressT-press)*0.14;
-      let moving=Math.abs(pressT-press)>0.002;
-      chars.forEach(c=>{
-        const bx=hr.left+c.bx, by=hr.top+c.by;
-        const dx=bx-cx, dy=by-cy;
-        const r=Math.sqrt(dx*dx+dy*dy);
-        const q1=r/sig, q2=(r-rb)/sigb;
-        const sc=Math.min(2,Math.max(.4,1-0.36*press*Math.exp(-(q1*q1))+0.12*press*Math.exp(-(q2*q2))));
-        const tx=(cx+dx*sc)-bx;
-        const ty=(cy+dy*sc)-by;
-        if(Math.abs(sc-1)>0.001) moving=true;
-        c.el.style.transform='translate('+tx.toFixed(2)+'px,'+ty.toFixed(2)+'px) scale('+sc.toFixed(3)+')';
-      });
-      raf=(active||moving||Math.abs(px-cx)>0.1||Math.abs(py-cy)>0.1)?requestAnimationFrame(frame):0;
+
+      var el=(t-startT)/1000;
+      var p=el%4.2;
+      var phase=p<1.7 ? -0.22+(p/1.7)*1.44 : -9;
+
+      if(press<0.003){
+        renderFrame(ctx,phase,0,0);
+      } else {
+        var nx=Math.max(-1,Math.min(1,(px/W)*2-1));
+        var ny=Math.max(-1,Math.min(1,(py/H)*2-1));
+        renderFrame(fctx,phase,nx*2*press*DPR,ny*2*press*DPR);
+        ctx.setTransform(1,0,0,1,0,0);
+        ctx.globalCompositeOperation='source-over';
+        ctx.globalAlpha=1;
+        ctx.clearRect(0,0,W,H);
+        ctx.drawImage(frame,0,0);
+        warp();
+      }
+      raf=requestAnimationFrame(tick);
     }
 
-    zone.addEventListener('pointermove',e=>{
-      if(!active){cx=e.clientX;cy=e.clientY;}
-      px=e.clientX;py=e.clientY;active=true;pressT=1;start();
-    },{passive:true});
-    zone.addEventListener('pointerleave',()=>{active=false;pressT=0;start();});
-    window.addEventListener('resize',()=>{measure();if(!active)start();},{passive:true});
+    function start(){
+      if(reduce||document.hidden) return;
+      if(!raf) raf=requestAnimationFrame(tick);
+    }
 
-    measure();
-    const hr0=h1.getBoundingClientRect();
-    px=cx=hr0.left+hr0.width/2; py=cy=hr0.top+hr0.height/2;
-    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(measure);
+    function toCanvas(e){
+      var r=canvas.getBoundingClientRect();
+      px=(e.clientX-r.left)*DPR;
+      py=(e.clientY-r.top)*DPR;
+      pressT=1;
+    }
+
+    canvas.addEventListener('pointermove',function(e){
+      if(e.pointerType==='touch') return;
+      toCanvas(e);
+      start();
+    },{passive:true});
+    canvas.addEventListener('pointerenter',function(e){
+      if(e.pointerType==='touch') return;
+      pressT=1;
+      start();
+    },{passive:true});
+    canvas.addEventListener('pointerleave',function(){ pressT=0; start(); });
+
+    document.addEventListener('visibilitychange',function(){
+      if(document.hidden){ if(raf){ cancelAnimationFrame(raf); raf=0; } }
+      else start();
+    });
+
+    var rt=0;
+    window.addEventListener('resize',function(){
+      clearTimeout(rt);
+      rt=setTimeout(function(){
+        build();
+        if(reduce){ ctx.drawImage(bright,0,0); return; }
+        if(raf){ cancelAnimationFrame(raf); raf=0; }
+        startT=performance.now();
+        start();
+      },150);
+    },{passive:true});
+
+    build();
+    if(reduce){ ctx.drawImage(bright,0,0); return; }
+    startT=performance.now();
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){ build(); startT=performance.now(); start(); });
+    start();
   })();
   (function(){
     var box = document.getElementById('siteRating');
