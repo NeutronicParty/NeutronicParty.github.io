@@ -52,6 +52,7 @@
 
   @media(prefers-reduced-motion:reduce){.back:hover{transform:none}}
 </style>
+<link rel="stylesheet" href="/news.css">
 </head>
 <body>
 <div class="glow" aria-hidden="true"></div>
@@ -60,6 +61,11 @@
   <div class="wrap">
     <nav>
       <a class="logo" href="/"><img class="mark" src="/logo.png" alt="Neutronic logo"> Neutronic</a>
+      <div class="nav-actions">
+        <button class="news-btn" id="newsBtn" type="button" aria-haspopup="dialog" aria-controls="newsModal">
+          <span class="news-dot" aria-hidden="true"></span>News
+        </button>
+      </div>
     </nav>
   </div>
 </header>
@@ -100,5 +106,6 @@
   setInterval(tick, 250);
 })();
 </script>
+<script src="/news.js"></script>
 </body>
 </html>

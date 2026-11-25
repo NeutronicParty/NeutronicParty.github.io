@@ -123,6 +123,7 @@
   }
 </style>
 <script src="/spamguard.js?v=2"></script>
+<link rel="stylesheet" href="/news.css">
 </head>
 <body>
 <canvas id="bg" aria-hidden="true"></canvas>
@@ -138,7 +139,12 @@
         <a href="../help.html">Help</a>
         <a href="../index.html#contact">Contact</a>
       </div>
-      <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+      <div class="nav-actions">
+        <button class="news-btn" id="newsBtn" type="button" aria-haspopup="dialog" aria-controls="newsModal">
+          <span class="news-dot" aria-hidden="true"></span>News
+        </button>
+        <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+      </div>
     </nav>
   </div>
 </header>
@@ -346,5 +352,6 @@
   })();
 })();
 </script>
+<script src="/news.js"></script>
 </body>
 </html>

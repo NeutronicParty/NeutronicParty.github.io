@@ -66,6 +66,7 @@
   header .wrap{max-width:none}
 </style>
 <script src="/spamguard.js?v=2"></script>
+<link rel="stylesheet" href="/news.css">
 </head>
 <body>
 
@@ -79,7 +80,12 @@
         <a class="active" href="help.html">Help</a>
         <a href="index.html#contact">Contact</a>
       </div>
-      <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+      <div class="nav-actions">
+        <button class="news-btn" id="newsBtn" type="button" aria-haspopup="dialog" aria-controls="newsModal">
+          <span class="news-dot" aria-hidden="true"></span>News
+        </button>
+        <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+      </div>
     </nav>
   </div>
 </header>
@@ -122,5 +128,6 @@
   </div>
 </footer>
 
+<script src="/news.js"></script>
 </body>
 </html>
