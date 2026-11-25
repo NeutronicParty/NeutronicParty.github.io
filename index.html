@@ -242,6 +242,10 @@
   #engineLeft.youtubed .kick{color:#ef4444}
   #engineLeft.youtubed .kick::before{background:#ef4444}
   #engineLeft.youtubed .tick{color:#ef4444}
+  #engineRight.games{background:radial-gradient(520px circle at 100% 0%,rgba(34,197,94,.16),transparent 62%),var(--panel);border-color:#1f4d34}
+  #engineRight.games .kick{color:#22c55e}
+  #engineRight.games .kick::before{background:#22c55e}
+  #engineRight.games .tick{color:#22c55e}
   @media(min-width:901px){.engine.right{margin-left:0;margin-right:calc(-1 * min(240px, 32px + max(0px, (100vw - 1168px) / 2)))}}
   @media(max-width:900px){.engine.right{margin-right:0}}
   .engine .kick{margin-bottom:10px}
@@ -325,7 +329,7 @@
         <h1 class="lens watermark" aria-label="Neutronic Partyhouse"><canvas class="wm-canvas" aria-hidden="true"></canvas></h1>
         <button class="morebtn" id="moreBtn" type="button" aria-pressed="false">More software</button>
       </div>
-      <div class="engine right rust reveal">
+      <div class="engine right rust reveal" id="engineRight">
         <p class="kick">Rustify</p>
         <h3>Spotify, but rusty</h3>
         <p class="engine-desc">A Spotify client written fully in rust, no skidding, just painful code.</p>
@@ -352,6 +356,20 @@
     </ul>
     <div class="engine-side">
       <a class="btn btn-y" href="youtubed/">Check it out →</a>
+    </div>
+  </template>
+
+  <template id="unblockedBlock">
+    <p class="kick">Unblocked Games</p>
+    <h3>Play when the bell rings</h3>
+    <p class="engine-desc">A whole pile of browser games that load anywhere — no downloads, no installs, just click and play.</p>
+    <ul>
+      <li><span class="tick bullet" aria-hidden="true"></span><span><b>Hundreds</b> — action, puzzle, racing, shooters</span></li>
+      <li><span class="tick bullet" aria-hidden="true"></span><span><b>Runs in-browser</b> — nothing to install</span></li>
+      <li><span class="tick bullet" aria-hidden="true"></span><span><b>Opens free</b> — one click, straight in</span></li>
+    </ul>
+    <div class="engine-side">
+      <a class="btn btn-g" href="https://classroom6x.github.io/" target="_blank" rel="noopener">Play now →</a>
     </div>
   </template>
 
@@ -451,9 +469,16 @@
     var btn=document.getElementById('moreBtn');
     var box=document.getElementById('engineLeft');
     var tpl=document.getElementById('youtubedBlock');
+    var rbox=document.getElementById('engineRight');
+    var rtpl=document.getElementById('unblockedBlock');
     if(!btn||!box||!tpl) return;
     var original=Array.prototype.map.call(box.childNodes, function(n){ return n.cloneNode(true); });
+    var roriginal=rbox?Array.prototype.map.call(rbox.childNodes, function(n){ return n.cloneNode(true); }):null;
     var showing=false;
+    function fill(el, frag){
+      if (el.replaceChildren) el.replaceChildren(frag);
+      else { while (el.firstChild) el.removeChild(el.firstChild); el.appendChild(frag); }
+    }
     function render(){
       var frag=document.createDocumentFragment();
       if(showing){
@@ -461,9 +486,19 @@
       } else {
         original.forEach(function(n){ frag.appendChild(n.cloneNode(true)); });
       }
-      if (box.replaceChildren) box.replaceChildren(frag);
-      else { while (box.firstChild) box.removeChild(box.firstChild); box.appendChild(frag); }
+      fill(box, frag);
       box.classList.toggle('youtubed', showing);
+      if(rbox && rtpl && roriginal && roriginal.length){
+        var rfrag=document.createDocumentFragment();
+        if(showing){
+          rfrag.appendChild(rtpl.content.cloneNode(true));
+        } else {
+          roriginal.forEach(function(n){ rfrag.appendChild(n.cloneNode(true)); });
+        }
+        fill(rbox, rfrag);
+        rbox.classList.toggle('games', showing);
+        rbox.classList.toggle('rust', !showing);
+      }
       btn.setAttribute('aria-pressed', showing?'true':'false');
     }
     var curtain=document.getElementById('curtain');
