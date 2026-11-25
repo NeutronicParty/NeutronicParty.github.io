@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Neutronic Games — unblocked browser games</title>
+<meta name="description" content="A pile of browser games built by Neutronic. No downloads, no installs, no accounts — click and play.">
+<link rel="icon" href="../logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="../"><img src="../logo.png" alt="Neutronic logo"> Neutronic Games</a>
+      <a class="back" href="../">← Main site</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <span class="kick">unblocked · offline · ours</span>
+    <h1>School blocked shit?</h1>
+    <p>No problemo we got all de games here bro. Every game on this page was written by us and runs right in your browser — nothing installs, nothing phones home.</p>
+  </section>
+
+  <div class="tools">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search games…" autocomplete="off" aria-label="Search games">
+    </label>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>
+  <div class="wrap row">
+    <span>Built by Neutronic · every line ours</span>
+    <a href="../">neutronicparty.github.io</a>
+  </div>
+</footer>
+
+<script>
+  var GAMES=[
+    {slug:"snake",title:"Snake",desc:"Eat, grow, don't bite yourself. The one everybody knows.",tags:["arcade","classic"],a:"rgba(34,197,94,.18)",c:"#22c55e",
+     icon:'<path d="M4 17h5a3 3 0 0 0 0-6H7a3 3 0 0 1 0-6h6"/><circle cx="17" cy="18" r="2"/><path d="M15 8h4"/>'},
+    {slug:"tetris",title:"Blocks",desc:"Stack falling pieces, clear lines, chase the level.",tags:["puzzle","classic"],a:"rgba(59,130,246,.18)",c:"#60a5fa",
+     icon:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="12" y="3" width="7" height="7" rx="1"/><rect x="12" y="12" width="7" height="7" rx="1"/><rect x="3" y="12" width="7" height="7" rx="1"/>'},
+    {slug:"breakout",title:"Breakout",desc:"Paddle, ball, wall of bricks. Keep it alive.",tags:["arcade","action"],a:"rgba(249,115,22,.18)",c:"#fb923c",
+     icon:'<rect x="3" y="5" width="18" height="3" rx="1"/><rect x="3" y="10" width="18" height="3" rx="1"/><rect x="8" y="18" width="8" height="3" rx="1.5"/><circle cx="18" cy="15" r="1.6"/>'},
+    {slug:"2048",title:"2048",desc:"Slide tiles, merge twins, reach the 2048 tile.",tags:["puzzle","numbers"],a:"rgba(250,204,21,.16)",c:"#facc15",
+     icon:'<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/>'},
+    {slug:"pong",title:"Pong",desc:"You vs. the machine. First to seven.",tags:["arcade","classic"],a:"rgba(168,85,247,.16)",c:"#c084fc",
+     icon:'<rect x="3" y="4" width="2.5" height="8" rx="1"/><rect x="18.5" y="12" width="2.5" height="8" rx="1"/><circle cx="12" cy="12" r="2"/>'},
+    {slug:"flappy",title:"Flap",desc:"Tap to fly between the pipes. It gets worse.",tags:["arcade","endless"],a:"rgba(14,165,233,.16)",c:"#38bdf8",
+     icon:'<path d="M4 12h6l3-6 3 6h4"/><path d="M4 18h16"/>'},
+    {slug:"mines",title:"Minesweeper",desc:"Clear the board without clicking a mine.",tags:["puzzle","logic"],a:"rgba(239,68,68,.16)",c:"#f87171",
+     icon:'<circle cx="12" cy="13" r="5"/><path d="M12 3v3M12 20v1M5 5l2 2M17 5l-2 2"/>'},
+    {slug:"memory",title:"Memory",desc:"Flip pairs, remember positions, clear the deck.",tags:["puzzle","brain"],a:"rgba(20,184,166,.16)",c:"#2dd4bf",
+     icon:'<rect x="3" y="5" width="8" height="14" rx="2"/><rect x="13" y="5" width="8" height="14" rx="2"/>'}
+  ];
+
+  var grid=document.getElementById('grid');
+  var chips=document.getElementById('chips');
+  var q=document.getElementById('q');
+  var active='all';
+
+  var allTags=['all'];
+  GAMES.forEach(function(g){g.tags.forEach(function(t){if(allTags.indexOf(t)<0)allTags.push(t)})});
+
+  chips.innerHTML=allTags.map(function(t){
+    return '<button class="chip" type="button" data-tag="'+t+'" aria-pressed="'+(t==='all')+'">'+(t==='all'?'All':t.charAt(0).toUpperCase()+t.slice(1))+'</button>';
+  }).join('');
+
+  function card(g){
+    return '<a class="card" href="'+g.slug+'.html" style="--a:'+g.a+';--c:'+g.c+'">'+
+      '<span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+g.icon+'</svg></span>'+
+      '<h3>'+g.title+'</h3><p>'+g.desc+'</p>'+
+      '<span class="meta">'+g.tags.map(function(t){return '<span class="tag">'+t+'</span>'}).join('')+'</span>'+
+    '</a>';
+  }
+
+  function render(){
+    var term=q.value.trim().toLowerCase();
+    var list=GAMES.filter(function(g){
+      var tagOk=active==='all'||g.tags.indexOf(active)>=0;
+      var termOk=!term||g.title.toLowerCase().indexOf(term)>=0||g.desc.toLowerCase().indexOf(term)>=0||g.tags.join(' ').indexOf(term)>=0;
+      return tagOk&&termOk;
+    });
+    grid.innerHTML=list.length?list.map(card).join(''):'<div class="empty">No game matches that. Try another word.</div>';
+  }
+
+  chips.addEventListener('click',function(e){
+    var b=e.target.closest('.chip'); if(!b) return;
+    active=b.getAttribute('data-tag');
+    Array.prototype.forEach.call(chips.children,function(c){c.setAttribute('aria-pressed', String(c===b))});
+    render();
+  });
+  q.addEventListener('input',render);
+  render();
+</script>
+</body>
+</html>

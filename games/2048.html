@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2048 — Neutronic Games</title>
+<link rel="icon" href="../logo.png">
+<link rel="stylesheet" href="style.css">
+<style>
+  .board{position:relative;width:min(100%,440px);aspect-ratio:1;background:#0d1117;border:1px solid var(--line);border-radius:18px;padding:0;overflow:hidden;touch-action:none}
+  .cells{position:absolute;inset:0}
+  .cell{position:absolute;background:#141a24;border-radius:10px}
+  .tile{position:absolute;display:grid;place-items:center;border-radius:10px;font-weight:860;letter-spacing:-.03em;
+    transition:left .12s ease,top .12s ease,background-color .12s;will-change:left,top}
+  .tile.pop{animation:pop .16s ease}
+  @keyframes pop{0%{transform:scale(.55)}70%{transform:scale(1.06)}100%{transform:scale(1)}}
+  .v2{background:#2b3648;color:#dfe7f3}
+  .v4{background:#37507a;color:#fff}
+  .v8{background:#2f7d5b;color:#fff}
+  .v16{background:#2f9d63;color:#fff}
+  .v32{background:#27b26a;color:#04140a}
+  .v64{background:#22c55e;color:#04140a}
+  .v128{background:#7dd3fc;color:#041018}
+  .v256{background:#60a5fa;color:#041018}
+  .v512{background:#a78bfa;color:#0b0620}
+  .v1024{background:#f472b6;color:#1b0413}
+  .v2048{background:#facc15;color:#1a1403;box-shadow:0 0 36px -6px rgba(250,204,21,.7)}
+  .vbig{background:#84cc16;color:#0d1204}
+</style>
+</head>
+<body class="game-body">
+<header><div class="wrap"><nav>
+  <a class="logo" href="../"><img src="../logo.png" alt="Neutronic logo"> Neutronic Games</a>
+  <a class="back" href="index.html">← All games</a>
+</nav></div></header>
+
+<main class="wrap" style="flex:1">
+  <div class="gbar">
+    <span class="gtitle">2048</span>
+    <span class="stat" style="margin-left:14px">Score <b id="score">0</b></span>
+    <span class="stat">Best <b id="best">0</b></span>
+    <span class="spacer"></span>
+    <button class="gbtn primary" id="restart" type="button">Restart</button>
+  </div>
+  <div class="stage" style="display:block">
+    <div class="rel" style="display:block;margin:0 auto;width:min(100%,440px)">
+      <div class="board" id="board"><div class="cells" id="cells"></div></div>
+      <div class="overlay" id="ov">
+        <div>
+          <h2 id="ovTitle">2048</h2>
+          <p id="ovText">Slide with arrows, WASD or swipe. Merge twins to double them.</p>
+          <button class="gbtn primary" id="ovBtn" type="button">Play</button>
+        </div>
+      </div>
+    </div>
+    <div class="dpad" id="dpad">
+      <button class="up" data-dir="up" aria-label="Up">↑</button>
+      <button class="left" data-dir="left" aria-label="Left">←</button>
+      <button class="down" data-dir="down" aria-label="Down">↓</button>
+      <button class="right" data-dir="right" aria-label="Right">→</button>
+    </div>
+    <p class="hint">Arrows / WASD / swipe · same numbers merge</p>
+  </div>
+</main>
+
+<script>
+(function(){
+  var board=document.getElementById('board'),cellsEl=document.getElementById('cells');
+  var scoreEl=document.getElementById('score'),bestEl=document.getElementById('best');
+  var ov=document.getElementById('ov'),ovTitle=document.getElementById('ovTitle'),ovText=document.getElementById('ovText'),ovBtn=document.getElementById('ovBtn');
+
+  var SIZE=4,GAP=10;
+  var grid,tiles,score,over,won,keepGoing,seq,best,els;
+
+  best=+(localStorage.getItem('ntr_2048_best')||0);
+  bestEl.textContent=best;
+  els=new Map();
+
+  function reset(){
+    grid=[];for(var i=0;i<SIZE*SIZE;i++)grid.push(null);
+    tiles=new Map();seq=1;score=0;over=false;won=false;keepGoing=false;
+    scoreEl.textContent='0';
+    els.forEach(function(el){el.remove();});els.clear();
+    addTile();addTile();
+    ov.classList.remove('show');
+    render();
+  }
+
+  function addTile(){
+    var open=[];for(var i=0;i<grid.length;i++)if(!grid[i])open.push(i);
+    if(!open.length)return null;
+    var idx=open[Math.floor(Math.random()*open.length)];
+    var t={id:seq++,value:Math.random()<.9?2:4,x:idx%SIZE,y:Math.floor(idx/SIZE),isNew:true,merged:false};
+    grid[idx]=t;tiles.set(t.id,t);
+    return t;
+  }
+
+  function lineIndices(dir){
+    var lines=[],i,j;
+    for(i=0;i<SIZE;i++){
+      lines.push([]);
+      for(j=0;j<SIZE;j++){
+        if(dir==='left')lines[i].push({x:j,y:i});
+        else if(dir==='right')lines[i].push({x:SIZE-1-j,y:i});
+        else if(dir==='up')lines[i].push({x:i,y:j});
+        else lines[i].push({x:i,y:SIZE-1-j});
+      }
+    }
+    return lines;
+  }
+
+  function move(dir){
+    if(over||(won&&!keepGoing))return;
+    var lines=lineIndices(dir),moved=false,scoreGain=0;
+    tiles.forEach(function(t){t.merged=false;t.isNew=false;});
+
+    lines.forEach(function(line){
+      var ordered=line.map(function(p){return grid[p.y*SIZE+p.x];}).filter(Boolean);
+      var result=[];
+      for(var i=0;i<ordered.length;i++){
+        var t=ordered[i];
+        if(i<ordered.length-1&&ordered[i+1].value===t.value&&!ordered[i+1].merged&&!t.merged){
+          var merged={id:seq++,value:t.value*2,x:0,y:0,isNew:false,merged:true};
+          tiles.delete(t.id);tiles.delete(ordered[i+1].id);
+          result.push({tile:merged,from:[t,ordered[i+1]]});
+          scoreGain+=merged.value;
+          i++;
+        } else result.push({tile:t,from:[t]});
+      }
+      for(var k=0;k<result.length;k++){
+        var p=line[k];
+        result[k].tile.x=p.x;result[k].tile.y=p.y;
+      }
+      for(var m=0;m<line.length;m++){
+        var p2=line[m],idx=p2.y*SIZE+p2.x;
+        var incoming=m<result.length?result[m].tile:null;
+        if(grid[idx]!==incoming)moved=true;
+        grid[idx]=incoming;
+      }
+      result.forEach(function(r){
+        if(r.from.length===2){
+          r.tile.merged=true;
+          tiles.set(r.tile.id,r.tile);
+          if(!tiles.has(r.from[0].id)){}
+        }
+      });
+    });
+
+    if(!moved)return;
+
+    score+=scoreGain;scoreEl.textContent=score;
+    if(score>best){best=score;localStorage.setItem('ntr_2048_best',best);bestEl.textContent=best;}
+    addTile();
+    render();
+    checkState();
+  }
+
+  function checkState(){
+    var maxVal=0;
+    tiles.forEach(function(t){maxVal=Math.max(maxVal,t.value);});
+    if(maxVal>=2048&&!won&&!keepGoing){
+      won=true;
+      ovTitle.textContent='2048!';
+      ovText.textContent='You made the tile. Keep going for a bigger number?';
+      ovBtn.textContent='Keep going';
+      ov.classList.add('show');
+      return;
+    }
+    if(!canMove()){
+      over=true;
+      ovTitle.textContent='No moves left';
+      ovText.textContent='Final score '+score+'. Best is '+best+'.';
+      ovBtn.textContent='Play again';
+      ov.classList.add('show');
+    }
+  }
+
+  function canMove(){
+    if(tiles.size<SIZE*SIZE)return true;
+    for(var y=0;y<SIZE;y++)for(var x=0;x<SIZE;x++){
+      var v=grid[y*SIZE+x]&&grid[y*SIZE+x].value;
+      if(x<SIZE-1&&grid[y*SIZE+x+1]&&grid[y*SIZE+x+1].value===v)return true;
+      if(y<SIZE-1&&grid[(y+1)*SIZE+x]&&grid[(y+1)*SIZE+x].value===v)return true;
+    }
+    return false;
+  }
+
+  function render(){
+    var w=board.clientWidth;
+    var cell=(w-GAP*(SIZE+1))/SIZE;
+
+    if(!cellsEl.childElementCount){
+      for(var i=0;i<SIZE*SIZE;i++){
+        var c=document.createElement('div');
+        c.className='cell';
+        c.style.width=cell+'px';c.style.height=cell+'px';
+        c.style.left=(GAP+(i%SIZE)*(cell+GAP))+'px';
+        c.style.top=(GAP+Math.floor(i/SIZE)*(cell+GAP))+'px';
+        cellsEl.appendChild(c);
+      }
+    } else {
+      Array.prototype.forEach.call(cellsEl.children,function(c,i){
+        c.style.width=cell+'px';c.style.height=cell+'px';
+        c.style.left=(GAP+(i%SIZE)*(cell+GAP))+'px';
+        c.style.top=(GAP+Math.floor(i/SIZE)*(cell+GAP))+'px';
+      });
+    }
+
+    var seen=new Set();
+    tiles.forEach(function(t){
+      seen.add(t.id);
+      var el=els.get(t.id);
+      if(!el){
+        el=document.createElement('div');
+        el.className='tile';
+        els.set(t.id,el);
+        board.appendChild(el);
+      }
+      var v=t.value;
+      el.className='tile '+(v<=2048?('v'+v):'vbig');
+      if(t.isNew||t.merged){
+        el.classList.add('pop');
+        setTimeout((function(el){return function(){el.classList.remove('pop');};})(el),180);
+      }
+      el.textContent=String(v);
+      el.style.width=cell+'px';el.style.height=cell+'px';
+      el.style.left=(GAP+t.x*(cell+GAP))+'px';
+      el.style.top=(GAP+t.y*(cell+GAP))+'px';
+      el.style.fontSize=Math.round(cell*(v<100?0.46:v<1000?0.38:v<10000?0.3:0.24))+'px';
+    });
+    els.forEach(function(el,id){
+      if(!seen.has(id)){el.remove();els.delete(id);}
+    });
+  }
+
+  var MAP={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',a:'left',d:'right',w:'up',s:'down',A:'left',D:'right',W:'up',S:'down'};
+  window.addEventListener('keydown',function(e){
+    var d=MAP[e.key];if(!d)return;
+    e.preventDefault();
+    if(won&&!keepGoing)return;
+    move(d);
+  });
+
+  var sx=0,sy=0;
+  board.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+  board.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)<26&&Math.abs(dy)<26)return;
+    move(Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up'));
+  },{passive:true});
+
+  document.getElementById('dpad').addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b)return;
+    move(b.getAttribute('data-dir'));
+  });
+
+  ovBtn.addEventListener('click',function(){
+    if(over||(won&&!keepGoing)){ if(won&&!keepGoing&&!over){keepGoing=true;ov.classList.remove('show');return;} reset(); }
+  });
+  document.getElementById('restart').addEventListener('click',reset);
+
+  window.addEventListener('resize',function(){render();});
+
+  reset();
+})();
+</script>
+</body>
+</html>

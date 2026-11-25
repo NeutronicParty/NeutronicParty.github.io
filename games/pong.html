@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pong — Neutronic Games</title>
+<link rel="icon" href="../logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="game-body">
+<header><div class="wrap"><nav>
+  <a class="logo" href="../"><img src="../logo.png" alt="Neutronic logo"> Neutronic Games</a>
+  <a class="back" href="index.html">← All games</a>
+</nav></div></header>
+
+<main class="wrap" style="flex:1">
+  <div class="gbar">
+    <span class="gtitle">Pong</span>
+    <span class="stat" style="margin-left:14px">You <b id="ps">0</b></span>
+    <span class="stat">CPU <b id="as">0</b></span>
+    <span class="spacer"></span>
+    <button class="gbtn primary" id="restart" type="button">Restart</button>
+  </div>
+  <div class="stage" style="display:block">
+    <div class="rel" style="display:block;margin:0 auto;width:min(100%,680px)">
+      <canvas id="cv" width="640" height="420" style="width:100%"></canvas>
+      <div class="overlay" id="ov">
+        <div>
+          <h2 id="ovTitle">Pong</h2>
+          <p id="ovText">Move with the mouse or ↑ ↓. First to 7 wins.</p>
+          <button class="gbtn primary" id="start" type="button">Start</button>
+        </div>
+      </div>
+    </div>
+    <div class="dpad" id="dpad">
+      <button class="up" data-dir="up" aria-label="Up">↑</button>
+      <button class="down" data-dir="down" aria-label="Down">↓</button>
+    </div>
+    <p class="hint">Mouse / touch / ↑ ↓ · first to 7</p>
+  </div>
+</main>
+
+<script>
+(function(){
+  var W=640,H=420;
+  var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+  var psEl=document.getElementById('ps'),asEl=document.getElementById('as');
+  var ov=document.getElementById('ov'),ovTitle=document.getElementById('ovTitle'),ovText=document.getElementById('ovText'),startBtn=document.getElementById('start');
+
+  var PH=74,PW=10,BALL=8,MW=40;
+  var player,cpu,ball,ps,as,running,upHeld,downHeld,lastTs;
+
+  function resetBall(dir){
+    ball={x:W/2,y:H/2,vx:dir*4.6,vy:(Math.random()*2-1)*2.6,r:BALL};
+  }
+
+  function reset(){
+    player={y:H/2-PH/2};cpu={y:H/2-PH/2};
+    ps=0;as=0;running=false;lastTs=0;
+    psEl.textContent='0';asEl.textContent='0';
+    resetBall(Math.random()<.5?1:-1);
+    draw();
+  }
+
+  function start(){reset();running=true;ov.classList.remove('show');}
+
+  function score(who){
+    if(who==='p'){ps++;psEl.textContent=ps;resetBall(1);}
+    else{as++;asEl.textContent=as;resetBall(-1);}
+    if(ps>=7||as>=7){
+      running=false;
+      ovTitle.textContent=ps>=7?'You win':'CPU wins';
+      ovText.textContent=ps+' — '+as+'. Run it back?';
+      startBtn.textContent='Play again';
+      ov.classList.add('show');
+    }
+  }
+
+  function update(dt){
+    if(!running)return;
+    var step=dt/16.6667;
+
+    if(upHeld)player.y-=8*step;
+    if(downHeld)player.y+=8*step;
+    player.y=Math.max(0,Math.min(H-PH,player.y));
+
+    var target=ball.y-PH/2;
+    var diff=target-cpu.y;
+    var speed=5.2+Math.min(2.4,Math.abs(ball.vx)*0.18);
+    cpu.y+=Math.sign(diff)*Math.min(Math.abs(diff),speed*step);
+    cpu.y=Math.max(0,Math.min(H-PH,cpu.y));
+
+    ball.x+=ball.vx*step;ball.y+=ball.vy*step;
+
+    if(ball.y-ball.r<0){ball.y=ball.r;ball.vy=Math.abs(ball.vy);}
+    if(ball.y+ball.r>H){ball.y=H-ball.r;ball.vy=-Math.abs(ball.vy);}
+
+    if(ball.vx<0&&ball.x-ball.r<MW+PW&&ball.x>MW&&ball.y>player.y-ball.r&&ball.y<player.y+PH+ball.r){
+      ball.x=MW+PW+ball.r;
+      var rel=(ball.y-(player.y+PH/2))/(PH/2);
+      var sp=Math.min(12,Math.hypot(ball.vx,ball.vy)*1.06);
+      var ang=rel*0.9;
+      ball.vx=Math.cos(ang)*sp;ball.vy=Math.sin(ang)*sp;
+    }
+    if(ball.vx>0&&ball.x+ball.r>W-MW-PW&&ball.x<W-MW&&ball.y>cpu.y-ball.r&&ball.y<cpu.y+PH+ball.r){
+      ball.x=W-MW-PW-ball.r;
+      var rel2=(ball.y-(cpu.y+PH/2))/(PH/2);
+      var sp2=Math.min(12,Math.hypot(ball.vx,ball.vy)*1.06);
+      var ang2=rel2*0.9;
+      ball.vx=-Math.cos(ang2)*sp2;ball.vy=Math.sin(ang2)*sp2;
+    }
+
+    if(ball.x+ball.r<0)score('a');
+    else if(ball.x-ball.r>W)score('p');
+  }
+
+  function draw(){
+    ctx.fillStyle='#0d1117';ctx.fillRect(0,0,W,H);
+    ctx.setLineDash([6,12]);ctx.strokeStyle='rgba(255,255,255,.09)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();ctx.setLineDash([]);
+
+    ctx.fillStyle='#7dd3fc';
+    ctx.fillRect(MW,player.y,PW,PH);
+    ctx.fillStyle='#f472b6';
+    ctx.fillRect(W-MW-PW,cpu.y,PW,PH);
+
+    ctx.fillStyle='#e4e9f1';
+    ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=.25;ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r*1.9,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+
+    ctx.font='700 15px ui-monospace,Menlo,monospace';ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.16)';
+    ctx.fillText(ps+'   '+as,W/2,30);
+  }
+
+  function frame(ts){
+    if(!lastTs)lastTs=ts;
+    var dt=Math.min(50,ts-lastTs);lastTs=ts;
+    update(dt);draw();
+    requestAnimationFrame(frame);
+  }
+
+  function pointerToY(y){
+    var rect=cv.getBoundingClientRect();
+    var scale=H/rect.height;
+    player.y=Math.max(0,Math.min(H-PH,(y-rect.top)*scale-PH/2));
+  }
+  cv.addEventListener('pointermove',function(e){if(running)pointerToY(e.clientY);});
+  cv.addEventListener('touchmove',function(e){if(running){pointerToY(e.touches[0].clientY);e.preventDefault();}},{passive:false});
+
+  window.addEventListener('keydown',function(e){
+    if(e.key==='ArrowUp'||e.key==='w'){upHeld=true;e.preventDefault();}
+    if(e.key==='ArrowDown'||e.key==='s'){downHeld=true;e.preventDefault();}
+    if(e.key===' '&&!running){e.preventDefault();start();}
+  });
+  window.addEventListener('keyup',function(e){
+    if(e.key==='ArrowUp'||e.key==='w')upHeld=false;
+    if(e.key==='ArrowDown'||e.key==='s')downHeld=false;
+  });
+
+  var dpad=document.getElementById('dpad');
+  dpad.addEventListener('pointerdown',function(e){
+    var b=e.target.closest('button');if(!b)return;
+    if(b.getAttribute('data-dir')==='up')upHeld=true;else downHeld=true;
+  });
+  dpad.addEventListener('pointerup',function(){upHeld=false;downHeld=false;});
+  dpad.addEventListener('pointercancel',function(){upHeld=false;downHeld=false;});
+
+  startBtn.addEventListener('click',start);
+  document.getElementById('restart').addEventListener('click',start);
+
+  reset();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

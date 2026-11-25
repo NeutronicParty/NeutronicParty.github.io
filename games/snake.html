@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snake — Neutronic Games</title>
+<link rel="icon" href="../logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="game-body">
+<header><div class="wrap"><nav>
+  <a class="logo" href="../"><img src="../logo.png" alt="Neutronic logo"> Neutronic Games</a>
+  <a class="back" href="index.html">← All games</a>
+</nav></div></header>
+
+<main class="wrap" style="flex:1">
+  <div class="gbar">
+    <span class="gtitle">Snake</span>
+    <span class="stat" style="margin-left:14px">Score <b id="score">0</b></span>
+    <span class="stat">Best <b id="best">0</b></span>
+    <span class="spacer"></span>
+    <button class="gbtn primary" id="restart" type="button">Restart</button>
+  </div>
+  <div class="stage" style="display:block">
+    <div class="rel" style="display:block;margin:0 auto;width:min(100%,520px)">
+      <canvas id="cv" width="480" height="480" style="width:100%"></canvas>
+      <div class="overlay" id="ov">
+        <div>
+          <h2 id="ovTitle">Snake</h2>
+          <p id="ovText">Arrows or WASD to move. Don't hit the walls or yourself.</p>
+          <button class="gbtn primary" id="start" type="button">Start</button>
+        </div>
+      </div>
+    </div>
+    <div class="dpad" id="dpad">
+      <button class="up" data-dir="up" aria-label="Up">↑</button>
+      <button class="left" data-dir="left" aria-label="Left">←</button>
+      <button class="down" data-dir="down" aria-label="Down">↓</button>
+      <button class="right" data-dir="right" aria-label="Right">→</button>
+    </div>
+    <p class="hint">Arrow keys / WASD · swipe on the board</p>
+  </div>
+</main>
+
+<script>
+(function(){
+  var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+  var N=20,CELL=cv.width/N;
+  var scoreEl=document.getElementById('score'),bestEl=document.getElementById('best');
+  var ov=document.getElementById('ov'),ovTitle=document.getElementById('ovTitle'),ovText=document.getElementById('ovText');
+  var startBtn=document.getElementById('start');
+
+  var snake,dir,nextDir,food,score,timer,speed,running,dead;
+  var best=+(localStorage.getItem('ntr_snake_best')||0);
+  bestEl.textContent=best;
+
+  function reset(){
+    snake=[{x:9,y:10},{x:8,y:10},{x:7,y:10}];
+    dir={x:1,y:0}; nextDir={x:1,y:0};
+    score=0; speed=150; dead=false; running=false;
+    scoreEl.textContent='0';
+    placeFood();
+    draw();
+  }
+
+  function placeFood(){
+    var open=[];
+    for(var y=0;y<N;y++)for(var x=0;x<N;x++){
+      var hit=snake.some(function(s){return s.x===x&&s.y===y});
+      if(!hit)open.push({x:x,y:y});
+    }
+    food=open[Math.floor(Math.random()*open.length)]||{x:0,y:0};
+  }
+
+  function start(){
+    reset(); running=true; ov.classList.remove('show');
+    clearInterval(timer); timer=setInterval(step,speed);
+  }
+
+  function over(){
+    running=false; dead=true; clearInterval(timer);
+    if(score>best){best=score;localStorage.setItem('ntr_snake_best',best);bestEl.textContent=best;}
+    ovTitle.textContent='Dead';
+    ovText.textContent='You scored '+score+'. Best is '+best+'.';
+    startBtn.textContent='Play again';
+    ov.classList.add('show');
+  }
+
+  function step(){
+    if(!running)return;
+    dir=nextDir;
+    var head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+    if(head.x<0||head.y<0||head.x>=N||head.y>=N)return over();
+    for(var i=0;i<snake.length-1;i++)if(snake[i].x===head.x&&snake[i].y===head.y)return over();
+    snake.unshift(head);
+    if(head.x===food.x&&head.y===food.y){
+      score++; scoreEl.textContent=score; placeFood();
+      if(score%5===0&&speed>70){speed-=10;clearInterval(timer);timer=setInterval(step,speed);}
+    } else snake.pop();
+    draw();
+  }
+
+  function draw(){
+    ctx.fillStyle='#0d1117';ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.strokeStyle='rgba(255,255,255,.03)';ctx.lineWidth=1;
+    for(var i=1;i<N;i++){
+      ctx.beginPath();ctx.moveTo(i*CELL,0);ctx.lineTo(i*CELL,cv.height);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,i*CELL);ctx.lineTo(cv.width,i*CELL);ctx.stroke();
+    }
+    ctx.fillStyle='#ef4444';
+    ctx.beginPath();
+    ctx.arc(food.x*CELL+CELL/2,food.y*CELL+CELL/2,CELL*0.32,0,Math.PI*2);
+    ctx.fill();
+    for(var j=snake.length-1;j>=0;j--){
+      var s=snake[j];
+      var t=j/Math.max(1,snake.length);
+      ctx.fillStyle=j===0?'#4ade80':'rgba(34,197,94,'+(0.95-0.5*t)+')';
+      roundRect(s.x*CELL+1.5,s.y*CELL+1.5,CELL-3,CELL-3,5);
+      ctx.fill();
+    }
+  }
+
+  function roundRect(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();
+  }
+
+  function turn(nx,ny){
+    if(!running)return;
+    if(nx===-dir.x&&ny===-dir.y)return;
+    nextDir={x:nx,y:ny};
+  }
+
+  var MAP={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],
+           w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]};
+  window.addEventListener('keydown',function(e){
+    var m=MAP[e.key];
+    if(m){e.preventDefault();turn(m[0],m[1]);}
+    if(e.key===' '&&!running&&!dead){e.preventDefault();start();}
+  });
+
+  document.getElementById('dpad').addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b)return;
+    var d=b.getAttribute('data-dir');
+    if(d==='up')turn(0,-1);if(d==='down')turn(0,1);if(d==='left')turn(-1,0);if(d==='right')turn(1,0);
+  });
+
+  var sx=0,sy=0;
+  cv.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+  cv.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)<24&&Math.abs(dy)<24)return;
+    if(Math.abs(dx)>Math.abs(dy))turn(dx>0?1:-1,0);else turn(0,dy>0?1:-1);
+  },{passive:true});
+
+  document.getElementById('restart').addEventListener('click',start);
+  startBtn.addEventListener('click',start);
+  reset();
+})();
+</script>
+</body>
+</html>

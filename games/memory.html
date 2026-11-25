@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory — Neutronic Games</title>
+<link rel="icon" href="../logo.png">
+<link rel="stylesheet" href="style.css">
+<style>
+  .mem{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:min(100%,430px);margin:0 auto;user-select:none}
+  .tile{position:relative;aspect-ratio:1;perspective:700px;background:none;border:0;padding:0;cursor:pointer}
+  .tile .inner{position:absolute;inset:0;transition:transform .35s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}
+  .tile.flipped .inner,.tile.done .inner{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;display:grid;place-items:center;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+  .face.front{background:linear-gradient(150deg,#182233,#0f1620);border:1px solid #24303f;color:#3b4d63;font-size:22px}
+  .face.back{background:linear-gradient(150deg,#123a2a,#0f2a1f);border:1px solid #1f4d34;color:#4ade80;font-size:clamp(20px,5vw,30px);transform:rotateY(180deg);font-weight:800}
+  .tile.done .face.back{background:linear-gradient(150deg,#14532d,#0f3a22);border-color:#22c55e;box-shadow:0 0 22px -6px rgba(34,197,94,.7)}
+  .tile.done{cursor:default}
+</style>
+</head>
+<body class="game-body">
+<header><div class="wrap"><nav>
+  <a class="logo" href="../"><img src="../logo.png" alt="Neutronic logo"> Neutronic Games</a>
+  <a class="back" href="index.html">← All games</a>
+</nav></div></header>
+
+<main class="wrap" style="flex:1">
+  <div class="gbar">
+    <span class="gtitle">Memory</span>
+    <span class="stat" style="margin-left:14px">Moves <b id="moves">0</b></span>
+    <span class="stat">Pairs <b id="pairs">0/8</b></span>
+    <span class="spacer"></span>
+    <button class="gbtn primary" id="restart" type="button">Restart</button>
+  </div>
+  <div class="stage" style="display:block">
+    <div class="rel" style="display:block;margin:0 auto;width:min(100%,450px)">
+      <div class="mem" id="mem"></div>
+      <div class="overlay" id="ov">
+        <div>
+          <h2 id="ovTitle">Memory</h2>
+          <p id="ovText">Flip two tiles. Match every pair in as few moves as you can.</p>
+          <button class="gbtn primary" id="start" type="button">Start</button>
+        </div>
+      </div>
+    </div>
+    <p class="hint">Find all 8 pairs</p>
+  </div>
+</main>
+
+<script>
+(function(){
+  var SYMBOLS=['◆','●','▲','■','★','✦','✚','✜'];
+  var mem=document.getElementById('mem');
+  var movesEl=document.getElementById('moves'),pairsEl=document.getElementById('pairs');
+  var ov=document.getElementById('ov'),ovTitle=document.getElementById('ovTitle'),ovText=document.getElementById('ovText'),startBtn=document.getElementById('start');
+
+  var deck,first,moves,matched,locked,started;
+
+  function reset(){
+    deck=[];
+    SYMBOLS.concat(SYMBOLS).forEach(function(s){deck.push(s);});
+    for(var i=deck.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=deck[i];deck[i]=deck[j];deck[j]=t;}
+    first=null;moves=0;matched=0;locked=false;started=false;
+    movesEl.textContent='0';pairsEl.textContent='0/8';
+    mem.innerHTML=deck.map(function(s,i){
+      return '<button class="tile" type="button" data-i="'+i+'" aria-label="Tile '+(i+1)+'">'+
+        '<span class="inner"><span class="face front">?</span><span class="face back">'+s+'</span></span></button>';
+    }).join('');
+    ov.classList.remove('show');
+  }
+
+  function flip(btn){
+    if(locked)return;
+    var i=+btn.getAttribute('data-i');
+    if(btn.classList.contains('done')||btn.classList.contains('flipped'))return;
+    btn.classList.add('flipped');
+
+    if(first===null){first={i:i,el:btn};return;}
+
+    moves++;movesEl.textContent=moves;
+    if(deck[first.i]===deck[i]){
+      var a=first.el,b=btn;first=null;
+      setTimeout(function(){a.classList.add('done');b.classList.add('done');},260);
+      matched++;pairsEl.textContent=matched+'/8';
+      if(matched===8)win();
+    } else {
+      locked=true;
+      var f=first;first=null;
+      setTimeout(function(){
+        f.el.classList.remove('flipped');btn.classList.remove('flipped');locked=false;
+      },620);
+    }
+  }
+
+  function win(){
+    locked=true;
+    setTimeout(function(){
+      ovTitle.textContent='Cleared';
+      ovText.textContent='All 8 pairs in '+moves+' moves.';
+      startBtn.textContent='Play again';ov.classList.add('show');
+    },420);
+  }
+
+  mem.addEventListener('click',function(e){
+    var b=e.target.closest('.tile');if(!b)return;
+    flip(b);
+  });
+  startBtn.addEventListener('click',reset);
+  document.getElementById('restart').addEventListener('click',reset);
+
+  reset();
+})();
+</script>
+</body>
+</html>

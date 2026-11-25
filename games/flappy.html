@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flap — Neutronic Games</title>
+<link rel="icon" href="../logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="game-body">
+<header><div class="wrap"><nav>
+  <a class="logo" href="../"><img src="../logo.png" alt="Neutronic logo"> Neutronic Games</a>
+  <a class="back" href="index.html">← All games</a>
+</nav></div></header>
+
+<main class="wrap" style="flex:1">
+  <div class="gbar">
+    <span class="gtitle">Flap</span>
+    <span class="stat" style="margin-left:14px">Score <b id="score">0</b></span>
+    <span class="stat">Best <b id="best">0</b></span>
+    <span class="spacer"></span>
+    <button class="gbtn primary" id="restart" type="button">Restart</button>
+  </div>
+  <div class="stage" style="display:block">
+    <div class="rel" style="display:block;margin:0 auto;width:min(100%,440px)">
+      <canvas id="cv" width="420" height="600" style="width:100%"></canvas>
+      <div class="overlay" id="ov">
+        <div>
+          <h2 id="ovTitle">Flap</h2>
+          <p id="ovText">Tap, click or press Space to flap. Don't touch the pipes.</p>
+          <button class="gbtn primary" id="start" type="button">Start</button>
+        </div>
+      </div>
+    </div>
+    <p class="hint">Space / click / tap to flap</p>
+  </div>
+</main>
+
+<script>
+(function(){
+  var W=420,H=600;
+  var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+  var scoreEl=document.getElementById('score'),bestEl=document.getElementById('best');
+  var ov=document.getElementById('ov'),ovTitle=document.getElementById('ovTitle'),ovText=document.getElementById('ovText'),startBtn=document.getElementById('start');
+
+  var GRAV=0.42,FLAP=-7.1,PIPEW=62,GAP=158,SPEED=2.7;
+  var bird,pipes,score,state,best,frame,groundOff;
+
+  best=+(localStorage.getItem('ntr_flap_best')||0);bestEl.textContent=best;
+
+  function reset(){
+    bird={x:110,y:H/2,v:0,r:13,rot:0};
+    pipes=[];score=0;frame=0;groundOff=0;state='ready';
+    scoreEl.textContent='0';
+    for(var i=0;i<3;i++)spawnPipe(W+120+i*230);
+  }
+
+  function spawnPipe(x){
+    var margin=90;
+    var gapY=margin+Math.random()*(H-GAP-margin*2);
+    pipes.push({x:x,top:gapY,bottom:gapY+GAP,passed:false});
+  }
+
+  function flap(){
+    if(state==='ready'){state='play';ov.classList.remove('show');}
+    if(state==='play')bird.v=FLAP;
+    else if(state==='over')start();
+  }
+
+  function start(){reset();state='play';ov.classList.remove('show');}
+
+  function over(){
+    state='over';
+    if(score>best){best=score;localStorage.setItem('ntr_flap_best',best);bestEl.textContent=best;}
+    ovTitle.textContent='Splat';
+    ovText.textContent='Score '+score+'. Best is '+best+'.';
+    startBtn.textContent='Play again';ov.classList.add('show');
+  }
+
+  function update(){
+    if(state!=='play')return;
+    frame++;
+    bird.v+=GRAV;
+    bird.y+=bird.v;
+    bird.rot=Math.max(-.5,Math.min(1.1,bird.v/14));
+
+    if(bird.y+bird.r>H-24||bird.y-bird.r<0){bird.y=Math.max(bird.r,Math.min(H-24-bird.r,bird.y));return over();}
+
+    pipes.forEach(function(p){
+      p.x-=SPEED;
+      if(!p.passed&&p.x+PIPEW<bird.x){p.passed=true;score++;scoreEl.textContent=score;}
+      if(bird.x+bird.r>p.x&&bird.x-bird.r<p.x+PIPEW){
+        if(bird.y-bird.r<p.top||bird.y+bird.r>p.bottom)over();
+      }
+    });
+    if(pipes.length&&pipes[0].x<-PIPEW-40){pipes.shift();spawnPipe(pipes[pipes.length-1].x+230);}
+  }
+
+  function draw(){
+    var g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#0b1220');g.addColorStop(1,'#0d1117');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+
+    ctx.fillStyle='rgba(125,211,252,.05)';
+    for(var s=0;s<40;s++){
+      var sx=(s*97+frame*0.3)%W, sy=(s*53)%(H-120);
+      ctx.fillRect(sx,sy,2,2);
+    }
+
+    pipes.forEach(function(p){
+      ctx.fillStyle='#22c55e';
+      ctx.fillRect(p.x,0,PIPEW,p.top);
+      ctx.fillRect(p.x,p.bottom,PIPEW,H-p.bottom);
+      ctx.fillStyle='#16a34a';
+      ctx.fillRect(p.x-4,p.top-22,PIPEW+8,22);
+      ctx.fillRect(p.x-4,p.bottom,PIPEW+8,22);
+      ctx.fillStyle='rgba(255,255,255,.14)';
+      ctx.fillRect(p.x+6,0,6,p.top);
+      ctx.fillRect(p.x+6,p.bottom,6,H-p.bottom);
+    });
+
+    ctx.fillStyle='#101820';ctx.fillRect(0,H-24,W,24);
+    ctx.fillStyle='#1b2937';
+    for(var x=-((groundOff)%20);x<W;x+=20)ctx.fillRect(x,H-24,10,24);
+
+    ctx.save();
+    ctx.translate(bird.x,bird.y);ctx.rotate(bird.rot);
+    ctx.fillStyle='#facc15';
+    ctx.beginPath();ctx.arc(0,0,bird.r,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#f59e0b';ctx.beginPath();ctx.arc(0,0,bird.r,0,Math.PI);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(5,-5,5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#111';ctx.beginPath();ctx.arc(6.5,-5,2.2,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#f97316';ctx.beginPath();ctx.moveTo(10,1);ctx.lineTo(19,4);ctx.lineTo(10,7);ctx.closePath();ctx.fill();
+    ctx.restore();
+
+    ctx.font='800 34px ui-monospace,Menlo,monospace';ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.85)';
+    ctx.fillText(String(score),W/2,64);
+  }
+
+  function loop(){
+    update();
+    if(state==='play')groundOff+=SPEED;
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  cv.addEventListener('pointerdown',function(e){e.preventDefault();flap();});
+  window.addEventListener('keydown',function(e){
+    if(e.key===' '||e.key==='ArrowUp'||e.key==='w'){e.preventDefault();flap();}
+  });
+  startBtn.addEventListener('click',start);
+  document.getElementById('restart').addEventListener('click',start);
+
+  reset();
+  loop();
+})();
+</script>
+</body>
+</html>
