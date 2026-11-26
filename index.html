@@ -260,7 +260,12 @@
   .tick.bullet{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none;margin-top:.5em;font-weight:400}
   .tick.bullet[data-sb]{width:auto;height:auto;background:none;margin-top:0}
   .engine-side{margin-top:22px}
-  .engine-side .btn{width:100%;justify-content:center;padding:14px 20px;font-size:14.5px}
+  .engine-side .btn{width:100%;justify-content:center;padding:14px 20px;font-size:14.5px;position:relative;overflow:hidden;isolation:isolate}
+  .engine-side .btn>.btn-snake{position:absolute;left:-14px;right:-14px;top:0;bottom:0;width:auto;height:100%;z-index:-1;pointer-events:none;opacity:.45;animation:btn-snake-sway 3.6s ease-in-out infinite alternate}
+  .engine-side .btn>.btn-snake .sbody{fill:none;stroke:#061020;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .engine-side .btn>.btn-snake .shead{stroke:#061020;stroke-width:8;stroke-linecap:round}
+  .engine-side .btn>.btn-snake .seye{stroke:#e8f1ff;stroke-width:1.6;stroke-linecap:round}
+  @keyframes btn-snake-sway{from{transform:translateX(-5px)}to{transform:translateX(5px)}}
 
   footer{border-top:1px solid var(--line);margin-top:96px;padding:40px 0}
   .fr{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
@@ -1174,6 +1179,24 @@
   }
   seed();
   requestAnimationFrame(frame);
+})();
+
+(function(){
+  var SVG='<svg class="btn-snake" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true"><path class="sbody" d="M16 22 Q 28.5 13 41 22 T 66 22 T 91 22 T 116 22 T 141 22 T 166 22 T 191 22 T 216 22" vector-effect="non-scaling-stroke"/><path class="shead" d="M16 22 L10 22" vector-effect="non-scaling-stroke"/><path class="seye" d="M12.5 19.6 L12.5 19.6" vector-effect="non-scaling-stroke"/></svg>';
+  function snakeify(root){
+    var btns=(root||document).querySelectorAll('.engine-side .btn');
+    for(var i=0;i<btns.length;i++){
+      if(!btns[i].querySelector('.btn-snake')) btns[i].insertAdjacentHTML('afterbegin',SVG);
+    }
+  }
+  snakeify(document);
+  if('MutationObserver' in window){
+    var mo=new MutationObserver(function(){ snakeify(document); });
+    ['engineLeft','engineRight'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el) mo.observe(el,{childList:true});
+    });
+  }
 })();
 </script>
 <script src="/shutup.js"></script>
