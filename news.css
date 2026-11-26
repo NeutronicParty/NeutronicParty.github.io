@@ -3,27 +3,27 @@
   border:1px solid var(--line,#1c2330);background:var(--panel,#0d1117);color:var(--ink,#eef2f7);font-family:inherit;font-size:13px;
   font-weight:700;letter-spacing:.01em;cursor:pointer;flex:none;transition:transform .16s,border-color .16s}
 .news-btn:hover{transform:translateY(-2px);border-color:#2c3646}
-.news-btn:focus-visible{outline:2px solid var(--cyan,#3b82f6);outline-offset:3px}
-.news-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan,#3b82f6);flex:none;animation:pulse 2s infinite}
+.news-btn:focus-visible{outline:2px solid var(--cyan,#e7eef8);outline-offset:3px}
+.news-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan,#e7eef8);flex:none;animation:pulse 2s infinite}
 @media(max-width:560px){.news-btn{padding:0 12px}}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(125,211,252,.5)}70%{box-shadow:0 0 0 9px rgba(125,211,252,0)}100%{box-shadow:0 0 0 0 rgba(125,211,252,0)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(244,248,252,.5)}70%{box-shadow:0 0 0 9px rgba(244,248,252,0)}100%{box-shadow:0 0 0 0 rgba(244,248,252,0)}}
 @keyframes mailfade{from{opacity:0}to{opacity:1}}
 
 .mail-x{position:absolute;top:12px;right:12px;width:32px;height:32px;display:grid;place-items:center;
   border:0;border-radius:50%;background:transparent;color:var(--muted,#8b96a6);font-family:inherit;font-size:22px;
   line-height:1;cursor:pointer}
 .mail-x:hover{color:var(--ink,#eef2f7);background:rgba(255,255,255,.06)}
-.mail-x:focus-visible{outline:2px solid var(--cyan,#3b82f6);outline-offset:3px}
+.mail-x:focus-visible{outline:2px solid var(--cyan,#e7eef8);outline-offset:3px}
 
 .newsmodal[hidden]{display:none}
 .newsmodal{position:fixed;top:0;right:0;bottom:0;left:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:20px}
 .news-back{position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(4,6,10,.74);backdrop-filter:blur(8px);animation:mailfade .2s ease-out}
 .news-card{position:relative;width:min(560px,100%);max-height:min(82vh,640px);display:flex;flex-direction:column;
   background:linear-gradient(180deg,var(--panel-2,#11161e),var(--panel,#0d1117));border:1px solid var(--line,#1c2330);border-radius:20px;
-  box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 70px -30px rgba(59,130,246,.5);overflow:hidden}
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 70px -30px rgba(231,238,248,.5);overflow:hidden}
 .news-head{display:flex;align-items:center;gap:14px;padding:22px 24px 18px;border-bottom:1px solid var(--line,#1c2330)}
 .news-avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none;border:1px solid var(--line,#1c2330);
-  box-shadow:0 0 26px -8px rgba(59,130,246,.8)}
+  box-shadow:0 0 26px -8px rgba(231,238,248,.8)}
 .news-head h3{font-size:19px;font-weight:820;letter-spacing:-.02em;line-height:1.15}
 .news-sub{display:block;margin-top:3px;font-size:12px;color:var(--muted,#8b96a6);letter-spacing:.02em}
 .news-msg{padding:22px 24px 26px;overflow:auto;color:#c3cbd6;font-size:15px;font-weight:700;line-height:1.62;
