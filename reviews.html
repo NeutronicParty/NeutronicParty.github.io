@@ -51,43 +51,46 @@
 
   .body{padding-top:48px;padding-bottom:40px}
 
-  .revbar{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:24px}
-  .revbar h2{font-size:clamp(20px,3vw,26px);letter-spacing:-.02em;font-weight:800;display:flex;align-items:center;gap:10px}
+  .summary{display:grid;grid-template-columns:auto 1fr auto;gap:32px;align-items:center;
+    border:1px solid var(--line);border-radius:var(--radius);padding:26px 30px;
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));margin-bottom:36px}
+  .sum-score{display:flex;flex-direction:column;align-items:center;gap:7px;padding-right:30px;border-right:1px solid var(--line)}
+  .sum-num{font-size:52px;font-weight:850;letter-spacing:-.04em;line-height:.9;font-variant-numeric:tabular-nums}
+  .sum-stars{color:#fbbf24;font-size:16px;letter-spacing:2px;line-height:1}
+  .sum-count{font-size:12.5px;color:var(--muted);font-weight:650;white-space:nowrap}
+  .sum-dist{display:flex;flex-direction:column;gap:8px;min-width:0}
+  .dist-row{display:grid;grid-template-columns:14px 1fr 22px;align-items:center;gap:11px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .dist-track{height:6px;border-radius:99px;background:#161c26;overflow:hidden}
+  .dist-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#fbbf24,#f59e0b);transition:width .55s cubic-bezier(.2,.7,.2,1)}
+  .dist-num{text-align:right;color:var(--dim)}
+  .sum-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch}
+  .sum-actions .btn,.sum-actions .refresh{justify-content:center;text-align:center}
+  .revbar{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:20px}
+  .revbar h2{font-size:clamp(20px,3vw,24px);letter-spacing:-.02em;font-weight:800;display:flex;align-items:center;gap:10px}
   .revcount{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--cyan);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--panel)}
-  .revsub{color:var(--muted);font-size:14.5px;margin-top:6px}
-  .revtools{display:flex;align-items:center;gap:10px}
-  .refresh{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:10px 14px;font-size:13px;font-weight:650;cursor:pointer;font-family:inherit;transition:color .16s,border-color .16s}
-  .refresh:hover{color:var(--ink);border-color:#2b3648}
+  .revsub{color:var(--muted);font-size:14.5px;margin-top:6px;max-width:60ch}
+  .refresh{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:11px 16px;font-size:13px;font-weight:650;cursor:pointer;font-family:inherit;transition:color .16s,border-color .16s,background .16s}
+  .refresh:hover{color:var(--ink);border-color:#2b3648;background:var(--panel)}
 
-  .reviewzone{position:relative;width:auto;margin-left:calc((100% - 100vw)/2);margin-right:calc((100% - 100vw)/2);
-    padding:16px 24px 24px;touch-action:pan-y}
-  .revgrid{display:flex;gap:18px;overflow-x:auto;overflow-y:hidden;padding:0 0 14px;
-    scroll-snap-type:x mandatory;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
-    scrollbar-width:thin;scrollbar-color:#2a3444 transparent}
-  .revgrid::-webkit-scrollbar{height:8px}
-  .revgrid::-webkit-scrollbar-track{background:transparent}
-  .revgrid::-webkit-scrollbar-button{display:none}
-  .revgrid::-webkit-scrollbar-thumb{background:#2a3444;border-radius:999px}
-  .revgrid::-webkit-scrollbar-thumb:hover{background:#3a4658}
-  .revgrid.dragging{scroll-snap-type:none}
-  .reviewzone.dragging,.reviewzone.dragging *{cursor:grabbing!important;user-select:none}
-  @media(hover:hover){.reviewzone{cursor:grab}}
-  .review{border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;max-width:660px;
-    background:radial-gradient(500px circle at 0% 0%,rgba(231,238,248,.10),transparent 62%),var(--panel);
-    display:flex;flex-direction:column}
-  .revgrid .review{max-width:82vw;flex:0 0 380px;scroll-snap-align:start}
-  .review .who{display:flex;align-items:center;gap:14px;margin-bottom:14px}
-  .review .avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;border:1px solid var(--line);box-shadow:0 0 22px -6px rgba(231,238,248,.65);flex:none}
-  .review .avatar.initial{display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#04070a;background:linear-gradient(135deg,var(--cyan),#f6f9fd);border:0;box-shadow:none}
-  .review .name{font-weight:800;font-size:17px;letter-spacing:-.01em;overflow-wrap:anywhere}
-  .review .role{font-size:12.5px;color:var(--dim)}
-  .review .stars{color:#fbbf24;font-size:18px;letter-spacing:3px;margin-bottom:12px;line-height:1}
+  .revgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;align-items:start}
+  .review{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:14px;padding:24px 26px 20px;
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));display:flex;flex-direction:column;
+    transition:border-color .18s,transform .18s,box-shadow .18s}
+  .review:hover{border-color:#2b3648;transform:translateY(-2px);box-shadow:0 20px 46px -34px rgba(0,0,0,.95)}
+  .review::before{content:"\201C";position:absolute;top:2px;right:18px;font-family:Georgia,"Times New Roman",serif;
+    font-size:74px;line-height:1;color:rgba(231,238,248,.055);pointer-events:none}
+  .review .who{display:flex;align-items:center;gap:13px;margin-bottom:15px;position:relative}
+  .review .avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid var(--line);flex:none}
+  .review .avatar.initial{display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#04070a;background:linear-gradient(135deg,var(--cyan),#f6f9fd);border:0}
+  .review .name{font-weight:750;font-size:15.5px;letter-spacing:-.01em;overflow-wrap:anywhere;line-height:1.2}
+  .review .role{font-size:12.5px;color:var(--dim);margin-top:2px}
+  .review .stars{color:#fbbf24;font-size:15px;letter-spacing:2.5px;margin-bottom:12px;line-height:1}
   .review .stars .off{color:#2a3444}
-  .review q{quotes:none;display:block;font-size:clamp(16px,2.2vw,19px);line-height:1.5;font-weight:650;letter-spacing:-.01em;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere;flex:1}
+  .review q{quotes:none;display:block;font-size:15.5px;line-height:1.62;font-weight:500;letter-spacing:-.005em;color:#d9e1ec;white-space:pre-wrap;overflow-wrap:anywhere;flex:1}
   .review q::before,.review q::after{content:""}
-  .review .meta{margin-top:16px;font-size:12.5px;color:var(--dim);display:flex;justify-content:space-between;align-items:center;gap:10px}
-  .review .meta .score{color:#fbbf24;letter-spacing:1px;font-weight:700}
-  .revstatus{margin-top:22px;color:var(--muted);font-size:14px;text-align:center}
+  .review .meta{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--dim);display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .review .meta .score{color:#fbbf24;letter-spacing:.5px;font-weight:700}
+  .revstatus{margin-top:26px;color:var(--muted);font-size:14px;text-align:center}
   .revstatus.err{color:#fca5a5}
 
   .modal[hidden]{display:none}
@@ -129,13 +132,17 @@
 
   header .wrap{max-width:none}
 
+  @media(max-width:760px){
+    .summary{grid-template-columns:1fr;gap:20px;padding:22px}
+    .sum-score{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:12px;padding:0 0 16px;border-right:0;border-bottom:1px solid var(--line);width:100%}
+    .sum-num{font-size:40px}
+    .sum-dist{order:2}
+    .sum-actions{flex-direction:row;order:3}
+    .sum-actions .btn,.sum-actions .refresh{flex:1}
+  }
   @media(max-width:560px){
-    .revbar{align-items:flex-start}
-    .revtools{width:100%}
-    .revtools .btn-p{flex:1;justify-content:center}
     .dialog{padding:22px}
     .revgrid{gap:14px}
-    .revgrid .review{flex-basis:84vw}
   }
 </style>
 <link rel="stylesheet" href="/news.css">
@@ -173,20 +180,34 @@
   </section>
 
   <div class="wrap body">
-    <div class="revbar">
-      <div>
-        <h2>All reviews <span class="revcount" id="revCount">1</span></h2>
-        <p class="revsub">Every review is public and visible to everyone who visits this page.</p>
+    <div class="summary" id="summary">
+      <div class="sum-score">
+        <div class="sum-num" id="sumAvg">5.0</div>
+        <div class="sum-stars" id="sumStars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <div class="sum-count" id="sumCount">1 review</div>
       </div>
-      <div class="revtools">
+      <div class="sum-dist" aria-hidden="true">
+        <div class="dist-row"><span>5</span><div class="dist-track"><div class="dist-fill" data-star="5" style="width:100%"></div></div><span class="dist-num" data-star="5">1</span></div>
+        <div class="dist-row"><span>4</span><div class="dist-track"><div class="dist-fill" data-star="4"></div></div><span class="dist-num" data-star="4">0</span></div>
+        <div class="dist-row"><span>3</span><div class="dist-track"><div class="dist-fill" data-star="3"></div></div><span class="dist-num" data-star="3">0</span></div>
+        <div class="dist-row"><span>2</span><div class="dist-track"><div class="dist-fill" data-star="2"></div></div><span class="dist-num" data-star="2">0</span></div>
+        <div class="dist-row"><span>1</span><div class="dist-track"><div class="dist-fill" data-star="1"></div></div><span class="dist-num" data-star="1">0</span></div>
+      </div>
+      <div class="sum-actions">
         <button class="refresh" id="refreshBtn" type="button">Refresh</button>
         <button class="btn btn-p" id="addReviewBtn" type="button">+ Add review</button>
       </div>
     </div>
 
-    <div class="reviewzone" id="reviewZone">
+    <div class="revbar">
+      <div>
+        <h2>All reviews <span class="revcount" id="revCount">1</span></h2>
+        <p class="revsub">Every review is public — posted as a GitHub issue, visible to everyone.</p>
+      </div>
+    </div>
+
     <div class="revgrid" id="reviewList">
-      <div class="review">
+      <div class="review" data-stars="5">
         <div class="who">
           <img class="avatar" src="team-neutronic.webp" alt="Neutronic profile picture">
           <div>
@@ -198,7 +219,6 @@
         <q>Absolutely Epic Scripts And Software!</q>
         <div class="meta"><span>Founder</span><span class="score">5 / 5</span></div>
       </div>
-    </div>
     </div>
 
     <div class="revstatus" id="revStatus" hidden></div>
@@ -465,6 +485,48 @@
       return new Date(ts).toLocaleDateString(undefined, {year: 'numeric', month: 'short', day: 'numeric'});
     } catch(err) { return ''; }
   }
+  function relTime(ts){
+    if (!ts) return '';
+    var t = new Date(ts).getTime();
+    if (isNaN(t)) return '';
+    var diff = (t - Date.now()) / 1000;
+    var abs = Math.abs(diff);
+    var units = [['year',31536000],['month',2592000],['week',604800],['day',86400],['hour',3600],['minute',60]];
+    for (var i = 0; i < units.length; i++) {
+      if (abs >= units[i][1]) {
+        var v = Math.round(diff / units[i][1]);
+        try { return new Intl.RelativeTimeFormat(undefined, {numeric: 'auto'}).format(v, units[i][0]); }
+        catch(err) { return fmtDate(ts); }
+      }
+    }
+    return 'just now';
+  }
+  function starStr(v){
+    var r = Math.round(v), out = '';
+    for (var i = 1; i <= 5; i++) out += (i <= r ? '\u2605' : '\u2606');
+    return out;
+  }
+  function updateSummary(){
+    var cards = listEl.querySelectorAll('.review');
+    var n = cards.length, sum = 0, dist = {1:0,2:0,3:0,4:0,5:0};
+    Array.prototype.forEach.call(cards, function(c){
+      var s = Math.max(1, Math.min(5, Math.round(+c.getAttribute('data-stars') || 5)));
+      sum += s; dist[s]++;
+    });
+    var avg = n ? sum / n : 0;
+    var avgEl = document.getElementById('sumAvg');
+    var starsEl = document.getElementById('sumStars');
+    var countEl2 = document.getElementById('sumCount');
+    if (avgEl) avgEl.textContent = avg.toFixed(1);
+    if (starsEl) starsEl.textContent = starStr(avg);
+    if (countEl2) countEl2.textContent = n + (n === 1 ? ' review' : ' reviews');
+    for (var k = 1; k <= 5; k++) {
+      var fill = document.querySelector('.dist-fill[data-star="' + k + '"]');
+      var num = document.querySelector('.dist-num[data-star="' + k + '"]');
+      if (fill) fill.style.width = (n ? (dist[k] / n * 100) : 0).toFixed(1) + '%';
+      if (num) num.textContent = String(dist[k]);
+    }
+  }
 
   function cleanReview(r){
     var name = String(r.name || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
@@ -497,6 +559,7 @@
     var card = document.createElement('div');
     card.className = 'review';
     card.setAttribute('data-user', '1');
+    card.setAttribute('data-stars', String(r.stars));
 
     var who = document.createElement('div');
     who.className = 'who';
@@ -541,7 +604,8 @@
     var meta = document.createElement('div');
     meta.className = 'meta';
     var date = document.createElement('span');
-    date.textContent = fmtDate(r.ts);
+    date.textContent = relTime(r.ts) || fmtDate(r.ts);
+    date.title = fmtDate(r.ts);
     var score = document.createElement('span');
     score.className = 'score';
     score.textContent = r.stars + ' / 5';
@@ -559,6 +623,7 @@
     Array.prototype.forEach.call(listEl.querySelectorAll('[data-user]'), function(el){ el.remove(); });
     reviews.forEach(function(r){ listEl.appendChild(makeCard(r)); });
     countEl.textContent = String(reviews.length + 1);
+    updateSummary();
     statusEl.hidden = true;
     statusEl.className = 'revstatus';
   }
@@ -631,43 +696,8 @@
     }
   }
 
-  (function(){
-    var zone = document.getElementById('reviewZone');
-    var strip = document.getElementById('reviewList');
-    var down = false, moved = false, startX = 0, startLeft = 0, pid = null;
-    zone.addEventListener('pointerdown', function(e){
-      if (e.pointerType === 'touch' || (e.pointerType === 'mouse' && e.button !== 0)) return;
-      if (e.target.closest('a,button,input,textarea,select')) return;
-      down = true; moved = false; startX = e.clientX; startLeft = strip.scrollLeft; pid = e.pointerId;
-    });
-    zone.addEventListener('pointermove', function(e){
-      if (!down) return;
-      var dx = e.clientX - startX;
-      if (!moved && Math.abs(dx) > 6) {
-        moved = true;
-        zone.classList.add('dragging');
-        strip.classList.add('dragging');
-        try { zone.setPointerCapture(pid); } catch(err) {}
-      }
-      if (moved) { e.preventDefault(); strip.scrollLeft = startLeft - dx; }
-    });
-    function end(){
-      if (!down) return;
-      down = false;
-      zone.classList.remove('dragging');
-      strip.classList.remove('dragging');
-      if (pid !== null) { try { zone.releasePointerCapture(pid); } catch(err) {} pid = null; }
-      setTimeout(function(){ moved = false; }, 0);
-    }
-    zone.addEventListener('pointerup', end);
-    zone.addEventListener('pointercancel', end);
-    zone.addEventListener('click', function(e){
-      if (moved) { e.preventDefault(); e.stopPropagation(); }
-    }, true);
-    zone.addEventListener('dragstart', function(e){ e.preventDefault(); });
-  })();
-
   document.getElementById('refreshBtn').addEventListener('click', function(){ loadReviews(true); });
+  updateSummary();
   loadReviews(false);
 })();
 </script>
