@@ -1021,7 +1021,7 @@
   var meteors = [];
   var stars = [];
   var clock = 0;
-  var mx = 0, my = 0, tx = 0, ty = 0;
+  var pmx = 0, pmy = 0, ptx = 0, pty = 0;
   var last = 0, nextSpawn = 0, visible = true;
 
   function resize(){
@@ -1069,16 +1069,16 @@
   function draw(dt){
     ctx.clearRect(0, 0, W, H);
     var ease = Math.min(1, dt * 3);
-    mx += (tx - mx) * ease;
-    my += (ty - my) * ease;
+    pmx += (ptx - pmx) * ease;
+    pmy += (pty - pmy) * ease;
     for (var s = 0; s < stars.length; s++){
       var st = stars[s];
       st.y += st.s * dt;
       if (st.y > H + 4){ st.y = -4; st.x = Math.random() * W; }
       var a = st.base * (0.6 + 0.4 * Math.sin(clock * st.tw + st.ph));
       if (a <= 0.02) continue;
-      var sx = st.x + mx * st.z * 12;
-      var sy = st.y + my * st.z * 12;
+      var sx = st.x + pmx * st.z * 12;
+      var sy = st.y + pmy * st.z * 12;
       ctx.fillStyle = 'rgba(231,238,248,' + a.toFixed(3) + ')';
       ctx.beginPath();
       ctx.arc(sx, sy, st.r, 0, Math.PI * 2);
@@ -1170,8 +1170,8 @@
   }
 
   addEventListener('pointermove', function(e){
-    tx = (e.clientX / innerWidth - 0.5) * 2;
-    ty = (e.clientY / innerHeight - 0.5) * 2;
+    ptx = (e.clientX / innerWidth - 0.5) * 2;
+    pty = (e.clientY / innerHeight - 0.5) * 2;
   }, {passive:true});
   resize();
   addEventListener('resize', resize, {passive:true});
