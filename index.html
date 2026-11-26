@@ -262,9 +262,10 @@
   .engine-side{margin-top:22px}
   .engine-side .btn{width:100%;justify-content:center;padding:14px 20px;font-size:14.5px;position:relative;overflow:hidden;isolation:isolate}
   .engine-side .btn>.btn-snake{position:absolute;left:-14px;right:-14px;top:0;bottom:0;width:auto;height:100%;z-index:-1;pointer-events:none;opacity:.45;animation:btn-snake-sway 3.6s ease-in-out infinite alternate}
-  .engine-side .btn>.btn-snake .sbody{fill:none;stroke:#061020;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-  .engine-side .btn>.btn-snake .shead{stroke:#061020;stroke-width:8;stroke-linecap:round}
-  .engine-side .btn>.btn-snake .seye{stroke:#e8f1ff;stroke-width:1.6;stroke-linecap:round}
+  .engine-side .btn>.btn-snake .sbody{fill:none;stroke:#061020;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .engine-side .btn>.btn-snake .shead{fill:#061020;stroke:none}
+  .engine-side .btn>.btn-snake .seye{stroke:#e8f1ff;stroke-width:2.2;stroke-linecap:round}
+  .engine-side .btn>.btn-snake .stongue{fill:none;stroke:#ff6b8a;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
   @keyframes btn-snake-sway{from{transform:translateX(-5px)}to{transform:translateX(5px)}}
 
   footer{border-top:1px solid var(--line);margin-top:96px;padding:40px 0}
@@ -1187,7 +1188,7 @@
 })();
 
 (function(){
-  var SVG='<svg class="btn-snake" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true"><path class="sbody" d="M16 22 Q 28.5 13 41 22 T 66 22 T 91 22 T 116 22 T 141 22 T 166 22 T 191 22 T 216 22" vector-effect="non-scaling-stroke"/><path class="shead" d="M16 22 L10 22" vector-effect="non-scaling-stroke"/><path class="seye" d="M12.5 19.6 L12.5 19.6" vector-effect="non-scaling-stroke"/></svg>';
+  var SVG='<svg class="btn-snake" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true"><path class="sbody" d="M23 22 Q 35.5 13 48 22 T 73 22 T 98 22 T 123 22 T 148 22 T 173 22 T 198 22 T 223 22" vector-effect="non-scaling-stroke"/><path class="shead" d="M23 17.6 C 19 17.6 15.2 19.6 13 22 C 15.2 24.4 19 26.4 23 26.4 C 25 26.4 26 24.6 26 22 C 26 19.4 25 17.6 23 17.6 Z"/><path class="stongue" d="M13.5 22 L10.2 21.1 M13.5 22 L10.2 22.9" vector-effect="non-scaling-stroke"/><path class="seye" d="M17.5 20.1 L17.5 20.1" vector-effect="non-scaling-stroke"/></svg>';
   function snakeify(root){
     var btns=(root||document).querySelectorAll('.engine-side .btn');
     for(var i=0;i<btns.length;i++){
