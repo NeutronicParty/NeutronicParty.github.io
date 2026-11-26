@@ -261,11 +261,12 @@
   .tick.bullet[data-sb]{width:auto;height:auto;background:none;margin-top:0}
   .engine-side{margin-top:22px}
   .engine-side .btn{width:100%;justify-content:center;padding:14px 20px;font-size:14.5px;position:relative;overflow:hidden;isolation:isolate}
-  .engine-side .btn>.btn-snake{position:absolute;left:-14px;right:-14px;top:0;bottom:0;width:auto;height:100%;z-index:-1;pointer-events:none;opacity:.45;animation:btn-snake-sway 3.6s ease-in-out infinite alternate}
-  .engine-side .btn>.btn-snake .sbody{fill:none;stroke:#061020;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
-  .engine-side .btn>.btn-snake .shead{fill:#061020;stroke:none}
-  .engine-side .btn>.btn-snake .seye{stroke:#e8f1ff;stroke-width:2.2;stroke-linecap:round}
-  .engine-side .btn>.btn-snake .stongue{fill:none;stroke:#ff6b8a;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+  .engine-side .btn>.btn-snake{position:absolute;left:-14px;top:0;width:calc(100% + 28px);height:100%;z-index:-1;pointer-events:none;opacity:.92;animation:btn-snake-sway 3.6s ease-in-out infinite alternate}
+  .engine-side .btn>.btn-snake .sbody-out{fill:none;stroke:#061020;stroke-width:28;stroke-linecap:round;stroke-linejoin:round}
+  .engine-side .btn>.btn-snake .sbody{fill:none;stroke:#ece9e2;stroke-width:22;stroke-linecap:round;stroke-linejoin:round}
+  .engine-side .btn>.btn-snake .shead{fill:#ece9e2;stroke:#061020;stroke-width:2.6;stroke-linejoin:round}
+  .engine-side .btn>.btn-snake .stongue{fill:none;stroke:#ff5c7a;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .engine-side .btn>.btn-snake .seye{stroke:#061020;stroke-width:3.2;stroke-linecap:round}
   @keyframes btn-snake-sway{from{transform:translateX(-5px)}to{transform:translateX(5px)}}
 
   footer{border-top:1px solid var(--line);margin-top:96px;padding:40px 0}
@@ -1188,7 +1189,7 @@
 })();
 
 (function(){
-  var SVG='<svg class="btn-snake" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true"><path class="sbody" d="M23 22 Q 35.5 13 48 22 T 73 22 T 98 22 T 123 22 T 148 22 T 173 22 T 198 22 T 223 22" vector-effect="non-scaling-stroke"/><path class="shead" d="M23 17.6 C 19 17.6 15.2 19.6 13 22 C 15.2 24.4 19 26.4 23 26.4 C 25 26.4 26 24.6 26 22 C 26 19.4 25 17.6 23 17.6 Z"/><path class="stongue" d="M13.5 22 L10.2 21.1 M13.5 22 L10.2 22.9" vector-effect="non-scaling-stroke"/><path class="seye" d="M17.5 20.1 L17.5 20.1" vector-effect="non-scaling-stroke"/></svg>';
+  var SVG='<svg class="btn-snake" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true"><path class="sbody-out" d="M38 22 Q 50 15 62 22 T 87 22 T 112 22 T 137 22 T 162 22 T 187 22 T 212 22" vector-effect="non-scaling-stroke"/><path class="sbody" d="M38 22 Q 50 15 62 22 T 87 22 T 112 22 T 137 22 T 162 22 T 187 22 T 212 22" vector-effect="non-scaling-stroke"/><path class="shead" d="M38 6 C 30 6 22 13.5 16 22 C 22 30.5 30 38 38 38 C 41 38 42 31 42 22 C 42 13 41 6 38 6 Z" vector-effect="non-scaling-stroke"/><path class="stongue" d="M16 22 L10 20.3 M16 22 L10 23.7" vector-effect="non-scaling-stroke"/><path class="seye" d="M26 15 L26 15" vector-effect="non-scaling-stroke"/></svg>';
   function snakeify(root){
     var btns=(root||document).querySelectorAll('.engine-side .btn');
     for(var i=0;i<btns.length;i++){
