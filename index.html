@@ -173,7 +173,7 @@
   .team{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
   @media(max-width:900px){.team{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:520px){.team{grid-template-columns:1fr}}
-  .member{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;padding:32px 22px 28px;border:1px solid var(--line);border-radius:var(--radius);background:radial-gradient(320px circle at 50% -12%,rgba(58,134,255,.16),transparent 70%),linear-gradient(180deg,var(--panel-2),var(--panel));overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s}
+  .member{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;padding:32px 22px 28px;border:1px solid var(--line);border-radius:var(--radius);background:radial-gradient(320px circle at 50% -12%,rgba(58,134,255,.04),transparent 70%),linear-gradient(180deg,#06090e,#030507);overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s}
   .member::before{content:"";position:absolute;top:0;left:50%;width:58px;height:2px;transform:translateX(-50%);border-radius:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.75}
   .member::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;background:radial-gradient(280px circle at var(--mx,50%) var(--my,0%),rgba(231,238,248,.10),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
   .member:hover{transform:translateY(-4px);border-color:#2b3648;box-shadow:0 24px 50px -30px rgba(0,0,0,.9)}
@@ -392,7 +392,6 @@
 
   <section class="sec wrap" id="team">
     <div class="head reveal">
-      <p class="kick" style="justify-content:center">the crew</p>
       <h2>Our Team</h2>
     </div>
     <div class="team reveal">
