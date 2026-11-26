@@ -285,7 +285,7 @@
 <header>
   <div class="wrap">
     <nav>
-      <a class="logo" href="#"><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/><path d="M10 21v-6h4v6"/></svg> Home</a>
+      <a class="logo" href="#"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true" style="flex:none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.08 3.32a1.55 1.55 0 0 1 1.84 0l7.33 5.49c.47.35.75.9.75 1.49V19A2.4 2.4 0 0 1 18.6 21.4H5.4A2.4 2.4 0 0 1 3 19v-8.7c0-.59.28-1.14.75-1.49l7.33-5.49ZM9.6 21.4v-5.05a2.4 2.4 0 0 1 4.8 0V21.4Z"/></svg> Home</a>
       <div class="nl">
         <a href="info.html">Info</a>
         <a href="reviews.html">Reviews</a>
@@ -779,24 +779,18 @@
       c.clearRect(0,0,W,H);
       c.drawImage(base,ox,oy);
       if(phase>-5){
-        tctx.setTransform(1,0,0,1,0,0);
-        tctx.globalCompositeOperation='source-over';
-        tctx.globalAlpha=1;
-        tctx.clearRect(0,0,W,H);
-        tctx.drawImage(bright,0,0);
-        tctx.globalCompositeOperation='destination-in';
         var bandC=contentLeft+phase*contentW;
         var sg=0.17*contentW;
-        var g=tctx.createLinearGradient(0,0,W,0);
+        var g=c.createLinearGradient(0,0,W,0);
         for(var d=-2.5;d<=2.5;d+=0.5){
           var pos=(bandC+d*sg)/W;
           if(pos<0) pos=0; else if(pos>1) pos=1;
-          g.addColorStop(pos,'rgba(255,255,255,'+(0.95*Math.exp(-(d*d))).toFixed(4)+')');
+          g.addColorStop(pos,'rgba(243,247,253,'+(0.95*Math.exp(-(d*d))).toFixed(4)+')');
         }
-        tctx.fillStyle=g;
-        tctx.fillRect(0,0,W,H);
-        tctx.globalCompositeOperation='source-over';
-        c.drawImage(temp,ox,oy);
+        c.globalCompositeOperation='source-atop';
+        c.fillStyle=g;
+        c.fillRect(0,0,W,H);
+        c.globalCompositeOperation='source-over';
       }
     }
 
@@ -909,7 +903,7 @@
       pressT=1;
       start();
     },{passive:true});
-    canvas.addEventListener('pointerleave',function(){ pressT=0; start(); });
+    canvas.addEventListener('pointerleave',function(){ pressT=0; press=0; start(); });
 
     document.addEventListener('visibilitychange',function(){
       if(document.hidden){ if(raf){ cancelAnimationFrame(raf); raf=0; } }
