@@ -241,13 +241,13 @@
   .engine .kick{color:#3a86ff}
   .engine .kick::before{background:#3a86ff}
   .engine .tick{color:#3a86ff}
-  .engine .engine-side .btn{background:linear-gradient(120deg,#5b9bff,#3a86ff);color:#eef3fb;text-shadow:0 1px 3px rgba(0,0,0,.55);box-shadow:0 10px 30px -12px rgba(58,134,255,.8)}
+  .engine .engine-side .btn{color:#eef3fb;text-shadow:0 2px 6px rgba(0,0,0,.85)}
   #engineLeft{background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,0) 42%),radial-gradient(520px circle at 0% 0%,rgba(58,134,255,.34),transparent 62%),rgba(16,26,44,.42);border-color:rgba(140,185,255,.55);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -22px 46px -34px rgba(58,134,255,.5),0 16px 50px -26px rgba(58,134,255,.75)}
   #engineRight{background:radial-gradient(520px circle at 100% 0%,rgba(201,214,230,.24),transparent 62%),rgba(26,31,40,.55);border-color:rgba(201,214,230,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 44px -24px rgba(201,214,230,.55)}
   #engineRight .kick{color:#cdd8e6}
   #engineRight .kick::before{background:#cdd8e6}
   #engineRight .tick{color:#cdd8e6}
-  #engineRight .engine-side .btn{background:linear-gradient(120deg,#dbe4ef,#c2cfe0);color:#eef3fb;text-shadow:0 1px 3px rgba(0,0,0,.55);box-shadow:0 10px 30px -12px rgba(201,214,230,.5)}
+  #engineRight .engine-side .btn{color:#eef3fb;text-shadow:0 2px 6px rgba(0,0,0,.85)}
   @media(min-width:901px){.engine.right{margin-left:0;margin-right:calc(-1 * min(240px, 32px + max(0px, (100vw - 1168px) / 2)))}}
   @media(max-width:900px){.engine.right{margin-right:0}}
   .engine .kick{margin-bottom:10px}
@@ -260,18 +260,8 @@
   .tick.bullet{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none;margin-top:.5em;font-weight:400}
   .tick.bullet[data-sb]{width:auto;height:auto;background:none;margin-top:0}
   .engine-side{margin-top:22px}
-  .engine-side .btn{width:100%;justify-content:center;padding:14px 20px;font-size:14.5px;position:relative;overflow:hidden;isolation:isolate}
-  .engine-side .btn>.btn-snake{position:absolute;left:-14px;top:0;width:calc(100% + 28px);height:100%;z-index:-1;pointer-events:none;opacity:.92;animation:btn-snake-sway 3.6s ease-in-out infinite alternate}
-  .engine-side .btn>.btn-snake .sbody-out{fill:none;stroke:#eef3fb;stroke-width:28;stroke-linecap:round;stroke-linejoin:round}
-  .engine-side .btn>.btn-snake .sbody{fill:none;stroke:#0a0d12;stroke-width:24;stroke-linecap:round;stroke-linejoin:round}
-  .engine-side .btn>.btn-snake .sbelly{fill:none;stroke:#151b25;stroke-width:2.4;stroke-linecap:round}
-  .engine-side .btn>.btn-snake .sridge{fill:none;stroke:#2c3546;stroke-width:2;stroke-linecap:round}
-  .engine-side .btn>.btn-snake .shead{fill:#0a0d12;stroke:#eef3fb;stroke-width:2.6;stroke-linejoin:round}
-  .engine-side .btn>.btn-snake .smouth{fill:none;stroke:#39424f;stroke-width:1.6;stroke-linecap:round}
-  .engine-side .btn>.btn-snake .seye{stroke:#e9d8a6;stroke-width:5;stroke-linecap:round}
-  .engine-side .btn>.btn-snake .spupil{stroke:#05070a;stroke-width:2.6;stroke-linecap:round}
-  .engine-side .btn>.btn-snake .stongue{fill:none;stroke:#d94b63;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-  @keyframes btn-snake-sway{from{transform:translateX(-5px)}to{transform:translateX(5px)}}
+  .engine-side .btn{width:100%;position:relative;display:flex;align-items:flex-end;justify-content:center;height:168px;padding:0 0 14px;border-radius:0;overflow:hidden;isolation:isolate;background:url(snak.png) center/cover no-repeat;font-size:14.5px;font-weight:700;box-shadow:none}
+  .engine-side .btn::before{content:"";position:absolute;left:0;right:0;bottom:0;height:56%;background:linear-gradient(180deg,transparent,rgba(6,12,22,.9));z-index:-1;pointer-events:none}
 
   footer{border-top:1px solid var(--line);margin-top:96px;padding:40px 0}
   .fr{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
@@ -1189,24 +1179,6 @@
   }
   seed();
   requestAnimationFrame(frame);
-})();
-
-(function(){
-  var SVG='<svg class="btn-snake" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true"><path class="sbody-out" d="M38 22 Q 50 15 62 22 T 87 22 T 112 22 T 137 22 T 162 22 T 187 22 T 212 22" vector-effect="non-scaling-stroke"/><path class="sbody" d="M38 22 Q 50 15 62 22 T 87 22 T 112 22 T 137 22 T 162 22 T 187 22 T 212 22" vector-effect="non-scaling-stroke"/><path class="sbelly" d="M38 27 Q 50 34 62 27 T 87 27 T 112 27 T 137 27 T 162 27 T 187 27 T 212 27" vector-effect="non-scaling-stroke"/><path class="sridge" d="M38 17 Q 50 10 62 17 T 87 17 T 112 17 T 137 17 T 162 17 T 187 17 T 212 17" vector-effect="non-scaling-stroke"/><path class="shead" d="M16 22 C 18 15.5 26 10.5 36 9.5 C 42 9 45.5 13 45.5 22 C 45.5 31 42 35 36 34.5 C 26 33.5 18 28.5 16 22 Z" vector-effect="non-scaling-stroke"/><path class="smouth" d="M17.5 24.5 Q 30 27 44 23.5" vector-effect="non-scaling-stroke"/><path class="seye" d="M31 16.5 L31 16.5" vector-effect="non-scaling-stroke"/><path class="spupil" d="M31 16.5 L31 16.5" vector-effect="non-scaling-stroke"/><path class="stongue" d="M16 23 L9 21.8 M16 23 L9 24.5" vector-effect="non-scaling-stroke"/></svg>';
-  function snakeify(root){
-    var btns=(root||document).querySelectorAll('.engine-side .btn');
-    for(var i=0;i<btns.length;i++){
-      if(!btns[i].querySelector('.btn-snake')) btns[i].insertAdjacentHTML('afterbegin',SVG);
-    }
-  }
-  snakeify(document);
-  if('MutationObserver' in window){
-    var mo=new MutationObserver(function(){ snakeify(document); });
-    ['engineLeft','engineRight'].forEach(function(id){
-      var el=document.getElementById(id);
-      if(el) mo.observe(el,{childList:true});
-    });
-  }
 })();
 </script>
 <script src="/shutup.js"></script>
