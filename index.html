@@ -717,16 +717,11 @@
       setFont(c);
       var w=c.measureText(text).width;
       var x=(W-w)/2;
-      if(text===L2){
-        var g=c.createLinearGradient(x,0,x+w,0);
-        g.addColorStop(0,shade(CYAN,f));
-        g.addColorStop(0.55,shade(LIGHT,f));
-        g.addColorStop(1,shade(BLUE,f));
-        c.fillStyle=g;
-      } else {
-        c.fillStyle=shade(INK,f);
-      }
-      c.fillText(text,x,y);
+      c.lineJoin='round';
+      c.lineCap='round';
+      c.lineWidth=Math.max(DPR,fontSizeDev*0.014);
+      c.strokeStyle=(f>1?'#ffffff':'#ece9e2');
+      c.strokeText(text,x,y);
       return w;
     }
 
