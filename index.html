@@ -241,13 +241,13 @@
   .engine .kick{color:#3a86ff}
   .engine .kick::before{background:#3a86ff}
   .engine .tick{color:#3a86ff}
-  .engine .engine-side .btn{color:#eef3fb;text-shadow:0 2px 6px rgba(0,0,0,.85)}
+  .engine .engine-side .btn{background:linear-gradient(120deg,#5b9bff,#3a86ff);color:#061020;box-shadow:0 10px 30px -12px rgba(58,134,255,.8)}
   #engineLeft{background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,0) 42%),radial-gradient(520px circle at 0% 0%,rgba(58,134,255,.34),transparent 62%),rgba(16,26,44,.42);border-color:rgba(140,185,255,.55);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -22px 46px -34px rgba(58,134,255,.5),0 16px 50px -26px rgba(58,134,255,.75)}
   #engineRight{background:radial-gradient(520px circle at 100% 0%,rgba(201,214,230,.24),transparent 62%),rgba(26,31,40,.55);border-color:rgba(201,214,230,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 44px -24px rgba(201,214,230,.55)}
   #engineRight .kick{color:#cdd8e6}
   #engineRight .kick::before{background:#cdd8e6}
   #engineRight .tick{color:#cdd8e6}
-  #engineRight .engine-side .btn{color:#eef3fb;text-shadow:0 2px 6px rgba(0,0,0,.85)}
+  #engineRight .engine-side .btn{background:linear-gradient(120deg,#dbe4ef,#c2cfe0);color:#061020;box-shadow:0 10px 30px -12px rgba(201,214,230,.5)}
   @media(min-width:901px){.engine.right{margin-left:0;margin-right:calc(-1 * min(240px, 32px + max(0px, (100vw - 1168px) / 2)))}}
   @media(max-width:900px){.engine.right{margin-right:0}}
   .engine .kick{margin-bottom:10px}
@@ -260,8 +260,7 @@
   .tick.bullet{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none;margin-top:.5em;font-weight:400}
   .tick.bullet[data-sb]{width:auto;height:auto;background:none;margin-top:0}
   .engine-side{margin-top:22px}
-  .engine-side .btn{width:100%;position:relative;display:flex;align-items:flex-end;justify-content:center;height:84px;padding:0 0 12px;border-radius:0;overflow:hidden;isolation:isolate;background:url(snak.png) center/cover no-repeat;font-size:14.5px;font-weight:700;box-shadow:none}
-  .engine-side .btn::before{content:"";position:absolute;left:0;right:0;bottom:0;height:78%;background:linear-gradient(180deg,transparent,rgba(6,12,22,.92));z-index:-1;pointer-events:none}
+  .engine-side .btn{width:100%;justify-content:center;padding:14px 20px;font-size:14.5px}
 
   footer{border-top:1px solid var(--line);margin-top:96px;padding:40px 0}
   .fr{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
