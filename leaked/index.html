@@ -96,10 +96,10 @@
   .chip.on{color:#04070a;background:linear-gradient(120deg,var(--cyan),#eef3fa);border-color:transparent}
   .chip:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
 
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
   @media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}
   @media(max-width:560px){.grid{grid-template-columns:1fr}}
-  .card{position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--panel-2),var(--panel));
+  .card{position:relative;display:flex;flex-direction:column;aspect-ratio:1/1;background:linear-gradient(180deg,var(--panel-2),var(--panel));
     border:1px solid var(--line);border-radius:var(--radius);padding:24px;overflow:hidden;cursor:pointer;
     transition:transform .2s,border-color .2s,box-shadow .2s,opacity .25s}
   .card::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none;
@@ -112,8 +112,8 @@
   .ico{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;margin-bottom:18px;
     border:1px solid var(--line);background:#0a0f16;color:var(--cyan)}
   .ico svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .codepane{height:170px;margin:-24px -24px 18px;padding:16px 18px;background:#000;border-bottom:1px solid var(--line);
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;line-height:1.7;
+  .codepane{height:100px;margin:-24px -24px 16px;padding:12px 16px;background:#000;border-bottom:1px solid var(--line);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;line-height:1.55;
     color:#7d8798;overflow:hidden}
   .codepane .cl{white-space:nowrap;overflow:hidden}
   .codepane .k{color:#7fb3e0}
@@ -437,10 +437,11 @@
       x: Math.random()*W,
       y: Math.random()*H,
       z: Math.random()*0.8+0.2,
-      size: Math.random()*28+16,
+      size: Math.random()*32+18,
       rot: Math.random()*Math.PI*2,
-      spin: (Math.random()*0.5+0.15)*(Math.random()<0.5?-1:1),
-      fall: Math.random()*0.7+0.4
+      spin: (Math.random()*0.5+0.2)*(Math.random()<0.5?-1:1),
+      fall: Math.random()*0.7+0.4,
+      tilt: (Math.random()-0.5)*0.9
     };
   }
   function resize(){
@@ -448,7 +449,7 @@
     W=cv.clientWidth; H=cv.clientHeight;
     cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
-    var n=Math.min(70,Math.round(W*H/24000));
+    var n=Math.min(80,Math.round(W*H/20000));
     logos=[];
     for(var i=0;i<n;i++){ logos.push(spawn()); }
   }
@@ -457,17 +458,20 @@
     tx+=((pmx*26)-tx)*0.04; ty+=((pmy*26)-ty)*0.04;
     for(var i=0;i<logos.length;i++){
       var l=logos[i];
-      l.rot+=l.spin*0.035;
-      l.y+=l.fall*l.z*1.5;
+      l.rot+=l.spin*0.012;
+      l.y+=l.fall*l.z*0.22;
       var size=l.size*l.z;
       if(l.y-size>H){ l.y=-size; l.x=Math.random()*W; }
-      var sx=Math.cos(l.rot);
-      var sy=0.82+0.18*Math.abs(Math.sin(l.rot*0.7));
-      var alpha=(0.16+0.6*l.z)*(0.5+0.5*Math.abs(Math.cos(l.rot)));
+      var c=Math.cos(l.rot), sn=Math.sin(l.rot);
+      var sx=c;
+      var sy=0.9+0.1*Math.abs(sn);
+      var shear=sn*0.28;
+      var alpha=(0.16+0.6*l.z)*(0.45+0.55*Math.abs(c));
       var ox=l.x+tx*l.z*30, oy=l.y+ty*l.z*30;
       ctx.save();
       ctx.translate(ox,oy);
-      ctx.transform(sx,0,0,sy,0,0);
+      ctx.rotate(l.tilt);
+      ctx.transform(sx,0,shear,sy,0,0);
       ctx.scale(size/16,size/16);
       ctx.fillStyle='rgba(231,238,248,'+alpha.toFixed(3)+')';
       ctx.fill(mark);
