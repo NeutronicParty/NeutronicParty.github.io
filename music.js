@@ -109,7 +109,7 @@
     bar.innerHTML=
       '<button type="button" id="musicPrev" aria-label="Previous song" title="Previous song">'+prevSvg+'</button>'+
       '<button type="button" id="musicNext" aria-label="Next song" title="Next song">'+nextSvg+'</button>'+
-      '<input id="musicVol" type="range" min="0" max="1" step="0.01" value="0.5" aria-label="Volume">';
+      '<input id="musicVol" type="range" min="0.15" max="1" step="0.01" value="0.5" aria-label="Volume">';
     document.body.appendChild(bar);
 
     slider=document.getElementById('musicVol');
