@@ -258,6 +258,11 @@
   #engineRight .kick::before{background:#cdd8e6}
   #engineRight .tick{color:#cdd8e6}
   #engineRight .engine-side .btn{background:linear-gradient(120deg,#dbe4ef,#c2cfe0);color:#061020;box-shadow:0 10px 30px -12px rgba(201,214,230,.5)}
+  #engineRight.aiprompts{background:radial-gradient(520px circle at 100% 0%,rgba(231,238,248,.26),transparent 62%),rgba(20,25,34,.55);border-color:rgba(231,238,248,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 12px 44px -24px rgba(231,238,248,.6)}
+  #engineRight.aiprompts .kick{color:#eef3fa}
+  #engineRight.aiprompts .kick::before{background:#eef3fa}
+  #engineRight.aiprompts .tick{color:#eef3fa}
+  #engineRight.aiprompts .engine-side .btn{background:linear-gradient(120deg,#f4f8fc,#c2cee0);color:#061020;box-shadow:0 10px 30px -12px rgba(231,238,248,.6)}
   @media(min-width:901px){.engine.right{margin-left:0;margin-right:calc(-1 * min(240px, 32px + max(0px, (100vw - 1168px) / 2)))}}
   @media(max-width:900px){.engine.right{margin-right:0}}
   .engine .kick{margin-bottom:10px}
@@ -384,6 +389,20 @@
     </div>
   </template>
 
+  <template id="aipromptsBlock">
+    <p class="kick">AI Prompts</p>
+    <h3>Prompts that actually hit</h3>
+    <p class="engine-desc">hand-tuned prompt packs for the models you run every day</p>
+    <ul>
+      <li><span class="tick bullet" aria-hidden="true"></span><span><b>Copy-paste</b> — no setup, straight into any chat</span></li>
+      <li><span class="tick bullet" aria-hidden="true"></span><span><b>Categorized</b> — coding, writing, research, life</span></li>
+      <li><span class="tick bullet" aria-hidden="true"></span><span><b>Free</b> — no keys, no sign-ups</span></li>
+    </ul>
+    <div class="engine-side">
+      <a class="btn btn-g" href="aiprompts/">Check it out →</a>
+    </div>
+  </template>
+
   <div class="marquee" aria-hidden="true">
     <div class="mq-track">
       <span>Web</span><b>·</b><span>Product</span><b>·</b><span>Systems</span><b>·</b><span>Sound</span><b>·</b><span>Motion</span><b>·</b><span>Interfaces</span><b>·</b><span>Prototypes</span><b>·</b>
@@ -483,42 +502,47 @@
   (function(){
     var btn=document.getElementById('moreBtn');
     var box=document.getElementById('engineLeft');
-    var tpl=document.getElementById('youtubedBlock');
     var rbox=document.getElementById('engineRight');
-    var rtpl=document.getElementById('unblockedBlock');
-    if(!btn||!box||!tpl) return;
+    var tplYT=document.getElementById('youtubedBlock');
+    var tplUG=document.getElementById('unblockedBlock');
+    var tplAI=document.getElementById('aipromptsBlock');
+    if(!btn||!box) return;
     var original=Array.prototype.map.call(box.childNodes, function(n){ return n.cloneNode(true); });
     var roriginal=rbox?Array.prototype.map.call(rbox.childNodes, function(n){ return n.cloneNode(true); }):null;
-    var showing=false;
+    var states=[
+      {left:null,  right:null},
+      {left:tplYT, right:tplUG},
+      {left:tplYT, right:tplAI}
+    ];
+    var state=0;
     function fill(el, frag){
       if (el.replaceChildren) el.replaceChildren(frag);
       else { while (el.firstChild) el.removeChild(el.firstChild); el.appendChild(frag); }
     }
-    function render(){
+    function makeFrag(tpl, orig){
       var frag=document.createDocumentFragment();
-      if(showing){
+      if(tpl){
         frag.appendChild(tpl.content.cloneNode(true));
-      } else {
-        original.forEach(function(n){ frag.appendChild(n.cloneNode(true)); });
+      } else if(orig){
+        orig.forEach(function(n){ frag.appendChild(n.cloneNode(true)); });
       }
-      fill(box, frag);
-      box.classList.toggle('youtubed', showing);
-      if(rbox && rtpl && roriginal && roriginal.length){
-        var rfrag=document.createDocumentFragment();
-        if(showing){
-          rfrag.appendChild(rtpl.content.cloneNode(true));
-        } else {
-          roriginal.forEach(function(n){ rfrag.appendChild(n.cloneNode(true)); });
-        }
-        fill(rbox, rfrag);
-        rbox.classList.toggle('games', showing);
-        rbox.classList.toggle('rust', !showing);
+      return frag;
+    }
+    function render(){
+      var s=states[state];
+      fill(box, makeFrag(s.left, original));
+      box.classList.toggle('youtubed', !!s.left);
+      if(rbox && roriginal && roriginal.length){
+        fill(rbox, makeFrag(s.right, roriginal));
+        rbox.classList.toggle('rust', s.right===null);
+        rbox.classList.toggle('games', s.right===tplUG);
+        rbox.classList.toggle('aiprompts', s.right===tplAI);
       }
-      btn.setAttribute('aria-pressed', showing?'true':'false');
+      btn.setAttribute('aria-pressed', state!==0?'true':'false');
     }
     var canvas=document.getElementById('wave');
     var animating=false;
-    function swap(){ showing=!showing; render(); }
+    function swap(){ state=(state+1)%states.length; render(); }
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     function runWave(){
