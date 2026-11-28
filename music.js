@@ -12,28 +12,45 @@
   audio.volume=0.5;
   audio.src=TRACKS[Math.floor(Math.random()*TRACKS.length)];
 
-  var started=false;
+  var unmuted=false;
 
-  function cleanup(){
-    document.removeEventListener('pointerdown',start,true);
-    document.removeEventListener('keydown',start,true);
-    document.removeEventListener('touchstart',start,true);
+  function removeUnmute(){
+    ['pointerdown','keydown','touchstart','wheel','scroll'].forEach(function(t){
+      document.removeEventListener(t,unmute,true);
+    });
   }
 
-  function start(){
-    if(started) return;
+  function unmute(){
+    if(unmuted) return;
+    unmuted=true;
+    audio.muted=false;
+    audio.volume=0.5;
+    if(audio.paused){
+      var p=audio.play();
+      if(p&&typeof p.catch==='function') p.catch(function(){});
+    }
+    removeUnmute();
+  }
+
+  function armUnmute(){
+    ['pointerdown','keydown','touchstart','wheel','scroll'].forEach(function(t){
+      document.addEventListener(t,unmute,true);
+    });
+  }
+
+  function attempt(){
     var p=audio.play();
     if(p&&typeof p.then==='function'){
-      p.then(function(){ started=true; cleanup(); }).catch(function(){});
+      p.then(function(){ unmuted=true; removeUnmute(); }).catch(function(){
+        audio.muted=true;
+        var q=audio.play();
+        if(q&&typeof q.catch==='function') q.catch(function(){});
+        armUnmute();
+      });
     }else{
-      started=true;
-      cleanup();
+      unmuted=true;
     }
   }
 
-  document.addEventListener('pointerdown',start,true);
-  document.addEventListener('keydown',start,true);
-  document.addEventListener('touchstart',start,true);
-
-  start();
+  attempt();
 })();
