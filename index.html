@@ -57,20 +57,7 @@
   .news-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);flex:none;animation:pulse 2s infinite}
   @media(max-width:560px){.news-btn{padding:0 12px}}
 
-  .curtain{position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;pointer-events:none;overflow:hidden}
-  .curtain .panel{position:absolute;top:0;bottom:0;width:50.5%;
-    background:
-      repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 10px,rgba(255,255,255,.045) 10px 26px),
-      linear-gradient(90deg,#5b0f0f,#b91c1c 46%,#7f1d1d);
-    box-shadow:inset 0 0 90px rgba(0,0,0,.7);
-    transform:translateX(-102%);transition:transform .4s cubic-bezier(.7,0,.3,1)}
-  .curtain .panel.l{left:0}
-  .curtain .panel.r{right:0;transform:translateX(102%)}
-  .curtain .panel::after{content:"";position:absolute;top:0;bottom:0;width:4px;
-    background:linear-gradient(180deg,#fbbf24,#b45309);opacity:.45}
-  .curtain .panel.l::after{right:0}
-  .curtain .panel.r::after{left:0}
-  .curtain.closed .panel.l,.curtain.closed .panel.r{transform:translateX(0)}
+  .wave{position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;pointer-events:none;display:none}
   .logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;letter-spacing:-.02em}
   .mark{
     width:34px;height:34px;border-radius:4.5px;object-fit:contain;
@@ -302,7 +289,7 @@
 </head>
 <body>
 
-<div class="curtain" id="curtain" aria-hidden="true"><span class="panel l"></span><span class="panel r"></span></div>
+<canvas class="wave" id="wave" aria-hidden="true"></canvas>
 
 <header>
   <div class="wrap">
@@ -529,22 +516,73 @@
       }
       btn.setAttribute('aria-pressed', showing?'true':'false');
     }
-    var curtain=document.getElementById('curtain');
+    var canvas=document.getElementById('wave');
     var animating=false;
     function swap(){ showing=!showing; render(); }
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function runWave(){
+      if(!canvas || !canvas.getContext || reduce){
+        swap();
+        animating=false; btn.disabled=false;
+        return;
+      }
+      var ctx=canvas.getContext('2d');
+      var dpr=Math.min(window.devicePixelRatio||1,2);
+      var W=window.innerWidth, H=window.innerHeight;
+      canvas.width=Math.round(W*dpr);
+      canvas.height=Math.round(H*dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      canvas.style.display='block';
+
+      var amp=26, freq=0.009, bandH=H+amp*4;
+      var phase=0, start=null, dur=1050, swapped=false;
+      var aFrom=-(bandH+amp), aTo=H+amp, swapAt=amp;
+
+      function draw(a){
+        ctx.clearRect(0,0,W,H);
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(0, a+Math.sin(phase)*amp);
+        for(var x=0;x<=W;x+=6) ctx.lineTo(x, a+Math.sin(x*freq+phase)*amp);
+        var b=a+bandH;
+        for(var x2=W;x2>=0;x2-=6) ctx.lineTo(x2, b+Math.sin(x2*freq+phase+1.3)*amp);
+        ctx.closePath();
+        ctx.clip();
+
+        var step=46, scroll=(phase*22)%(step*2);
+        var y0=Math.floor((a-amp)/step)*step-step*2;
+        var y1=b+amp+step, i=0;
+        for(var y=y0;y<y1;y+=step,i++){
+          ctx.fillStyle=(i%2===0)?'#050608':'#f4f8fc';
+          ctx.fillRect(0, y+scroll, W, step+1);
+        }
+        ctx.restore();
+      }
+
+      function frame(now){
+        if(start===null) start=now;
+        var t=Math.min(1,(now-start)/dur);
+        var e=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+        var a=aFrom+(aTo-aFrom)*e;
+        phase+=0.07;
+        draw(a);
+        if(!swapped && a>=swapAt){ swapped=true; swap(); }
+        if(t<1){
+          requestAnimationFrame(frame);
+        } else {
+          canvas.style.display='none';
+          animating=false; btn.disabled=false;
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+
     btn.addEventListener('click', function(){
       if(animating) return;
-      if(!curtain){ swap(); return; }
       animating=true;
       btn.disabled=true;
-      curtain.classList.add('closed');
-      setTimeout(function(){
-        swap();
-        setTimeout(function(){
-          curtain.classList.remove('closed');
-          setTimeout(function(){ animating=false; btn.disabled=false; }, 460);
-        }, 1000);
-      }, 400);
+      runWave();
     });
   })();
 
