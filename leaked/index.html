@@ -456,12 +456,11 @@
   function drawLogo(l){
     var size=l.size*l.z, k=size/24;
     var c=Math.cos(l.rot), sn=Math.sin(l.rot);
-    var alpha=(0.18+0.6*l.z)*(0.5+0.5*Math.abs(c));
-    var thick=Math.max(3,size*0.22);
+    var thick=Math.max(3,size*0.28);
     var steps=Math.round(thick);
-    var px=l.x+pmx*46*l.z, py=l.y+pmy*46*l.z;
-    var rot=l.tilt+pmx*0.06;
-    var sh=Math.round(70*l.z+52);
+    var px=l.x+pmx*150*l.z, py=l.y+pmy*150*l.z;
+    var rot=l.tilt+pmx*0.14;
+    var sh=Math.round(28+60*l.z);
     var side='rgb('+sh+','+(sh+9)+','+(sh+22)+')';
     for(var e=steps;e>=1;e--){
       var t=e/steps;
@@ -475,12 +474,13 @@
       ctx.fill(mark);
       ctx.restore();
     }
+    var fr=Math.round(150+95*l.z);
     ctx.save();
     ctx.translate(px,py);
     ctx.rotate(rot);
     ctx.scale(c,1);
     ctx.scale(k,k);
-    ctx.fillStyle='rgba(231,238,248,'+alpha.toFixed(3)+')';
+    ctx.fillStyle='rgb('+fr+','+(fr+6)+','+(fr+16)+')';
     ctx.fill(mark);
     ctx.restore();
   }
