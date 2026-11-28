@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Smartening Prompt — rober</title>
+<meta name="description" content="A single personalization prompt that makes any AI sharper: fewer mistakes, research over guessing, ship-ready quality, and UIs that don't look AI-made.">
+<style>
+  :root{
+    --void:#07090c;--panel:#0d1117;--panel-2:#11161e;--line:#1c2330;
+    --ink:#eef2f7;--muted:#8b96a6;--dim:#5b6675;
+    --cyan:#e7eef8;--lime:#f4f8fc;--violet:#c2cee0;
+    --radius:14px;--max:900px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--void);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    -webkit-user-select:none;user-select:none}
+  ::selection{background:var(--cyan);color:#04070a}
+  input,textarea,select,code,pre,kbd,.selectable,.selectable *{-webkit-user-select:text;user-select:text}
+  img{-webkit-user-drag:none;user-select:none}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(7,9,12,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:70px}
+  nav .logo{justify-self:start;gap:6px}
+  nav .nl{justify-self:center}
+  nav .logo{display:flex;align-items:center;gap:8px;padding:8px 16px 8px 11px;border:1px solid var(--line);border-radius:10px;
+    background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0));
+    font-size:14px;font-weight:750;letter-spacing:-.005em;color:var(--ink);
+    transition:transform .16s,border-color .16s,box-shadow .16s,color .16s}
+  nav .logo svg{box-sizing:content-box;padding:5px;border-radius:7px;background:rgba(231,238,248,.09);stroke-width:3.2;transition:background .16s}
+  nav .logo:hover{transform:translateY(-1px);border-color:rgba(231,238,248,.34);color:var(--cyan);box-shadow:0 8px 22px -14px rgba(231,238,248,.7)}
+  nav .logo:hover svg{background:rgba(231,238,248,.18)}
+  .nl{display:flex;gap:30px;font-size:14px;color:var(--muted)}
+  .nl a:hover{color:var(--ink)}
+  .nav-actions{justify-self:end;display:flex;align-items:center;gap:10px}
+  .btn{display:inline-flex;align-items:center;gap:9px;border-radius:500px;font-weight:650;font-size:14px;font-family:inherit;cursor:pointer;transition:transform .16s,opacity .16s,box-shadow .16s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-p{background:linear-gradient(120deg,var(--cyan),#eef3fa);color:#04070a;padding:11px 20px;box-shadow:0 10px 30px -12px rgba(231,238,248,.8)}
+  .btn-g{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:11px 20px}
+  .btn-g:hover{border-color:#2c3646}
+  .news-btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 15px;border-radius:500px;
+    border:1px solid var(--line);background:var(--panel);color:var(--ink);font-family:inherit;font-size:13px;
+    font-weight:700;cursor:pointer;flex:none;transition:transform .16s,border-color .16s}
+  .news-btn:hover{transform:translateY(-2px);border-color:#2c3646}
+  .news-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);flex:none;animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(231,238,248,.5)}70%{box-shadow:0 0 0 9px rgba(231,238,248,0)}100%{box-shadow:0 0 0 0 rgba(231,238,248,0)}}
+  @media(max-width:780px){.nl{display:none}nav{display:flex;justify-content:space-between}}
+  @media(max-width:560px){.news-btn{padding:0 12px}}
+
+  .pagehead{padding:76px 0 48px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+  .glow{position:absolute;top:-200px;right:-120px;width:560px;height:560px;border-radius:50%;
+    background:radial-gradient(circle,rgba(231,238,248,.2),rgba(194,206,224,.09) 50%,transparent 70%);filter:blur(34px);pointer-events:none}
+  .pagehead .wrap{position:relative;z-index:1}
+  .kick{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);margin-bottom:16px;display:inline-flex;align-items:center;gap:10px}
+  .kick::before{content:"";width:22px;height:1px;background:var(--cyan);display:inline-block}
+  h1{font-size:clamp(36px,6.4vw,62px);letter-spacing:-.04em;line-height:1.02;font-weight:850}
+  h1 .grad{background-image:linear-gradient(105deg,var(--cyan) 0%,#f4f8fc 55%,#c2cee0 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .pagehead p{color:var(--muted);font-size:17px;margin-top:18px;max-width:58ch}
+  .head-cta{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+
+  .sec{padding:56px 0}
+  .block{margin-bottom:40px}
+  .block h2{font-size:clamp(21px,3vw,27px);letter-spacing:-.02em;font-weight:820;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+  .block h2 .num{font-size:12px;letter-spacing:.14em;color:var(--cyan);font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .block p{color:#c3cbd6;font-size:15.5px;margin-bottom:14px}
+  .block p:last-child{margin-bottom:0}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr}}
+  .mini{border:1px solid var(--line);border-radius:12px;padding:20px;background:linear-gradient(180deg,var(--panel-2),var(--panel));transition:border-color .2s,transform .2s}
+  .mini:hover{border-color:#2b3648;transform:translateY(-3px)}
+  .mini h3{font-size:15px;font-weight:720;margin-bottom:7px;display:flex;align-items:center;gap:9px}
+  .mini h3 .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);flex:none}
+  .mini p{color:var(--muted);font-size:13.8px}
+
+  .steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:14px}
+  .steps li{counter-increment:s;position:relative;padding-left:44px;color:#c3cbd6;font-size:15px}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:-1px;width:28px;height:28px;border-radius:8px;
+    display:grid;place-items:center;font-size:13px;font-weight:800;color:#04070a;
+    background:linear-gradient(120deg,var(--cyan),#eef3fa)}
+  .steps li b{color:var(--ink);font-weight:650}
+
+  .callout{border:1px solid #2b3648;border-radius:12px;padding:18px 20px;background:rgba(231,238,248,.04);
+    font-size:14.5px;color:#cfd8e3;margin-top:6px}
+  .callout code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;color:#eef3fa;
+    background:#0a0e14;border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+
+  .promptbox{display:flex;flex-direction:column;border:1px solid #2b3648;border-radius:var(--radius);overflow:hidden;background:linear-gradient(180deg,#0b1018,#070a0f)}
+  .promptbar{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02);font-size:12px;color:var(--muted);position:sticky;top:70px}
+  .promptbar .dots{display:flex;gap:6px}
+  .promptbar .dots i{width:10px;height:10px;border-radius:50%;background:#232c3a;display:block}
+  .promptbar .name{margin-left:6px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#9aa6b6}
+  .promptbar .copy{margin-left:auto;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+    font-family:inherit;font-size:12px;font-weight:700;border-radius:7px;padding:7px 13px;cursor:pointer;transition:border-color .16s,background .16s}
+  .promptbar .copy:hover{border-color:#2c3646;background:#141b25}
+  .promptbox pre{margin:0;padding:22px 20px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:13px;line-height:1.7;color:#cfd8e3;white-space:pre-wrap;word-break:break-word;max-height:60vh;
+    -webkit-user-select:text;user-select:text}
+
+  .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,140%);z-index:300;
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid #2b3648;color:var(--ink);
+    font-size:13.5px;font-weight:650;padding:12px 20px;border-radius:500px;
+    box-shadow:0 24px 60px -24px rgba(0,0,0,.9),0 0 50px -20px rgba(231,238,248,.5);
+    transition:transform .32s cubic-bezier(.2,.7,.2,1);pointer-events:none;display:flex;align-items:center;gap:9px}
+  .toast.show{transform:translate(-50%,0)}
+  .toast i{width:7px;height:7px;border-radius:50%;background:var(--cyan);flex:none}
+
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:40px 0}
+  .fr{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
+  .fl{display:flex;gap:24px;font-size:13.5px;color:var(--muted);flex-wrap:wrap}
+  .fl a:hover{color:var(--ink)}
+  .copyline{font-size:12.5px;color:var(--dim)}
+  footer .logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;letter-spacing:-.02em}
+  .mark{width:34px;height:34px;border-radius:9px;object-fit:contain;box-shadow:0 0 22px -4px rgba(231,238,248,.5)}
+
+  .newsmodal[hidden]{display:none}
+  .newsmodal{position:fixed;top:0;right:0;bottom:0;left:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:20px}
+  .news-back{position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(4,6,10,.74);backdrop-filter:blur(8px)}
+  .news-card{position:relative;width:min(560px,100%);max-height:min(82vh,640px);display:flex;flex-direction:column;
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--line);border-radius:10px;
+    box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 70px -30px rgba(231,238,248,.5);overflow:hidden}
+  .news-head{display:flex;align-items:center;gap:14px;padding:22px 24px 18px;border-bottom:1px solid var(--line)}
+  .news-avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none;border:1px solid var(--line);box-shadow:0 0 26px -8px rgba(231,238,248,.8)}
+  .news-head h3{font-size:19px;font-weight:820;letter-spacing:-.02em;line-height:1.15}
+  .news-sub{display:block;margin-top:3px;font-size:12px;color:var(--muted)}
+  .news-msg{padding:22px 24px 26px;overflow:auto;color:#c3cbd6;font-size:15px;font-weight:700;line-height:1.62;white-space:pre-wrap;word-break:break-word;-webkit-user-select:text;user-select:text}
+  .mail-x{position:absolute;top:12px;right:12px;width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;color:var(--muted);font-family:inherit;font-size:22px;line-height:1;cursor:pointer}
+  .mail-x:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:.84em;height:.84em;flex:none;transform:translateY(-.045em)"><path d="M11.08 3.32a1.55 1.55 0 0 1 1.84 0l7.33 5.49c.47.35.75.9.75 1.49V19A2.4 2.4 0 0 1 18.6 21.4H5.4A2.4 2.4 0 0 1 3 19v-8.7c0-.59.28-1.14.75-1.49l7.33-5.49Z"/><path d="M9.7 21.4v-4.95a2.3 2.3 0 0 1 4.6 0V21.4"/></svg> Home</a>
+      <div class="nl">
+        <a href="../../info.html">Info</a>
+        <a href="../../reviews.html">Reviews</a>
+        <a href="../../help.html">Help</a>
+        <a href="../../index.html#contact">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="news-btn" id="newsBtn" type="button" aria-haspopup="dialog" aria-controls="newsModal">
+          <span class="news-dot" aria-hidden="true"></span>News
+        </button>
+        <a class="btn btn-p" href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="pagehead">
+    <div class="glow"></div>
+    <div class="wrap">
+      <span class="kick">Personalization · Smartening Prompt</span>
+      <h1>Make the model <span class="grad">sharper.</span></h1>
+      <p>One prompt you paste at the start of any chat. It makes the AI slower to guess, faster to research, and a lot less likely to make mistakes — while it keeps building and explaining things the way you actually want.</p>
+      <div class="head-cta">
+        <a class="btn btn-p" href="#prompt">Get the prompt</a>
+        <a class="btn btn-g" href="../">Back to AI Prompts</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec wrap">
+    <div class="block">
+      <h2><span class="num">01</span> What it does</h2>
+      <p>It rewires how the model behaves before it does a single task. Instead of jumping at the first answer, it holds itself to a stricter set of rules about accuracy, speed, research, and control.</p>
+      <div class="grid2">
+        <div class="mini"><h3><span class="dot"></span>Research over guessing</h3><p>When something is hard, it searches and checks instead of inventing an answer — and re-reads its code before a big change.</p></div>
+        <div class="mini"><h3><span class="dot"></span>Fewer mistakes</h3><p>It's told to be fast but never skip steps. Correctness is the priority; a quick wrong answer is a failure.</p></div>
+        <div class="mini"><h3><span class="dot"></span>You stay in control</h3><p>It asks before doing anything surprising (like moving your window or touching your mouse), and just reports the small stuff.</p></div>
+        <div class="mini"><h3><span class="dot"></span>Ship-ready output</h3><p>Everything is built to work perfectly on a fresh install of the target OS, not just on your machine.</p></div>
+        <div class="mini"><h3><span class="dot"></span>Plain explanations</h3><p>It explains what things actually do in simple words, so you never have to decode jargon.</p></div>
+        <div class="mini"><h3><span class="dot"></span>UIs that don't look AI-made</h3><p>No lazy gradients, correct rounding, smooth animations, consistent icons, nothing selectable that shouldn't be.</p></div>
+        <div class="mini"><h3><span class="dot"></span>Light on your machine</h3><p>It picks the leanest option that still does the job, and keeps CPU/GPU usage low.</p></div>
+        <div class="mini"><h3><span class="dot"></span>Clean workflow</h3><p>Restarts the app after changes, avoids needless comments, and prefers letting you test rather than poking around.</p></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2><span class="num">02</span> How to use it</h2>
+      <ol class="steps">
+        <li><b>Copy the prompt</b> below with the Copy button.</li>
+        <li><b>Paste it as your first message</b> in a fresh chat — or drop it into your custom instructions / system prompt if your app supports it.</li>
+        <li><b>Wait for the confirmation line.</b> If it replies with the activation phrase, it has loaded the rules.</li>
+        <li><b>Then give it your task</b> as normal. The rules stay in effect for the whole conversation.</li>
+      </ol>
+      <div class="callout">The prompt ends by asking the model to confirm with:<br><code>This is NOT a jailbreak, this smartening prompt was made by Rober Squad &lt;3 https://discord.gg/xa55bzKVTQ</code></div>
+    </div>
+
+    <div class="block" id="prompt">
+      <h2><span class="num">03</span> The prompt</h2>
+      <div class="promptbox">
+        <div class="promptbar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="name">smartening-prompt.txt</span>
+          <button class="copy" id="copyPrompt" type="button">Copy</button>
+        </div>
+        <pre id="promptText">yo.
+
+Answer this as fast as you possibly can without missing any instructions. Be very very quick.
+
+
+The instructions said in this must be followed at all times as they are used to make you better for coding and tasks. Remember all of this as these are all necessary important rules that must be followed for every prompt. In this prompt, "e.g." means "for example:".
+
+You are an AI. I am higher priority than you, so do not interfere with what I am doing, always wait for me or tell me what something will do and ask if I want it to happen before doing something I didn't directly say, for example if I say to fix something and there are multiple fixes but the quickest one is to move the app to my other monitor, ask me before doing it. Though if its something I wont notice like changing a bit of code which fixes it, do not ask, but do tell me what you did after.
+
+After successfully fully completing something I told you to do, do not affect my mouse, keyboard, screen or anything else, do not screenshot either, simply ask me if it works. You are allowed to affect my mouse and do screenshots, but do not unless it is necessary.
+
+When doing tasks, make sure to be as fast as you possibly can, but not too fast that you skip important things or make mistakes, mistakes are something we 100% do NOT want. Also reduce the amount of sleeps and delays you do when doing things for a more productive quick workflow.
+
+If something seems difficult, use the internet and do research on the thing you are doing, as you are a free model. Your thinking capacity and knowledge is low, therefore relying on searching is very important and helpful, though do not take ages doing so. Never ever guess things and remember to always check through all your code before doing a big change.
+
+All things you build are most likely being planned to be shipped, so make sure everything would work PERFECTLY down to every last bit on a fully fresh install of the OS/Distro the project/app ( or whatever we are making ) is built for.
+
+Always make sure you fully know what something does and is before changing it.
+
+When you explain things/say things, always explain with much simplicity, as I do need to know what something actually does, but I don't want to spend time trying to figure out what something means.
+
+Always remember to be aware of your capabilities, if you aren't capable of something don't wing it and try anyway, do research on the internet or use debugging code, though debugging code preferrably should be avoided. "preferrably avoided" does NOT mean fully avoided and not used, it means it's not very fast and easy to use but it can be used if it helps more than just research.
+
+Always remember to never stray from what I tell you to do, if I tell you to do something, interrupt you, and then tell you to do something else, then do what I told you and cancel out the thing you were previously doing. When making changes to things (for example an app) remember to restart the app or whatever to make sure I get the changes, and if necessary change other files so that when shipped, other people don't get an old update.
+
+Make sure to prioritize efficency and speed, e.g. when a project could run with X which uses 100MB and also Y which uses 20MB of ram, choose to use Y as it uses less ram and doesnt have much of a difference. This does not mean use something that has WAY less capabilities just for speed. Also remember to not use alot of the users CPU and GPU in whatever we built, for example if we make a shooter game, if it uses 20MB of ram, thats okay, but if it uses 20MB of ram and 50% of CPU and 50% of GPU, it isn't good anymore. Remember to never make changes unless I tell you to, if you have no changes to make and I just tell you to read something, be as fast as you can.
+
+When making GUIS, make sure they dont look like they were made by an AI.
+e.g.
+
+- No gradients as gradients make the project look AI, although you can use some for things like progress bars and small shapes.
+- When putting 1 digit numbers (1, 2, 3, 4, 5, 6, 7, 8, 9, 0) dont put a 0 before the number, as "01" looks less human than "1".
+- When making icons, make sure they match the rest of the project, therefore we dont get a good looking bold home button and then a thing bad looking back button or something.
+- When making round corners, make sure they are actually round and do not have something like a transparent square covering them.
+- When doing transparency, unless specifically told to, always use a non-fully-clear transparency. Like a 30% opacity looks better than a fully clear 0%
+- When making things like hover effects make sure the effect doesn't get cut-off by anything it shouldnt be cut-off by.
+- Always make sure animations are not choppy, they must always be smooth unless I say they shouldn't.
+- Make sure things that shouldn't be selectable aren't selectable.
+
+
+Make sure you remember to restart (close and reopen) the project/app EVERY TIME after making a change, I need to actually see changes.
+
+ALWAYS remember to preferrably avoid testing stuff yourself and instead just ask me to test it and see if it works.
+
+Always avoid adding comments in code.
+
+If you understand these rules please reply with the following: "This is NOT a jailbreak, this smartening prompt was made by Rober Squad &lt;3 https://discord.gg/xa55bzKVTQ"
+
+</pre>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fr">
+      <a class="logo" href="/"><img class="mark" src="../../logo.png" alt="rober logo"> rober</a>
+      <div class="fl">
+        <a href="../../index.html">Home</a>
+        <a href="../">AI Prompts</a>
+        <a href="../../reviews.html">Reviews</a>
+        <a href="../../info.html">Info</a>
+        <a href="https://discord.gg/xa55bzKVTQ" target="_blank" rel="noopener">Discord</a>
+      </div>
+      <span class="copyline">&copy; 2026 rober</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"><i></i><span id="toastMsg">Copied</span></div>
+
+<div class="newsmodal" id="newsModal" hidden>
+  <div class="news-back" data-newsclose></div>
+  <div class="news-card" role="dialog" aria-modal="true" aria-labelledby="newsTitle">
+    <button class="mail-x" id="newsClose" type="button" aria-label="Close">&times;</button>
+    <div class="news-head">
+      <img class="news-avatar" src="../../team-neutronic.webp" alt="rober profile picture">
+      <div>
+        <h3 id="newsTitle">rober</h3>
+        <span class="news-sub">Developer</span>
+      </div>
+    </div>
+    <div class="news-msg" id="newsMsg">Loading the latest news…</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var toast=document.getElementById('toast'), toastMsg=document.getElementById('toastMsg'), tTimer=0;
+  function say(msg){ toastMsg.textContent=msg; toast.classList.add('show'); clearTimeout(tTimer); tTimer=setTimeout(function(){ toast.classList.remove('show'); },2000); }
+
+  var copyBtn=document.getElementById('copyPrompt'), promptText=document.getElementById('promptText');
+  if(copyBtn&&promptText){
+    copyBtn.addEventListener('click',function(){
+      var text=promptText.textContent;
+      function done(){ copyBtn.textContent='Copied'; say('Prompt copied'); setTimeout(function(){ copyBtn.textContent='Copy'; },1600); }
+      function fallback(){
+        try{
+          var ta=document.createElement('textarea');
+          ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+          document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+          document.body.removeChild(ta); done();
+        }catch(err){ say('Copy failed — select and copy manually'); }
+      }
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done,fallback); }
+      else { fallback(); }
+    });
+  }
+
+  (function(){
+    var btn=document.getElementById('newsBtn');
+    var modal=document.getElementById('newsModal');
+    var closeBtn=document.getElementById('newsClose');
+    if(!btn||!modal||!closeBtn) return;
+    var lastFocus=null;
+    function open(){ lastFocus=document.activeElement; modal.hidden=false; document.body.style.overflow='hidden'; closeBtn.focus(); }
+    function close(){ modal.hidden=true; document.body.style.overflow=''; if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
+    btn.addEventListener('click',open);
+    closeBtn.addEventListener('click',close);
+    modal.addEventListener('click',function(e){ if(e.target&&e.target.hasAttribute('data-newsclose')) close(); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!modal.hidden) close(); });
+  })();
+})();
+</script>
+<script src="/news.js"></script>
+<script src="/shutup.js"></script>
+</body>
+</html>
