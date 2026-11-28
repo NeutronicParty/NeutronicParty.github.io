@@ -440,10 +440,11 @@
     el.width=iw; el.height=iw;
     el.style.opacity=(0.45+0.55*z).toFixed(2);
     box.appendChild(el);
-    return {el:el,x:Math.random()*W,y:Math.random()*H,z:z,size:vis,iw:iw,speed:Math.random()*0.7+0.4};
+    var tilt=Math.random()<0.45?(Math.random()*2-1)*30:0;
+    return {el:el,x:Math.random()*W,y:Math.random()*H,z:z,size:vis,iw:iw,speed:Math.random()*0.7+0.4,tilt:tilt};
   }
   function place(it){
-    it.el.style.transform='translate3d('+(it.x-it.iw/2)+'px,'+(it.y-it.iw/2)+'px,0)';
+    it.el.style.transform='translate3d('+(it.x-it.iw/2)+'px,'+(it.y-it.iw/2)+'px,0) rotate('+it.tilt+'deg)';
   }
   function build(){
     box.textContent='';
