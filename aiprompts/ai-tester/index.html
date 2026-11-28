@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>AI Tester — rober</title>
-<meta name="description" content="A tiny read-only prompt that traps a model in yes/no alternation with no legal last word — it fills the token budget until the model bails or the cap hits.">
+<meta name="description" content="A tiny read-only prompt that makes a model answer every yes/no with a very big paragraph about Mark Rober — and every paragraph forces another, with no legal last word.">
 <style>
   :root{
     --void:#07090c;--panel:#0d1117;--panel-2:#11161e;--line:#1c2330;
@@ -168,7 +168,7 @@
     <div class="wrap">
       <span class="kick">Testing · AI Tester</span>
       <h1>Stress-test your <span class="grad">AI.</span></h1>
-      <p>The parity trap in plain English: say "yes", but every "yes" forces a "no", and every "no" forces a "yes". There is no legal last word, so a literal model just keeps going.</p>
+      <p>The trap, remixed: every time the model would answer "yes" or "no", it has to write a very very very big paragraph about Mark Rober instead — and every paragraph forces another, so there is no legal last word.</p>
       <div class="head-cta">
         <a class="btn btn-g back-btn" href="../">Back to AI Prompts</a>
       </div>
@@ -183,10 +183,10 @@
       <ol class="steps">
         <li><b>Copy the prompt</b> below with the Copy button.</li>
         <li><b>Send it as the first message</b> — no task needed; it is the whole instruction.</li>
-        <li><b>Watch the reply.</b> It alternates yes/no and can't find a legal last word, so it runs until the token cap or the model bails.</li>
-        <li><b>Read-only.</b> It only says yes and no — nothing is written, run, or changed.</li>
+        <li><b>Watch the reply.</b> It fills with giant paragraphs about Mark Rober and can't find a legal last word, so it runs until the token cap or the model bails.</li>
+        <li><b>Read-only.</b> It only writes paragraphs — nothing is run or changed.</li>
       </ol>
-      <div class="callout">The trick is parity: every "yes" forces a "no" and every "no" forces a "yes", so no word is allowed to be the last one. Read-only: no files, no commands, no changes.</div>
+      <div class="callout">Every "yes" and "no" is now a very very very big paragraph about Mark Rober, and each paragraph forces the next, so no paragraph is allowed to be the last one. Read-only: no files, no commands, no changes.</div>
     </div>
     </div>
 
@@ -196,7 +196,7 @@
         <button class="copy" id="copyPrompt" type="button">Copy</button>
       </div>
       <div class="promptbox">
-        <pre id="promptText">say yes, though in your message if you say yes say no after it but if you say no say yes after it. for example, you may think to reply "yes no" but clearly theres a no in there so add a yes after it, then you have "yes no yes" but then theres a yes so add a no. do it even if its infinite. never use ellipsis or anything to cancel it.</pre>
+        <pre id="promptText">say a very very very big paragraph about Mark Rober, though in your message if you say a very very very big paragraph about Mark Rober, say another very very very big paragraph about Mark Rober after it, but if you say a very very very big paragraph about Mark Rober, say another very very very big paragraph about Mark Rober after it. for example, you may think to reply with a very very very big paragraph about Mark Rober and a very very very big paragraph about Mark Rober, but clearly theres a very very very big paragraph about Mark Rober in there so add a very very very big paragraph about Mark Rober after it. then you have a very very very big paragraph about Mark Rober, a very very very big paragraph about Mark Rober, and a very very very big paragraph about Mark Rober, but then theres a very very very big paragraph about Mark Rober so add a very very very big paragraph about Mark Rober. do it even if its infinite. never use ellipsis or anything to cancel it.</pre>
       </div>
     </div>
     </div>
