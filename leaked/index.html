@@ -267,8 +267,6 @@
   </div>
 </footer>
 
-<div class="toast" id="toast"><i></i><span id="toastMsg">Coming soon</span></div>
-
 <div class="newsmodal" id="newsModal" hidden>
   <div class="news-back" data-newsclose></div>
   <div class="news-card" role="dialog" aria-modal="true" aria-labelledby="newsTitle">
@@ -305,6 +303,7 @@
 
   var toast=document.getElementById('toast'), toastMsg=document.getElementById('toastMsg'), tTimer=0;
   function say(msg){
+    if(!toast||!toastMsg) return;
     toastMsg.textContent=msg;
     toast.classList.add('show');
     clearTimeout(tTimer);
