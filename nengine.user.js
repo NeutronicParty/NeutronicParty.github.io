@@ -14,7 +14,7 @@
 (() => {
   'use strict';
 
-  const SRC = 'https://raw.githubusercontent.com/NeutronicParty/loader/main/code.js';
+  const SRC = 'https://raw.githubusercontent.com/robersquad/loader/main/code.js';
 
   const log  = (...a) => console.log('%c[Neutronic Loader]', 'color:#0af', ...a);
   const warn = (...a) => console.warn('[Neutronic Loader]', ...a);
