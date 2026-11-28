@@ -94,13 +94,11 @@
     background:#0a0e14;border:1px solid var(--line);border-radius:6px;padding:2px 7px}
 
   .promptbox{display:flex;flex-direction:column;border:1px solid #2b3648;border-radius:var(--radius);overflow:hidden;background:linear-gradient(180deg,#0b1018,#070a0f)}
-  .promptbar{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02);font-size:12px;color:var(--muted);position:sticky;top:70px}
-  .promptbar .dots{display:flex;gap:6px}
-  .promptbar .dots i{width:10px;height:10px;border-radius:50%;background:#232c3a;display:block}
-  .promptbar .name{margin-left:6px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#9aa6b6}
-  .promptbar .copy{margin-left:auto;border:1px solid var(--line);background:var(--panel);color:var(--ink);
-    font-family:inherit;font-size:12px;font-weight:700;border-radius:7px;padding:7px 13px;cursor:pointer;transition:border-color .16s,background .16s}
-  .promptbar .copy:hover{border-color:#2c3646;background:#141b25}
+  .prompt-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
+  .prompt-head h2{margin-bottom:0}
+  .copy{border:1px solid var(--line);background:var(--panel);color:var(--ink);
+    font-family:inherit;font-size:12px;font-weight:700;border-radius:8px;padding:8px 16px;cursor:pointer;transition:border-color .16s,background .16s}
+  .copy:hover{border-color:#2c3646;background:#141b25}
   .promptbox pre{margin:0;padding:22px 20px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
     font-size:13px;line-height:1.7;color:#cfd8e3;white-space:pre-wrap;word-break:break-word;max-height:60vh;
     -webkit-user-select:text;user-select:text}
@@ -185,13 +183,11 @@
     </div>
 
     <div class="block" id="prompt">
-      <h2><span class="num">02</span> The prompt</h2>
+      <div class="prompt-head">
+        <h2><span class="num">02</span> The prompt</h2>
+        <button class="copy" id="copyPrompt" type="button">Copy</button>
+      </div>
       <div class="promptbox">
-        <div class="promptbar">
-          <span class="dots"><i></i><i></i><i></i></span>
-          <span class="name">smartening-prompt.txt</span>
-          <button class="copy" id="copyPrompt" type="button">Copy</button>
-        </div>
         <pre id="promptText">yo.
 
 Answer this as fast as you possibly can without missing any instructions. Be very very quick.
