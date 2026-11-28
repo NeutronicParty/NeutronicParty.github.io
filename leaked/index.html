@@ -96,8 +96,8 @@
   .chip.on{color:#04070a;background:linear-gradient(120deg,var(--cyan),#eef3fa);border-color:transparent}
   .chip:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
 
-  .grid{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
-  .card{position:relative;display:flex;flex-direction:column;aspect-ratio:1/1;width:320px;max-width:100%;flex:0 0 auto;background:linear-gradient(180deg,var(--panel-2),var(--panel));
+  .grid{display:flex;flex-wrap:wrap;gap:16px;align-items:stretch}
+  .card{position:relative;display:flex;flex-direction:column;flex:1 1 360px;max-width:100%;background:linear-gradient(180deg,var(--panel-2),var(--panel));
     border:1px solid var(--line);border-radius:var(--radius);padding:24px;overflow:hidden;cursor:pointer;
     transition:transform .2s,border-color .2s,box-shadow .2s,opacity .25s}
   .card::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none;
@@ -110,7 +110,7 @@
   .ico{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;margin-bottom:18px;
     border:1px solid var(--line);background:#0a0f16;color:var(--cyan)}
   .ico svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .codepane{height:140px;margin:-24px -24px 16px;padding:12px 16px;background:#000;border-bottom:1px solid var(--line);
+  .codepane{height:88px;margin:-24px -24px 16px;padding:12px 16px;background:#000;border-bottom:1px solid var(--line);
     font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;line-height:1.55;
     color:#7d8798;overflow:hidden}
   .codepane .cl{white-space:nowrap;overflow:hidden}
