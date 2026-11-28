@@ -137,6 +137,7 @@
   h1 .grad .ch{background-image:linear-gradient(105deg,var(--cyan) 0%,#f4f8fc 55%,#c2cee0 100%);background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent}
   h1.lens{position:relative;z-index:1}
   .wm-canvas{display:block;margin:0 auto}
+  h1.watermark{letter-spacing:.09em}
   h1.lens::before{content:"";position:absolute;left:50%;top:52%;width:min(700px,92vw);height:min(320px,54vh);
     transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:-1;filter:blur(30px);
     background:radial-gradient(ellipse at center,rgba(238,243,250,.30),rgba(231,238,248,.13) 45%,transparent 72%)}
@@ -260,7 +261,11 @@
   .engine .kick::before{background:#3a86ff}
   .engine .tick{color:#3a86ff}
   .engine .engine-side .btn{background:linear-gradient(120deg,#5b9bff,#3a86ff);color:#061020;box-shadow:0 10px 30px -12px rgba(58,134,255,.8)}
-  #engineLeft{background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,0) 42%),radial-gradient(520px circle at 0% 0%,rgba(58,134,255,.34),transparent 62%),rgba(16,26,44,.42);border-color:rgba(140,185,255,.55);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -22px 46px -34px rgba(58,134,255,.5),0 16px 50px -26px rgba(58,134,255,.75)}
+  #engineLeft{background:radial-gradient(520px circle at 0% 0%,rgba(201,214,230,.24),transparent 62%),rgba(26,31,40,.55);border-color:rgba(201,214,230,.42);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 44px -24px rgba(201,214,230,.55)}
+  #engineLeft .kick{color:#cdd8e6}
+  #engineLeft .kick::before{background:#cdd8e6}
+  #engineLeft .tick{color:#cdd8e6}
+  #engineLeft .engine-side .btn{background:linear-gradient(120deg,#dbe4ef,#c2cfe0);color:#061020;box-shadow:0 10px 30px -12px rgba(201,214,230,.5)}
   #engineRight{background:radial-gradient(520px circle at 100% 0%,rgba(201,214,230,.24),transparent 62%),rgba(26,31,40,.55);border-color:rgba(201,214,230,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 44px -24px rgba(201,214,230,.55)}
   #engineRight .kick{color:#cdd8e6}
   #engineRight .kick::before{background:#cdd8e6}
@@ -345,7 +350,7 @@
           <span><b id="ratingScore">5</b> stars total</span>
           <span class="rc" id="ratingCount">(1 review)</span>
         </a>
-        <h1 class="lens watermark" aria-label="rober squad"><canvas class="wm-canvas" aria-hidden="true"></canvas></h1>
+        <h1 class="lens watermark" aria-label="ROBER SQUAD"><canvas class="wm-canvas" aria-hidden="true"></canvas></h1>
         <button class="morebtn" id="moreBtn" type="button" aria-pressed="false">More software</button>
       </div>
       <div class="engine right rust reveal" id="engineRight">
@@ -710,7 +715,7 @@
     var DPR=Math.min(window.devicePixelRatio||1,2);
     var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
     var INK='#eef2f7', CYAN='#e7eef8', LIGHT='#f4f8fc', BLUE='#c2cee0';
-    var L1='rober', L2='squad';
+    var L1='ROBER', L2='SQUAD';
 
     var base=document.createElement('canvas'), bctx=base.getContext('2d');
     var bright=document.createElement('canvas'), rctx=bright.getContext('2d');
