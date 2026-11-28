@@ -535,40 +535,93 @@
       ctx.setTransform(dpr,0,0,dpr,0,0);
       canvas.style.display='block';
 
-      var amp=26, freq=0.009, bandH=H+amp*4;
-      var phase=0, start=null, dur=1050, swapped=false;
-      var aFrom=-(bandH+amp), aTo=H+amp, swapAt=amp;
+      var layers=[
+        {a:26, f:0.0100, s:1.6, p:0.0},
+        {a:15, f:0.0190, s:-2.3, p:1.3},
+        {a:8,  f:0.0410, s:3.2, p:2.7}
+      ];
+      var ampMax=0;
+      for(var li=0;li<layers.length;li++) ampMax+=layers[li].a;
 
-      function draw(a){
+      var T_DOWN=950, T_HOLD=520, T_UP=950, T_TOTAL=T_DOWN+T_HOLD+T_UP;
+      var baseUp=-(ampMax+12), baseDown=H+ampMax+12;
+      var start=null, swapped=false;
+
+      function crestY(x, base, time){
+        var y=base;
+        for(var i=0;i<layers.length;i++){
+          var L=layers[i];
+          y += L.a*Math.sin(x*L.f + time*L.s + L.p);
+        }
+        return y;
+      }
+
+      function ease(t){ return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+
+      function draw(base, time){
         ctx.clearRect(0,0,W,H);
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(0, a+Math.sin(phase)*amp);
-        for(var x=0;x<=W;x+=6) ctx.lineTo(x, a+Math.sin(x*freq+phase)*amp);
-        var b=a+bandH;
-        for(var x2=W;x2>=0;x2-=6) ctx.lineTo(x2, b+Math.sin(x2*freq+phase+1.3)*amp);
-        ctx.closePath();
-        ctx.clip();
+        var pts=[];
+        for(var x=-8;x<=W+8;x+=5) pts.push([x, crestY(x, base, time)]);
 
-        var step=46, scroll=(phase*22)%(step*2);
-        var y0=Math.floor((a-amp)/step)*step-step*2;
-        var y1=b+amp+step, i=0;
-        for(var y=y0;y<y1;y+=step,i++){
-          ctx.fillStyle=(i%2===0)?'#050608':'#f4f8fc';
-          ctx.fillRect(0, y+scroll, W, step+1);
+        ctx.beginPath();
+        ctx.moveTo(-8,-H*2);
+        ctx.lineTo(-8, pts[0][1]);
+        for(var i=1;i<pts.length;i++) ctx.lineTo(pts[i][0], pts[i][1]);
+        ctx.lineTo(W+8,-H*2);
+        ctx.closePath();
+
+        var g=ctx.createLinearGradient(0, base-H, 0, base+ampMax+8);
+        g.addColorStop(0,'#030509');
+        g.addColorStop(0.62,'#0a0f16');
+        g.addColorStop(1,'#1a222e');
+        ctx.fillStyle=g;
+        ctx.fill();
+
+        ctx.save();
+        ctx.clip();
+        ctx.globalAlpha=0.06;
+        ctx.strokeStyle='#f4f8fc';
+        ctx.lineWidth=2;
+        var scroll=(time*20)%50;
+        for(var k=1;k<=4;k++){
+          ctx.beginPath();
+          for(var x2=0;x2<=W;x2+=8){
+            var yy=crestY(x2, base, time) - k*50 - scroll;
+            if(x2===0) ctx.moveTo(x2,yy); else ctx.lineTo(x2,yy);
+          }
+          ctx.stroke();
         }
         ctx.restore();
+
+        ctx.beginPath();
+        for(var i2=0;i2<pts.length;i2++){
+          if(i2===0) ctx.moveTo(pts[i2][0], pts[i2][1]);
+          else ctx.lineTo(pts[i2][0], pts[i2][1]);
+        }
+        ctx.lineJoin='round';
+        ctx.lineCap='round';
+        ctx.strokeStyle='rgba(244,248,252,0.16)'; ctx.lineWidth=30; ctx.stroke();
+        ctx.strokeStyle='rgba(244,248,252,0.55)'; ctx.lineWidth=15; ctx.stroke();
+        ctx.strokeStyle='rgba(255,255,255,0.92)'; ctx.lineWidth=6;  ctx.stroke();
       }
 
       function frame(now){
         if(start===null) start=now;
-        var t=Math.min(1,(now-start)/dur);
-        var e=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
-        var a=aFrom+(aTo-aFrom)*e;
-        phase+=0.07;
-        draw(a);
-        if(!swapped && a>=swapAt){ swapped=true; swap(); }
-        if(t<1){
+        var el=now-start;
+        var time=el/1000;
+        var base;
+        if(el<T_DOWN){
+          base=baseUp+(baseDown-baseUp)*ease(el/T_DOWN);
+        } else if(el<T_DOWN+T_HOLD){
+          base=baseDown;
+          if(!swapped){ swapped=true; swap(); }
+        } else if(el<T_TOTAL){
+          base=baseDown+(baseUp-baseDown)*ease((el-T_DOWN-T_HOLD)/T_UP);
+        } else {
+          base=baseUp;
+        }
+        draw(base, time);
+        if(el<T_TOTAL){
           requestAnimationFrame(frame);
         } else {
           canvas.style.display='none';
