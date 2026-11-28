@@ -253,6 +253,11 @@
   #engineLeft .kick::before{background:#cdd8e6}
   #engineLeft .tick{color:#cdd8e6}
   #engineLeft .engine-side .btn{background:linear-gradient(120deg,#dbe4ef,#c2cfe0);color:#061020;box-shadow:0 10px 30px -12px rgba(201,214,230,.5)}
+  #engineLeft.leaked{background:radial-gradient(520px circle at 0% 0%,rgba(255,96,96,.20),transparent 62%),rgba(28,18,22,.55);border-color:rgba(255,120,120,.45);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 44px -24px rgba(255,96,96,.55)}
+  #engineLeft.leaked .kick{color:#ffb4b4}
+  #engineLeft.leaked .kick::before{background:#ffb4b4}
+  #engineLeft.leaked .tick{color:#ffb4b4}
+  #engineLeft.leaked .engine-side .btn{background:linear-gradient(120deg,#ff9a9a,#ff6060);color:#1c0707;box-shadow:0 10px 30px -12px rgba(255,96,96,.6)}
   #engineRight{background:radial-gradient(520px circle at 100% 0%,rgba(201,214,230,.24),transparent 62%),rgba(26,31,40,.55);border-color:rgba(201,214,230,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 44px -24px rgba(201,214,230,.55)}
   #engineRight .kick{color:#cdd8e6}
   #engineRight .kick::before{background:#cdd8e6}
@@ -403,6 +408,20 @@
     </div>
   </template>
 
+  <template id="leakedBlock">
+    <p class="kick">Leaked Shi</p>
+    <h3>Cool shit I find.</h3>
+    <p class="engine-desc">random leaks, tools, and whatever's worth saving — dumped here as I find it</p>
+    <ul>
+      <li><span class="tick bullet" aria-hidden="true"></span><span><b>Leaks</b> — early builds and stuff that slipped out</span></li>
+      <li><span class="tick bullet" aria-hidden="true"></span><span><b>Tools</b> — handy shit I actually use</span></li>
+      <li><span class="tick bullet" aria-hidden="true"></span><span><b>Whatever's cool</b> — no rules, just the good stuff</span></li>
+    </ul>
+    <div class="engine-side">
+      <a class="btn btn-g" href="leaked/">Check it out →</a>
+    </div>
+  </template>
+
   <div class="marquee" aria-hidden="true">
     <div class="mq-track">
       <span>Web</span><b>·</b><span>Product</span><b>·</b><span>Systems</span><b>·</b><span>Sound</span><b>·</b><span>Motion</span><b>·</b><span>Interfaces</span><b>·</b><span>Prototypes</span><b>·</b>
@@ -506,13 +525,14 @@
     var tplYT=document.getElementById('youtubedBlock');
     var tplUG=document.getElementById('unblockedBlock');
     var tplAI=document.getElementById('aipromptsBlock');
+    var tplLeaked=document.getElementById('leakedBlock');
     if(!btn||!box) return;
     var original=Array.prototype.map.call(box.childNodes, function(n){ return n.cloneNode(true); });
     var roriginal=rbox?Array.prototype.map.call(rbox.childNodes, function(n){ return n.cloneNode(true); }):null;
     var states=[
       {left:null,  right:null},
       {left:tplYT, right:tplUG},
-      {left:tplYT, right:tplAI}
+      {left:tplLeaked, right:tplAI}
     ];
     var state=0;
     function fill(el, frag){
@@ -531,7 +551,8 @@
     function render(){
       var s=states[state];
       fill(box, makeFrag(s.left, original));
-      box.classList.toggle('youtubed', !!s.left);
+      box.classList.toggle('youtubed', s.left===tplYT);
+      box.classList.toggle('leaked', s.left===tplLeaked);
       if(rbox && roriginal && roriginal.length){
         fill(rbox, makeFrag(s.right, roriginal));
         rbox.classList.toggle('rust', s.right===null);
