@@ -67,8 +67,10 @@
   .head-cta{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
 
   .sec{padding:56px 0}
-  .two-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:36px;align-items:start}
+  .two-col{display:grid;grid-template-columns:minmax(0,0.8fr) minmax(0,2fr);gap:44px;align-items:start}
   @media(max-width:860px){.two-col{grid-template-columns:1fr;gap:30px}}
+  .prompt-layout{max-width:1240px}
+  @media(min-width:861px){.col-left{position:sticky;top:92px}}
   .back-btn{border-radius:8px}
   .block{margin-bottom:40px}
   .block h2{font-size:clamp(21px,3vw,27px);letter-spacing:-.02em;font-weight:820;margin-bottom:16px;display:flex;align-items:center;gap:12px}
@@ -172,7 +174,7 @@
     </div>
   </section>
 
-  <section class="sec wrap">
+  <section class="sec wrap prompt-layout">
     <div class="two-col">
     <div class="col-left">
     <div class="block">
