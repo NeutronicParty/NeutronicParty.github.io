@@ -9,8 +9,8 @@
       '<div class="news-card" role="dialog" aria-modal="true" aria-labelledby="newsTitle">'+
         '<button class="mail-x" id="newsClose" type="button" aria-label="Close">&times;</button>'+
         '<div class="news-head">'+
-          '<img class="news-avatar" src="/team-neutronic.webp" alt="Neutronic profile picture">'+
-          '<div><h3 id="newsTitle">Neutronic</h3><span class="news-sub">Developer</span></div>'+
+          '<img class="news-avatar" src="/team-neutronic.webp" alt="rober profile picture">'+
+          '<div><h3 id="newsTitle">rober</h3><span class="news-sub">Developer</span></div>'+
         '</div>'+
         '<div class="news-msg loading" id="newsMsg">Loading the latest news…</div>'+
       '</div>';
