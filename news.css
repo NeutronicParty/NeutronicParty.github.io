@@ -49,3 +49,5 @@ nav .logo:hover svg{background:rgba(231,238,248,.18)}
 nav .logo:active{transform:translateY(0)}
 nav .logo:focus-visible{outline:2px solid var(--cyan,#e7eef8);outline-offset:3px}
 @media(max-width:560px){nav .logo{padding:7px 13px 7px 9px;font-size:13.5px;gap:7px}}
+nav .news-btn{height:32px;padding:0 12px;border-radius:8px}
+nav .btn{height:32px;padding:0 14px;border-radius:8px;font-size:13px}
