@@ -96,10 +96,8 @@
   .chip.on{color:#04070a;background:linear-gradient(120deg,var(--cyan),#eef3fa);border-color:transparent}
   .chip:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
 
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
-  @media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:560px){.grid{grid-template-columns:1fr}}
-  .card{position:relative;display:flex;flex-direction:column;aspect-ratio:1/1;background:linear-gradient(180deg,var(--panel-2),var(--panel));
+  .grid{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+  .card{position:relative;display:flex;flex-direction:column;aspect-ratio:1/1;width:260px;max-width:100%;flex:0 0 auto;background:linear-gradient(180deg,var(--panel-2),var(--panel));
     border:1px solid var(--line);border-radius:var(--radius);padding:24px;overflow:hidden;cursor:pointer;
     transition:transform .2s,border-color .2s,box-shadow .2s,opacity .25s}
   .card::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none;
