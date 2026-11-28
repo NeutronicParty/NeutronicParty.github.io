@@ -57,6 +57,8 @@
     border:1px solid var(--line);background:var(--panel);color:var(--ink);font-family:inherit;font-size:13px;
     font-weight:700;letter-spacing:.01em;cursor:pointer;flex:none;transition:transform .16s,border-color .16s}
   .news-btn:hover{transform:translateY(-2px);border-color:#2c3646}
+  nav .news-btn{height:32px;padding:0 12px;border-radius:8px}
+  nav .btn{height:32px;padding:0 14px;border-radius:8px;font-size:13px}
   .news-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);flex:none;animation:pulse 2s infinite}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,79,163,.5)}70%{box-shadow:0 0 0 9px rgba(255,79,163,0)}100%{box-shadow:0 0 0 0 rgba(255,79,163,0)}}
   @media(max-width:780px){.nl{display:none}nav{display:flex;justify-content:space-between}}
@@ -411,6 +413,13 @@
     var o=((off%STEP)+STEP)%STEP;
     var k=SIZE/24, h=SIZE/2;
     var rows=Math.ceil(H/STEP)+1, cols=Math.ceil(W/STEP)+1;
+    ctx.globalAlpha=1;
+    ctx.strokeStyle='rgba(150,158,170,0.16)';
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    for(var gx=o-STEP; gx<=W+STEP; gx+=STEP){ ctx.moveTo(gx,0); ctx.lineTo(gx,H); }
+    for(var gy=o-STEP; gy<=H+STEP; gy+=STEP){ ctx.moveTo(0,gy); ctx.lineTo(W,gy); }
+    ctx.stroke();
     ctx.globalAlpha=0.5;
     for(var r=-1;r<rows;r++){
       for(var c=-1;c<cols;c++){
