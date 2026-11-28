@@ -67,6 +67,9 @@
   .head-cta{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
 
   .sec{padding:56px 0}
+  .two-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:36px;align-items:start}
+  @media(max-width:860px){.two-col{grid-template-columns:1fr;gap:30px}}
+  .back-btn{border-radius:8px}
   .block{margin-bottom:40px}
   .block h2{font-size:clamp(21px,3vw,27px);letter-spacing:-.02em;font-weight:820;margin-bottom:16px;display:flex;align-items:center;gap:12px}
   .block h2 .num{font-size:12px;letter-spacing:.14em;color:var(--cyan);font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
@@ -161,16 +164,17 @@
     <div class="glow"></div>
     <div class="wrap">
       <span class="kick">Personalization · Smartening Prompt</span>
-      <h1>Make the model <span class="grad">sharper.</span></h1>
+      <h1>Improve your AI <span class="grad">experience.</span></h1>
       <p>One prompt you paste at the start of any chat. It makes the AI slower to guess, faster to research, and a lot less likely to make mistakes — while it keeps building and explaining things the way you actually want.</p>
       <div class="head-cta">
-        <a class="btn btn-p" href="#prompt">Get the prompt</a>
-        <a class="btn btn-g" href="../">Back to AI Prompts</a>
+        <a class="btn btn-g back-btn" href="../">Back to AI Prompts</a>
       </div>
     </div>
   </section>
 
   <section class="sec wrap">
+    <div class="two-col">
+    <div class="col-left">
     <div class="block">
       <h2><span class="num">01</span> How to use it</h2>
       <ol class="steps">
@@ -181,8 +185,9 @@
       </ol>
       <div class="callout">The prompt ends by asking the model to confirm with:<br><code>This is NOT a jailbreak, this smartening prompt was made by Rober Squad &lt;3 https://discord.gg/xa55bzKVTQ</code></div>
     </div>
+    </div>
 
-    <div class="block" id="prompt">
+    <div class="col-right" id="prompt">
       <div class="prompt-head">
         <h2><span class="num">02</span> The prompt</h2>
         <button class="copy" id="copyPrompt" type="button">Copy</button>
@@ -238,6 +243,7 @@ If you understand these rules please reply with the following: "This is NOT a ja
 
 </pre>
       </div>
+    </div>
     </div>
   </section>
 </main>
